@@ -16,15 +16,15 @@
   <meta name="author" content="��ϲ">
   <meta name="keywords" content="">
   
-    <meta name="description" content="安装 hexonpm install -g hexo-cli 配置环境变量查看默认安装路径 npm config ls，找到 hexo-cli&#x2F;bin文件夹，将其添加到环境变量中   创建新文件夹mkdir blog hexo 初始化hexo init">
+    <meta name="description" content="安装 hexonpm install -g hexo-cli 配置环境变量查看默认安装路径 npm config ls，找到 hexo-cli&#x2F;bin文件夹，将其添加到环境变量中   创建新文件夹mkdir blog 生成初始化文件hexo init 下载部署插件npm install hexo-deployer-git --save">
 <meta property="og:type" content="article">
 <meta property="og:title" content="使用 Hexo 配置博客">
-<meta property="og:url" content="http://example.com/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/index.html">
+<meta property="og:url" content="https://vexentox.github.io/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/index.html">
 <meta property="og:site_name" content="��ϲ�ĸ��˲���">
-<meta property="og:description" content="安装 hexonpm install -g hexo-cli 配置环境变量查看默认安装路径 npm config ls，找到 hexo-cli&#x2F;bin文件夹，将其添加到环境变量中   创建新文件夹mkdir blog hexo 初始化hexo init">
+<meta property="og:description" content="安装 hexonpm install -g hexo-cli 配置环境变量查看默认安装路径 npm config ls，找到 hexo-cli&#x2F;bin文件夹，将其添加到环境变量中   创建新文件夹mkdir blog 生成初始化文件hexo init 下载部署插件npm install hexo-deployer-git --save">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-03-09T13:56:14.000Z">
-<meta property="article:modified_time" content="2023-05-09T13:57:27.752Z">
+<meta property="article:modified_time" content="2023-05-09T14:21:27.175Z">
 <meta property="article:author" content="��ϲ">
 <meta property="article:tag" content="hexo, blog">
 <meta name="twitter:card" content="summary_large_image">
@@ -69,7 +69,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          110 字
+          149 字
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          1 分钟
+          2 分钟
         
       </span>
     
@@ -277,7 +277,8 @@
                 <h1 id="安装-hexo"><a href="#安装-hexo" class="headerlink" title="安装 hexo"></a>安装 hexo</h1><p><code>npm install -g hexo-cli</code></p>
 <h1 id="配置环境变量"><a href="#配置环境变量" class="headerlink" title="配置环境变量"></a>配置环境变量</h1><p>查看默认安装路径 <code>npm config ls</code>，找到 <code>hexo-cli/bin</code>文件夹，将其添加到环境变量中  </p>
 <h1 id="创建新文件夹"><a href="#创建新文件夹" class="headerlink" title="创建新文件夹"></a>创建新文件夹</h1><p><code>mkdir blog</code></p>
-<h1 id="hexo-初始化"><a href="#hexo-初始化" class="headerlink" title="hexo 初始化"></a><code>hexo</code> 初始化</h1><p><code>hexo init</code></p>
+<h1 id="生成初始化文件"><a href="#生成初始化文件" class="headerlink" title="生成初始化文件"></a>生成初始化文件</h1><p><code>hexo init</code></p>
+<h1 id="下载部署插件"><a href="#下载部署插件" class="headerlink" title="下载部署插件"></a>下载部署插件</h1><p><code>npm install hexo-deployer-git --save</code></p>
 <!-- 
 # 
 <code>hexo g</code>
@@ -311,7 +312,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>使用 Hexo 配置博客</div>
-      <div>http://example.com/2023/03/09/使用hexo配置博客/</div>
+      <div>https://vexentox.github.io/2023/03/09/使用hexo配置博客/</div>
     </div>
     <div class="license-meta">
       

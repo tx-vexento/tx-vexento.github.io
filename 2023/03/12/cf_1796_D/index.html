@@ -19,17 +19,17 @@
     <meta name="description" content="D (dp)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp)">
-<meta property="og:url" content="http://example.com/2023/03/12/cf_1796_D/index.html">
+<meta property="og:url" content="https://vexentox.github.io/2023/03/12/cf_1796_D/index.html">
 <meta property="og:site_name" content="��ϲ�ĸ��˲���">
 <meta property="og:description" content="D (dp)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/cf_1796_D.png">
+<meta property="og:image" content="https://vexentox.github.io/img/cf_1796_D.png">
 <meta property="article:published_time" content="2023-03-12T08:40:00.000Z">
 <meta property="article:modified_time" content="2023-03-15T15:02:59.483Z">
 <meta property="article:author" content="��ϲ">
 <meta property="article:tag" content="codeforce, cf, D, Maximum Subarray, dp, DP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/cf_1796_D.png">
+<meta name="twitter:image" content="https://vexentox.github.io/img/cf_1796_D.png">
   
   
   
@@ -71,7 +71,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -233,7 +233,7 @@
         
         
         
-          11 分钟
+          12 分钟
         
       </span>
     
@@ -300,7 +300,7 @@
 </ul>
 <p>$~~~~$因此，状态转移方程为：<br>$$<br>f[i,j]&#x3D;\left{\begin{matrix}max(a[i]-x,f[i-1,j]+a[i]-x)\ \ j&lt;i<br> \max(a[i]+x, f[i-1, j-1]+a[i]+x)\ \ j &gt; 0<br>\end{matrix}\right.<br>$$</p>
 <p>$~~~~$初始条件为：$f[0, 0] &#x3D; 0$</p>
-<h1 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h1><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">T = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(T):</span><br><span class="line">    n, k, x = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    a = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    inf = <span class="built_in">float</span>(<span class="string">&#x27;inf&#x27;</span>)</span><br><span class="line">    f = [[-inf <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(k+<span class="number">1</span>)] <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n+<span class="number">1</span>)]</span><br><span class="line">    res = <span class="number">0</span></span><br><span class="line">    f[<span class="number">0</span>][<span class="number">0</span>] = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n+<span class="number">1</span>):</span><br><span class="line">        <span class="comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最少为 k-(n-i)，即让 i 后面的数全部执行 &quot;+x&quot; 操作</span></span><br><span class="line">        <span class="comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最多为 i，即让 i 前面的数全部执行 &quot;+x&quot; 操作</span></span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">max</span>(<span class="number">0</span>, k-(n-i)), <span class="built_in">min</span>(i, k)+<span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> j &lt; i:</span><br><span class="line">                f[i][j] = <span class="built_in">max</span>(a[i-<span class="number">1</span>] - x, f[i-<span class="number">1</span>][j] + a[i-<span class="number">1</span>] - x)</span><br><span class="line">            <span class="keyword">if</span> j:</span><br><span class="line">                <span class="comment"># 注意此处 f[i][j] 可能已经被更新，因此要带上</span></span><br><span class="line">                f[i][j] = <span class="built_in">max</span>(f[i][j], <span class="built_in">max</span>(a[i-<span class="number">1</span>] + x, f[i-<span class="number">1</span>][j-<span class="number">1</span>] + a[i-<span class="number">1</span>] + x))</span><br><span class="line">            <span class="comment"># 若只考虑当前的最大子段和，其他的 &quot;+x&quot; 操作发生在什么地方对当前结果没有影响</span></span><br><span class="line">            res = <span class="built_in">max</span>(res, f[i][j])</span><br><span class="line">    <span class="built_in">print</span>(res)</span><br></pre></td></tr></table></figure>
+<h1 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, x = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    inf = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    f = [[-inf <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k+<span class="hljs-number">1</span>)] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    res = <span class="hljs-number">0</span><br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最少为 k-(n-i)，即让 i 后面的数全部执行 &quot;+x&quot; 操作</span><br>        <span class="hljs-comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最多为 i，即让 i 前面的数全部执行 &quot;+x&quot; 操作</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, k-(n-i)), <span class="hljs-built_in">min</span>(i, k)+<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j &lt; i:<br>                f[i][j] = <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] - x, f[i-<span class="hljs-number">1</span>][j] + a[i-<span class="hljs-number">1</span>] - x)<br>            <span class="hljs-keyword">if</span> j:<br>                <span class="hljs-comment"># 注意此处 f[i][j] 可能已经被更新，因此要带上</span><br>                f[i][j] = <span class="hljs-built_in">max</span>(f[i][j], <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] + x, f[i-<span class="hljs-number">1</span>][j-<span class="hljs-number">1</span>] + a[i-<span class="hljs-number">1</span>] + x))<br>            <span class="hljs-comment"># 若只考虑当前的最大子段和，其他的 &quot;+x&quot; 操作发生在什么地方对当前结果没有影响</span><br>            res = <span class="hljs-built_in">max</span>(res, f[i][j])<br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -326,7 +326,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp)</div>
-      <div>http://example.com/2023/03/12/cf_1796_D/</div>
+      <div>https://vexentox.github.io/2023/03/12/cf_1796_D/</div>
     </div>
     <div class="license-meta">
       
