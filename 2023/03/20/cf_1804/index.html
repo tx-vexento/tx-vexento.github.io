@@ -1,0 +1,654 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="��ϲ">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="A (思维) B (贪心) C (数论) D (贪心)">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nebius Welcome Round (Div. 1 + Div. 2) a - D">
+<meta property="og:url" content="http://example.com/2023/03/20/cf_1804/index.html">
+<meta property="og:site_name" content="��ϲ�ĸ��˲���">
+<meta property="og:description" content="A (思维) B (贪心) C (数论) D (贪心)">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/cf_1804.png">
+<meta property="article:published_time" content="2023-03-20T04:28:00.000Z">
+<meta property="article:modified_time" content="2023-03-23T12:25:34.341Z">
+<meta property="article:author" content="��ϲ">
+<meta property="article:tag" content="codeforce, cf, A, B, C, D">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="http://example.com/img/cf_1804.png">
+  
+  
+  
+  <title>Nebius Welcome Round (Div. 1 + Div. 2) a - D - ��ϲ�ĸ��˲���</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/cf_1804.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Nebius Welcome Round (Div. 1 + Div. 2) a - D"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-03-20 12:28" pubdate>
+          2023年3月20日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          19 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Nebius Welcome Round (Div. 1 + Div. 2) a - D</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>A (思维) B (贪心) C (数论) D (贪心)</p>
+<span id="more"></span>
+
+<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/1804">https://codeforces.com/contest/1804</a></p>
+<h2 id="A"><a href="#A" class="headerlink" title="A"></a>A</h2><h3 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 从 $(0, 0)$ 开始走，每次只能走上下左右四个方向，走一步，且方向和上一次不同，问走到 $(a, b)$ 最短步数。</p>
+<h3 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 一般地，将 $(0, 0)$ 和 $(a, b)(a &lt; b \ and \ a &gt; 0 \ and \ b &gt; 0)$ 视为长方形的两个顶点，则最优策略是从 $(0, 0)$ 走到 $(a, a)$，在从 $(a, a)$ 走到 $(a, b)$。<br>$~~~~$ 则答案为 $2 * (b - a) - 1$</p>
+<h3 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">T = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(T):</span><br><span class="line">    x, y = [<span class="built_in">abs</span>(<span class="built_in">int</span>(_)) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    <span class="keyword">if</span> x &gt; y:</span><br><span class="line">        x, y = y, x</span><br><span class="line">    res = <span class="number">2</span> * x</span><br><span class="line">    <span class="keyword">if</span> y &gt; x:</span><br><span class="line">        res+=<span class="number">2</span> * (y-x)-<span class="number">1</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">print</span>(res)</span><br></pre></td></tr></table></figure>
+
+<h2 id="B"><a href="#B" class="headerlink" title="B"></a>B</h2><h3 id="题意-1"><a href="#题意-1" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 给出一些区间 $[t_{i}, t_{i}+w], t_{i} \le t_{i+1},i \in [1, n]$，要求使用数量最少的个区间 $[x, x+w]$，其中 $x$ 自定，使得所有的区间和 $[x, x+w]$ 有交集。</p>
+<h3 id="题解-1"><a href="#题解-1" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 考虑贪心。从前往后遍历 $t_{i}$，以 $t_{i} + w$ 作为左边界，$t_{i} + w+d$ 作为右边界，寻找和该区间相交的区间，直到下一个区间不再与该区间相交，则另起一个新的区间。</p>
+<h3 id="python-代码-1"><a href="#python-代码-1" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> *</span><br><span class="line">T = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(T):</span><br><span class="line">    n, k, d, w = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    a = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    right = -<span class="number">1</span></span><br><span class="line">    res = <span class="number">0</span></span><br><span class="line">    nowk = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        <span class="keyword">if</span> a[i] &lt;= right <span class="keyword">and</span> nowk:</span><br><span class="line">            nowk -= <span class="number">1</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            res += <span class="number">1</span></span><br><span class="line">            right = a[i] + w + d</span><br><span class="line">            nowk = k - <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span>(res)</span><br></pre></td></tr></table></figure>
+
+<h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><h3 id="题意-2"><a href="#题意-2" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 找到一个 $f, f \in [1, p]$，使得 $(x + \frac{f * (f + 1)}{2}) % n &#x3D;&#x3D; 0$ 成立。</p>
+<h3 id="题解-2"><a href="#题解-2" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 上结论，<br>$$<br>\frac{(a * n + b) * (a * n + b + 1)}{2} \ % n &#x3D; (\frac{(a * n) * (a * n + 1)}{2} % n + \frac{b * (b + 1)}{2} % n) % n<br>$$<br>$~~~~$ 证明待补。<br>$~~~~$ 因此，$f &#x3D; a * n + b, b &lt; n$，枚举 $a$ 即可。</p>
+<h3 id="python-代码-2"><a href="#python-代码-2" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">from</span> math <span class="keyword">import</span> *</span><br><span class="line">T = <span class="built_in">int</span>(<span class="built_in">input</span>())</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(T):</span><br><span class="line">    n, x, p = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">    s = [<span class="number">0</span> <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n+<span class="number">1</span>)]</span><br><span class="line">    mp = <span class="built_in">dict</span>()</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, n+<span class="number">1</span>):</span><br><span class="line">        s[i] = i*(i+<span class="number">1</span>)//<span class="number">2</span> % n</span><br><span class="line">        <span class="keyword">if</span> mp.__contains__(s[i]):</span><br><span class="line">            mp[s[i]] = <span class="built_in">min</span>(mp[s[i]], i)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            mp.update(&#123;s[i]: i&#125;)</span><br><span class="line">    ok = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> a <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">        now = (<span class="number">2</span>*n-s[n]*a%n-x)%n</span><br><span class="line">        <span class="keyword">if</span> mp.__contains__(now) <span class="keyword">and</span> mp[now] + a*n &lt;= p:</span><br><span class="line">            ok = <span class="number">1</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">if</span> ok:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;YES&#x27;</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">&#x27;NO&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="D"><a href="#D" class="headerlink" title="D"></a>D</h2><h3 id="题意-3"><a href="#题意-3" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 给一个 $ n \times m , 4|m$ 的 $01$ 矩阵，对于每一行，满足两个连在一起的块数量和单个块的数量都为 $\frac{m}{4}$。<br>$~~~~$ 要求分配两种块的位置，使得至少有一个 $1$ 的块的数量最少或最多。</p>
+<h3 id="题解-3"><a href="#题解-3" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 显然每一行是独立的。记每一行 $1$ 的数量为 $ cnt1 $。<br>$~~~~$ 对于最小值，贪心的找每一行 $11$ 块数量 $ cnt11 $。  </p>
+<ul>
+<li>如果 $cnt11 \le \frac{m}{4}$，答案为 $cnt1 - 2 \times cnt11 + cnt11$   </li>
+<li>如果 $cnt11 &gt; \frac{m}{4}$，答案为 $cnt1 - 2 \times \frac{m}{4} + \frac{m}{4}$</li>
+</ul>
+<p>$~~~~$ 对于最大值，贪心的找每一个不是 $11$ 块的数量 $cnt11n$。  </p>
+<ul>
+<li>如果 $cnt11 \le \frac{m}{4}$，则 $cnt11 &#x3D; \frac{m}{4} - cnt11n$，答案为 $cnt1 - 2 \times cnt11 + cnt11$   </li>
+<li>如果 $cnt11 &gt; \frac{m}{4}$，则 $cnt11 &#x3D; \frac{m}{4} - cnt11n$, 答案为 $cnt1$</li>
+</ul>
+<h3 id="python-代码-3"><a href="#python-代码-3" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">n, m = [<span class="built_in">int</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">input</span>().split()]</span><br><span class="line">mn, mx = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(n):</span><br><span class="line">    s = <span class="built_in">input</span>()</span><br><span class="line">    cnt1 = s.count(<span class="string">&#x27;1&#x27;</span>)</span><br><span class="line">    x = <span class="number">0</span></span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; m:</span><br><span class="line">        <span class="keyword">if</span> i + <span class="number">1</span> &lt; m <span class="keyword">and</span> s[i] == <span class="string">&#x27;1&#x27;</span> <span class="keyword">and</span> s[i+<span class="number">1</span>] == <span class="string">&#x27;1&#x27;</span>:</span><br><span class="line">            x += <span class="number">1</span></span><br><span class="line">            i += <span class="number">1</span></span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    mn += cnt1 - <span class="built_in">min</span>(m//<span class="number">4</span>, x)</span><br><span class="line">    x = <span class="number">0</span></span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> i &lt; m:</span><br><span class="line">        <span class="keyword">if</span> i + <span class="number">1</span> &lt; m <span class="keyword">and</span> (s[i] == <span class="string">&#x27;0&#x27;</span> <span class="keyword">or</span> s[i] != s[i+<span class="number">1</span>]):</span><br><span class="line">            x += <span class="number">1</span></span><br><span class="line">            i += <span class="number">1</span></span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    mx += cnt1 - <span class="built_in">max</span>(<span class="number">0</span>, (m//<span class="number">4</span> - x))</span><br><span class="line"><span class="built_in">print</span>(mn, mx)</span><br></pre></td></tr></table></figure>
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/codeforce-cf-a-b-c-d/">#codeforce, cf, A, B, C, D</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Nebius Welcome Round (Div. 1 + Div. 2) a - D</div>
+      <div>http://example.com/2023/03/20/cf_1804/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>��ϲ</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年3月20日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/03/23/%E7%AE%97%E6%B3%95%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97_%E8%A3%81%E5%89%AA%E5%BA%8F%E5%88%97/" title="裁剪序列 (线段树优化Dp) From 算法进阶指南">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">裁剪序列 (线段树优化Dp) From 算法进阶指南</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/15/cf_1795/" title="Educational Codeforces Round 143 (Rated for Div. 2) C - D">
+                        <span class="hidden-mobile">Educational Codeforces Round 143 (Rated for Div. 2) C - D</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
