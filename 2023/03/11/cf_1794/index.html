@@ -13,27 +13,25 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="��ϲ">
-  <meta name="keywords" content="">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
-    <meta name="description" content="A (思维) B (思维) C (思维) D (dp)">
+    <meta name="description" content="A (ćçť´) B (ćçť´) C (ćçť´) D (dp)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Codeforces Round 856 (Div. 2) a - D">
 <meta property="og:url" content="https://vexentox.github.io/2023/03/11/cf_1794/index.html">
-<meta property="og:site_name" content="��ϲ�ĸ��˲���">
-<meta property="og:description" content="A (思维) B (思维) C (思维) D (dp)">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="A (ćçť´) B (ćçť´) C (ćçť´) D (dp)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://vexentox.github.io/img/cf_1794_A_D.png">
 <meta property="article:published_time" content="2023-03-11T13:41:51.000Z">
-<meta property="article:modified_time" content="2023-03-15T15:01:39.687Z">
-<meta property="article:author" content="��ϲ">
+<meta property="article:modified_time" content="2023-05-13T01:40:10.489Z">
+<meta property="article:author" content="唐喜">
 <meta property="article:tag" content="codeforce, Codeforces Round 856 (Div. 2) A - D">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://vexentox.github.io/img/cf_1794_A_D.png">
   
   
   
-  <title>Codeforces Round 856 (Div. 2) a - D - ��ϲ�ĸ��˲���</title>
+  <title>Codeforces Round 856 (Div. 2) a - D - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -193,7 +191,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/cf_1794_A_D.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -222,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          4.4k 字
+          5.7k 字
         
       </span>
     
@@ -233,7 +231,7 @@
         
         
         
-          37 分钟
+          48 分钟
         
       </span>
     
@@ -276,47 +274,143 @@
             
               <div class="markdown-body">
                 
-                <p>A (思维) B (思维) C (思维) D (dp) </p>
+                <p>A (ćçť´) B (ćçť´) C (ćçť´) D (dp)</p>
 <span id="more"></span>
-
-
-<h1 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h1><p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/1794">https://codeforces.com/contest/1794</a></p>
-<h1 id="A-思维"><a href="#A-思维" class="headerlink" title="A (思维)"></a>A (思维)</h1><h2 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h2><p>$~~~~$给出一个字符串 $s$ 的所有子串 $s_{sub}$ 的随机排列，判断这个字符串 $s$ 是否为回文串</p>
-<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><p>$~~~~$找出两个长度最长的子串 $s_{sub, max_{1}}$、$s_{sub, max_{2}}$，假设 $s_{sub, max_{1}}$ 是 $s$ 的前缀，$s_{sub, max_{2}}$是 $s$ 的后缀，则<br>$$<br>s &#x3D; s_{sub, max_{1}}[:] + s_{sub, max_{2}}[-1] \ \ or \  \ s_{sub, max_{1}}[0] + s_{sub, max_{2}}[:]<br>$$</p>
-<p>$~~~~$枚举两者情况即可求得 $s$，最后判断 $s$ 是否为回文串即可。</p>
-<h2 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    s = <span class="hljs-built_in">input</span>().split()<br>    <span class="hljs-keyword">if</span> n == <span class="hljs-number">2</span>:<br>        res = s[<span class="hljs-number">0</span>] + s[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">else</span>:<br>        mxs = []<br>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> s:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c) == n-<span class="hljs-number">1</span>:<br>                mxs.append(c)<br>        <span class="hljs-comment"># print(mxs[0][:n-2], mxs[1][1:])</span><br>        <span class="hljs-keyword">if</span> mxs[<span class="hljs-number">0</span>][:n-<span class="hljs-number">2</span>] == mxs[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>:]:<br>            res = mxs[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">0</span>]<br>        <span class="hljs-keyword">else</span>:<br>            res = mxs[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">if</span> res == res[::-<span class="hljs-number">1</span>]:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;YES&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;NO&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-<h1 id="B-思维"><a href="#B-思维" class="headerlink" title="B (思维)"></a>B (思维)</h1><h2 id="题意-1"><a href="#题意-1" class="headerlink" title="题意"></a>题意</h2><p>$~~~~$给一个数组 $a$，每一次操作可以让 $a_{i}&#x3D;a_{i}+1$，最多操作 $n$ 次，要求最后使得 $a$ 满足<br>$$<br>\forall i \in [1, n-1], a_{i} \ not\  \mid a_{i+1}<br>$$</p>
-<h2 id="题解-1"><a href="#题解-1" class="headerlink" title="题解"></a>题解</h2><p>$~~~~$贪心即可。 </p>
-<p>$~~~~$从前往后遍历，只要 $a_{i-1} \mid a_{i}$，因为 $a_{i-1}+1$ 可能是 $a_{i}$ 的因子，而 $a_{i-1}$ 不可能是 $a_{i}+1$ 的因子，因此就让 $a_{i} +&#x3D; 1$。 </p>
-<p>$~~~~$注意，当 $a_{i-1}&#x3D;1$ 时，恒有 $a_{i-1} | (a_{i}+1)$，因此如果 $\exists k \in [1, n], a_{k}&#x3D;1$，则使 $a_{k} +&#x3D; 1$。</p>
-<h2 id="python-代码-1"><a href="#python-代码-1" class="headerlink" title="python 代码"></a>python 代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    <span class="hljs-keyword">if</span> <span class="hljs-number">1</span> <span class="hljs-keyword">in</span> a:<br>        a = [_ + <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> a]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>        <span class="hljs-keyword">if</span> a[i] % a[i-<span class="hljs-number">1</span>] == <span class="hljs-number">0</span>:<br>            a[i] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % x, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure>
-
-<h1 id="C-思维"><a href="#C-思维" class="headerlink" title="C (思维)"></a>C (思维)</h1><h2 id="题意-2"><a href="#题意-2" class="headerlink" title="题意"></a>题意</h2><p>$~~~~$给一个单调非减数组 $a$，$\forall i \in [1, n]$，在 $a_{j}, j \in [1, i]$ 中选出一个子序列 $s_{1}, s_{2}, …, s_{d}$，要使 $maxsocre_{i} &#x3D; \frac{s_{1}<em>s_{2}</em>…*s_{d}}{d!} $，输出 $score_{i}$。</p>
-<h2 id="题解-2"><a href="#题解-2" class="headerlink" title="题解"></a>题解</h2><p>$~~~~$注意到，$a$ 是一个单调非减的序列，且对于 $score &#x3D; \frac{s_{1}<em>s_{2}</em>…*s_{d}}{d!}$，如果想要加入一个数 $s_{d+1}$，则 $socre *&#x3D; \frac{s_{d+1}}{d+1}$。 </p>
-<p>$~~~~$因此对于某一个前缀 $a_{j}, j \in [1, i]$，我们可以这样让 $score$ 最大化：</p>
+<h1 id="éžćľ">éžćĽ</h1>
+<p>https://codeforces.com/contest/1794</p>
+<h1 id="a-ćçť">A (ćçť´)</h1>
+<h2 id="éć">é˘ć</h2>
+<p><span class="math inline">\(~~~~\)</span>çťĺşä¸ä¸Şĺ­çŹŚä¸˛ <span
+class="math inline">\(s\)</span> çććĺ­ä¸? <span
+class="math inline">\(s_{sub}\)</span> çéćşćĺďźĺ¤ć­čżä¸Şĺ­çŹŚä¸? <span
+class="math inline">\(s\)</span> ćŻĺŚä¸şĺćä¸˛</p>
+<h2 id="éčł">é˘č§Ł</h2>
+<p><span class="math inline">\(~~~~\)</span>ćžĺşä¸¤ä¸ŞéżĺşŚćéżçĺ­ä¸˛
+<span class="math inline">\(s_{sub, max_{1}}\)</span>ă?<span
+class="math inline">\(s_{sub, max_{2}}\)</span>ďźĺčŽ? <span
+class="math inline">\(s_{sub, max_{1}}\)</span> ć? <span
+class="math inline">\(s\)</span> çĺçźďź?<span
+class="math inline">\(s_{sub, max_{2}}\)</span>ć? <span
+class="math inline">\(s\)</span> çĺçźďźĺ <span class="math display">\[
+s = s_{sub, max_{1}}[:] + s_{sub, max_{2}}[-1] \ \ or \  \ s_{sub,
+max_{1}}[0] + s_{sub, max_{2}}[:]   
+\]</span></p>
+<p><span class="math inline">\(~~~~\)</span>ćä¸žä¸¤čćĺľĺłĺŻćąĺž? <span
+class="math inline">\(s\)</span>ďźćĺĺ¤ć? <span
+class="math inline">\(s\)</span> ćŻĺŚä¸şĺćä¸˛ĺłĺŻă?</p>
+<h2 id="python-äťłç">python äťŁç </h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    s = <span class="hljs-built_in">input</span>().split()<br>    <span class="hljs-keyword">if</span> n == <span class="hljs-number">2</span>:<br>        res = s[<span class="hljs-number">0</span>] + s[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">else</span>:<br>        mxs = []<br>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> s:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c) == n-<span class="hljs-number">1</span>:<br>                mxs.append(c)<br>        <span class="hljs-comment"># print(mxs[0][:n-2], mxs[1][1:])</span><br>        <span class="hljs-keyword">if</span> mxs[<span class="hljs-number">0</span>][:n-<span class="hljs-number">2</span>] == mxs[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>:]:<br>            res = mxs[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">0</span>]<br>        <span class="hljs-keyword">else</span>:<br>            res = mxs[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">if</span> res == res[::-<span class="hljs-number">1</span>]:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;YES&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;NO&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="b-ćçť">B (ćçť´)</h1>
+<h2 id="éć-1">é˘ć</h2>
+<p><span class="math inline">\(~~~~\)</span>çťä¸ä¸Şć°çť? <span
+class="math inline">\(a\)</span>ďźćŻä¸ćŹĄćä˝ĺŻäťĽčŽŠ <span
+class="math inline">\(a_{i}=a_{i}+1\)</span>ďźćĺ¤ćä˝? <span
+class="math inline">\(n\)</span> ćŹĄďźčŚćąćĺä˝żĺž? <span
+class="math inline">\(a\)</span> ćťĄčśł <span class="math display">\[
+\forall i \in [1, n-1], a_{i} \ not\  \mid a_{i+1}
+\]</span></p>
+<h2 id="éčł-1">é˘č§Ł</h2>
+<p><span class="math inline">\(~~~~\)</span>č´ŞĺżĺłĺŻă?</p>
+<p><span class="math inline">\(~~~~\)</span>äťĺĺžĺéĺďźĺŞčŚ <span
+class="math inline">\(a_{i-1} \mid a_{i}\)</span>ďźĺ ä¸? <span
+class="math inline">\(a_{i-1}+1\)</span> ĺŻč˝ć? <span
+class="math inline">\(a_{i}\)</span> çĺ ĺ­ďźč? <span
+class="math inline">\(a_{i-1}\)</span> ä¸ĺŻč˝ćŻ <span
+class="math inline">\(a_{i}+1\)</span> çĺ ĺ­ďźĺ ć­¤ĺ°ąčŽŠ <span
+class="math inline">\(a_{i} += 1\)</span>ă?</p>
+<p><span class="math inline">\(~~~~\)</span>ćł¨ćďźĺ˝ <span
+class="math inline">\(a_{i-1}=1\)</span> ćśďźćć <span
+class="math inline">\(a_{i-1} | (a_{i}+1)\)</span>ďźĺ ć­¤ĺŚć? <span
+class="math inline">\(\exists k \in [1, n], a_{k}=1\)</span>ďźĺä˝? <span
+class="math inline">\(a_{k} += 1\)</span>ă?</p>
+<h2 id="python-äťłç-1">python äťŁç </h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    <span class="hljs-keyword">if</span> <span class="hljs-number">1</span> <span class="hljs-keyword">in</span> a:<br>        a = [_ + <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> a]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>        <span class="hljs-keyword">if</span> a[i] % a[i-<span class="hljs-number">1</span>] == <span class="hljs-number">0</span>:<br>            a[i] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % x, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure>
+<h1 id="c-ćçť">C (ćçť´)</h1>
+<h2 id="éć-2">é˘ć</h2>
+<p><span class="math inline">\(~~~~\)</span>çťä¸ä¸Şĺč°éĺć°çť? <span
+class="math inline">\(a\)</span>ďź?<span class="math inline">\(\forall i
+\in [1, n]\)</span>ďźĺ¨ <span class="math inline">\(a_{j}, j \in [1,
+i]\)</span> ä¸­éĺşä¸ä¸Şĺ­ĺşĺ <span class="math inline">\(s_{1}, s_{2},
+..., s_{d}\)</span>ďźčŚä˝? $maxsocre_{i} = $ďźčžĺ? <span
+class="math inline">\(score_{i}\)</span>ă?</p>
+<h2 id="éčł-2">é˘č§Ł</h2>
+<p><span class="math inline">\(~~~~\)</span>ćł¨ćĺ°ďź<span
+class="math inline">\(a\)</span> ćŻä¸ä¸Şĺč°éĺçĺşĺďźä¸ĺŻšäş <span
+class="math inline">\(score =
+\frac{s_{1}*s_{2}*...*s_{d}}{d!}\)</span>ďźĺŚććłčŚĺ ĺĽä¸ä¸Şć° <span
+class="math inline">\(s_{d+1}\)</span>ďźĺ <span
+class="math inline">\(socre *= \frac{s_{d+1}}{d+1}\)</span>ă?</p>
+<p><span class="math inline">\(~~~~\)</span>ĺ ć­¤ĺŻšäşćä¸ä¸Şĺçź <span
+class="math inline">\(a_{j}, j \in [1, i]\)</span>ďźćäťŹĺŻäťĽčżć ˇčŽŠ
+<span class="math inline">\(score\)</span> ćĺ¤§ĺďź?</p>
 <ul>
-<li>$score &#x3D; a_{j}$ </li>
-<li>$if a_{j-1}&#x2F;2 &gt; 1，则score &#x3D; \frac{a_{j} * a_{j-1}}{2}$ </li>
-<li>依次类推</li>
+<li><span class="math inline">\(score = a_{j}\)</span></li>
+<li><span class="math inline">\(if a_{j-1}/2 &gt; 1ďźĺscore =
+\frac{a_{j} * a_{j-1}}{2}\)</span></li>
+<li>äžćŹĄçąťć¨</li>
 </ul>
-<p>$~~~~$因此，我们可以从前往后扫，用一个队列来维护 $score$ 的最大值，每次只需要判断队列前面的是否需要删除即可。</p>
-<h2 id="python-代码-2"><a href="#python-代码-2" class="headerlink" title="python 代码"></a>python 代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    res, l, r = <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span><br>    que = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        r += <span class="hljs-number">1</span><br>        que[r] = x<br>        res += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">while</span> que[l] &lt; res <span class="hljs-keyword">and</span> l &lt; r:<br>            l += <span class="hljs-number">1</span><br>            res -= <span class="hljs-number">1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % res, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure>
-
-<h1 id="D-dp"><a href="#D-dp" class="headerlink" title="D (dp)"></a>D (dp)</h1><h2 id="题意-3"><a href="#题意-3" class="headerlink" title="题意"></a>题意</h2><p>$~~~~$给出一个长度为 $2n$ 的数组 $a$，$a$ 的某一个排列是某一个数的质因数分解，即<br>$$<br>f(m) &#x3D; {p_{1}, e_{1}, p_{2}, e_{2}, …, p_{k}, e_{k}}<br>$$</p>
-<p>$~~~~$求有多少个这样的数，模 $998244353$。</p>
-<h2 id="题解-3"><a href="#题解-3" class="headerlink" title="题解"></a>题解</h2><p>$~~~~$首先考虑特殊情况，当 $a$ 中的素数数量 $&lt;n$ 时，答案显然为 $0$。</p>
-<p>$~~~~$注意到，当选定 $n$ 个数为底数时，剩下的 $n$ 个数做全排列。设 $a$ 去重后为 $b$，由多重集全排列理论可知，全排列数为<br>$$<br>\frac{n!}{cnt_{b_{1}}! * cnt_{b_{2}}! * .. cnt_{b_{m}}!}<br>$$</p>
-<p>$~~~~$其中 $cnt_{b_{k}}$ 是 $b_{k}$ 的数量。</p>
-<p>$~~~~$当 $b_{k}$ 为非素数时，贡献是固定的，因为它们都不能作为底数。而当 $b_{k}$ 为素数时，贡献是不固定的，因为当它们作为底数时，贡献为 $\frac{1}{(cnt_{b_{k}}-1)!}$，而这个部分可以用 $dp$ 来求。</p>
-<p>$~~~~$设 $f_{i, j}$ 为处理到第 $i$ 种数，以 $j$ 个数作为底数时的贡献。考虑如何从 $f_{i-1}$ 转移：</p>
+<p><span
+class="math inline">\(~~~~\)</span>ĺ ć­¤ďźćäťŹĺŻäťĽäťĺĺžĺćŤďźç¨ä¸ä¸ŞéĺćĽçť´ć¤
+<span class="math inline">\(score\)</span>
+çćĺ¤§ĺźďźćŻćŹĄĺŞéčŚĺ¤ć­éĺĺé˘çćŻĺŚéčŚĺ é¤ĺłĺŻă?</p>
+<h2 id="python-äťłç-2">python äťŁç </h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    res, l, r = <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span><br>    que = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        r += <span class="hljs-number">1</span><br>        que[r] = x<br>        res += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">while</span> que[l] &lt; res <span class="hljs-keyword">and</span> l &lt; r:<br>            l += <span class="hljs-number">1</span><br>            res -= <span class="hljs-number">1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % res, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure>
+<h1 id="d-dp">D (dp)</h1>
+<h2 id="éć-3">é˘ć</h2>
+<p><span class="math inline">\(~~~~\)</span>çťĺşä¸ä¸ŞéżĺşŚä¸ş <span
+class="math inline">\(2n\)</span> çć°çť? <span
+class="math inline">\(a\)</span>ďź?<span
+class="math inline">\(a\)</span> çćä¸ä¸ŞćĺćŻćä¸ä¸Şć°çč´¨ĺ ć°ĺč§Łďźĺł
+<span class="math display">\[
+f(m) = \{p_{1}, e_{1}, p_{2}, e_{2}, ..., p_{k}, e_{k}\}
+\]</span></p>
+<p><span class="math inline">\(~~~~\)</span>ćąćĺ¤ĺ°ä¸Şčżć ˇçć°ďźć¨?
+<span class="math inline">\(998244353\)</span>ă?</p>
+<h2 id="éčł-3">é˘č§Ł</h2>
+<p><span class="math inline">\(~~~~\)</span>éŚĺččçšćŽćĺľďźĺ˝ <span
+class="math inline">\(a\)</span> ä¸­çç´ ć°ć°é <span
+class="math inline">\(&lt;n\)</span> ćśďźç­ćĄćžçśä¸? <span
+class="math inline">\(0\)</span>ă?</p>
+<p><span class="math inline">\(~~~~\)</span>ćł¨ćĺ°ďźĺ˝éĺŽ <span
+class="math inline">\(n\)</span> ä¸Şć°ä¸şĺşć°ćśďźĺŠä¸ç <span
+class="math inline">\(n\)</span> ä¸Şć°ĺĺ¨ćĺăčŽž <span
+class="math inline">\(a\)</span> ĺťéĺä¸ş <span
+class="math inline">\(b\)</span>ďźçąĺ¤ééĺ¨ćĺçčŽşĺŻçĽďźĺ¨ćĺć°ä¸ş <span
+class="math display">\[
+\frac{n!}{cnt_{b_{1}}! * cnt_{b_{2}}! * .. cnt_{b_{m}}!}  
+\]</span></p>
+<p><span class="math inline">\(~~~~\)</span>ĺśä¸­ <span
+class="math inline">\(cnt_{b_{k}}\)</span> ć? <span
+class="math inline">\(b_{k}\)</span> çć°éă?</p>
+<p><span class="math inline">\(~~~~\)</span>ĺ˝? <span
+class="math inline">\(b_{k}\)</span>
+ä¸şéç´ ć°ćśďźč´ĄçŽćŻĺşĺŽçďźĺ ä¸şĺŽäťŹé˝ä¸č˝ä˝ä¸şĺşć°ăčĺ˝ <span
+class="math inline">\(b_{k}\)</span>
+ä¸şç´ ć°ćśďźč´ĄçŽćŻä¸ĺşĺŽçďźĺ ä¸şĺ˝ĺŽäťŹä˝ä¸şĺşć°ćśďźč´ĄçŽä¸? <span
+class="math inline">\(\frac{1}{(cnt_{b_{k}}-1)!}\)</span>ďźččżä¸Şé¨ĺĺŻäťĽç¨
+<span class="math inline">\(dp\)</span> ćĽćąă?</p>
+<p><span class="math inline">\(~~~~\)</span>čŽ? <span
+class="math inline">\(f_{i, j}\)</span> ä¸şĺ¤çĺ°çŹ? <span
+class="math inline">\(i\)</span> ç§ć°ďźäťĽ <span
+class="math inline">\(j\)</span> ä¸Şć°ä˝ä¸şĺşć°ćśçč´ĄçŽăččĺŚä˝äť? <span
+class="math inline">\(f_{i-1}\)</span> č˝Źç§ťďź?</p>
 <ul>
-<li>当第 $i$ 种数不作为底数时，则 $f_{i,j} &#x3D; \frac{f_{i-1, j}}{cnt_{b_{i}}!} $，因为前后的底数数量 $j$ 是一样的</li>
-<li>当第 $i$ 种数作为底数时，则 $f_{i,j} &#x3D; \frac{f_{i-1,j-1}}{(cnt_{b_{i}}-1)!}$，因为当前比上一次多一个底数<br>$f_{m, n}$ 即为素数的贡献，其中 $m$ 是数的种类。</li>
+<li>ĺ˝çŹŹ <span class="math inline">\(i\)</span> ç§ć°ä¸ä˝ä¸şĺşć°ćśďźĺ
+$f_{i,j} = $ďźĺ ä¸şĺĺçĺşć°ć°é <span class="math inline">\(j\)</span>
+ćŻä¸ć ˇç</li>
+<li>ĺ˝çŹŹ <span class="math inline">\(i\)</span> ç§ć°ä˝ä¸şĺşć°ćśďźĺ?
+<span class="math inline">\(f_{i,j} =
+\frac{f_{i-1,j-1}}{(cnt_{b_{i}}-1)!}\)</span>ďźĺ ä¸şĺ˝ĺćŻä¸ä¸ćŹĄĺ¤ä¸ä¸Şĺşć?<br />
+<span class="math inline">\(f_{m, n}\)</span> ĺłä¸şç´ ć°çč´ĄçŽďźĺśä¸­
+<span class="math inline">\(m\)</span> ćŻć°çç§çąťă?</li>
 </ul>
-<p>$~~~~$最后，设 $b$ 中的非素数部分为 $c$，则<br>$$res &#x3D; \frac{n}{cnt_{c_{1}}! * cnt_{c_{2}}! *…} * f_{m, n}<br>$$</p>
-<h2 id="c-代码"><a href="#c-代码" class="headerlink" title="c++ 代码"></a>c++ 代码</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> int long long</span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> mod = <span class="hljs-number">998244353</span>;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">qmi</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>&#123;<br>    <span class="hljs-type">int</span> res = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span>(b) &#123;<br>        <span class="hljs-keyword">if</span>(b &amp; <span class="hljs-number">1</span>) res = res * a % mod;<br>        a = a * a % mod;<br>        b &gt;&gt;= <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">signed</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> n;<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;n);<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">a</span><span class="hljs-params">(<span class="hljs-number">2</span> * n)</span></span>;<br>    <span class="hljs-type">int</span> mx = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;a[i]);<br>        mx = <span class="hljs-built_in">max</span>(mx, a[i]);<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">primes</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">not_prime</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span></span>;<br>    not_prime[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> cnt_primes = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= mx; i++) &#123;<br>        <span class="hljs-keyword">if</span>(!not_prime[i]) primes[++cnt_primes] = i;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= cnt_primes <span class="hljs-keyword">and</span> i * primes[j] &lt;= mx; j++) &#123;<br>            not_prime[i * primes[j]] = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">if</span>(i % primes[j] == <span class="hljs-number">0</span>) <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">fac</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">inv</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span></span>;<br>    fac[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) fac[i] = fac[i - <span class="hljs-number">1</span>] * i % mod;<br>    inv[<span class="hljs-number">0</span>] = inv[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++) inv[i] = <span class="hljs-built_in">qmi</span>(fac[i], mod - <span class="hljs-number">2</span>);<br>    vector&lt;<span class="hljs-type">int</span>&gt; p, np;<br>    map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; cnt;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        cnt[a[i]]++;<br>        <span class="hljs-keyword">if</span>(cnt[a[i]] == <span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-keyword">if</span>(not_prime[a[i]]) np.<span class="hljs-built_in">push_back</span>(a[i]);<br>            <span class="hljs-keyword">else</span> p.<span class="hljs-built_in">push_back</span>(a[i]);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(p.<span class="hljs-built_in">size</span>() &lt; n) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;0\n&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-type">int</span> res = fac[n];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; np.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * inv[cnt[np[i]]] % mod;<br>    &#125;<br>    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">f</span>(p.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n + <span class="hljs-number">1</span>));<br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= p.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        f[i][<span class="hljs-number">0</span>] = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= n &amp;&amp; j &lt;= i; j++) &#123;<br>            f[i][j] = ((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod + (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]] - <span class="hljs-number">1</span>] % mod) % mod;<br>        &#125;<br>    &#125;<br>    res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * f[p.<span class="hljs-built_in">size</span>()][n] % mod;<br> 	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%lld\n&quot;</span>, res);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <br><br>&#125;<br></code></pre></td></tr></table></figure>
-
+<p><span class="math inline">\(~~~~\)</span>ćĺďźčŽ? <span
+class="math inline">\(b\)</span> ä¸­çéç´ ć°é¨ĺä¸ş <span
+class="math inline">\(c\)</span>ďźĺ <span class="math display">\[res =
+\frac{n}{cnt_{c_{1}}! * cnt_{c_{2}}! *...} * f_{m, n}
+\]</span></p>
+<h2 id="c-äťłç">c++ äťŁç </h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> int long long</span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> mod = <span class="hljs-number">998244353</span>;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">qmi</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>&#123;<br>    <span class="hljs-type">int</span> res = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span>(b) &#123;<br>        <span class="hljs-keyword">if</span>(b &amp; <span class="hljs-number">1</span>) res = res * a % mod;<br>        a = a * a % mod;<br>        b &gt;&gt;= <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">signed</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> n;<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;n);<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">a</span><span class="hljs-params">(<span class="hljs-number">2</span> * n)</span></span>;<br>    <span class="hljs-type">int</span> mx = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;a[i]);<br>        mx = <span class="hljs-built_in">max</span>(mx, a[i]);<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">primes</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">not_prime</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span></span>;<br>    not_prime[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> cnt_primes = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= mx; i++) &#123;<br>        <span class="hljs-keyword">if</span>(!not_prime[i]) primes[++cnt_primes] = i;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= cnt_primes <span class="hljs-keyword">and</span> i * primes[j] &lt;= mx; j++) &#123;<br>            not_prime[i * primes[j]] = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">if</span>(i % primes[j] == <span class="hljs-number">0</span>) <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">fac</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">inv</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span></span>;<br>    fac[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) fac[i] = fac[i - <span class="hljs-number">1</span>] * i % mod;<br>    inv[<span class="hljs-number">0</span>] = inv[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++) inv[i] = <span class="hljs-built_in">qmi</span>(fac[i], mod - <span class="hljs-number">2</span>);<br>    vector&lt;<span class="hljs-type">int</span>&gt; p, np;<br>    map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; cnt;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        cnt[a[i]]++;<br>        <span class="hljs-keyword">if</span>(cnt[a[i]] == <span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-keyword">if</span>(not_prime[a[i]]) np.<span class="hljs-built_in">push_back</span>(a[i]);<br>            <span class="hljs-keyword">else</span> p.<span class="hljs-built_in">push_back</span>(a[i]);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(p.<span class="hljs-built_in">size</span>() &lt; n) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;0\n&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-type">int</span> res = fac[n];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; np.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * inv[cnt[np[i]]] % mod;<br>    &#125;<br>    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">f</span>(p.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n + <span class="hljs-number">1</span>));<br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= p.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        f[i][<span class="hljs-number">0</span>] = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= n &amp;&amp; j &lt;= i; j++) &#123;<br>            f[i][j] = ((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod + (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]] - <span class="hljs-number">1</span>] % mod) % mod;<br>        &#125;<br>    &#125;<br>    res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * f[p.<span class="hljs-built_in">size</span>()][n] % mod;<br> 	<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%lld\n&quot;</span>, res);<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <br><br>&#125;<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -324,6 +418,27 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%A2%98%E8%A7%A3/" class="category-chain-item">题解</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
@@ -348,7 +463,7 @@
       
         <div class="license-meta-item">
           <div>作者</div>
-          <div>��ϲ</div>
+          <div>唐喜</div>
         </div>
       
       
@@ -454,6 +569,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -647,6 +768,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

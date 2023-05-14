@@ -13,27 +13,25 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="��ϲ">
-  <meta name="keywords" content="">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
     <meta name="description" content="A (思维) B (贪心) C (数论) D (贪心)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Nebius Welcome Round (Div. 1 + Div. 2) a - D">
 <meta property="og:url" content="https://vexentox.github.io/2023/03/20/cf_1804/index.html">
-<meta property="og:site_name" content="��ϲ�ĸ��˲���">
+<meta property="og:site_name" content="唐喜的个人博客">
 <meta property="og:description" content="A (思维) B (贪心) C (数论) D (贪心)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://vexentox.github.io/img/cf_1804.png">
 <meta property="article:published_time" content="2023-03-20T04:28:00.000Z">
-<meta property="article:modified_time" content="2023-03-23T12:25:34.341Z">
-<meta property="article:author" content="��ϲ">
+<meta property="article:modified_time" content="2023-05-13T01:40:21.592Z">
+<meta property="article:author" content="唐喜">
 <meta property="article:tag" content="codeforce, cf, A, B, C, D">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://vexentox.github.io/img/cf_1804.png">
   
   
   
-  <title>Nebius Welcome Round (Div. 1 + Div. 2) a - D - ��ϲ�ĸ��˲���</title>
+  <title>Nebius Welcome Round (Div. 1 + Div. 2) a - D - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -193,7 +191,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/cf_1804.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -222,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.3k 字
+          2.4k 字
         
       </span>
     
@@ -233,7 +231,7 @@
         
         
         
-          20 分钟
+          21 分钟
         
       </span>
     
@@ -278,38 +276,127 @@
                 
                 <p>A (思维) B (贪心) C (数论) D (贪心)</p>
 <span id="more"></span>
-
-<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/1804">https://codeforces.com/contest/1804</a></p>
-<h2 id="A"><a href="#A" class="headerlink" title="A"></a>A</h2><h3 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 从 $(0, 0)$ 开始走，每次只能走上下左右四个方向，走一步，且方向和上一次不同，问走到 $(a, b)$ 最短步数。</p>
-<h3 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 一般地，将 $(0, 0)$ 和 $(a, b)(a &lt; b \ and \ a &gt; 0 \ and \ b &gt; 0)$ 视为长方形的两个顶点，则最优策略是从 $(0, 0)$ 走到 $(a, a)$，在从 $(a, a)$ 走到 $(a, b)$。<br>$~~~~$ 则答案为 $2 * (b - a) - 1$</p>
-<h3 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    x, y = [<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">int</span>(_)) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    <span class="hljs-keyword">if</span> x &gt; y:<br>        x, y = y, x<br>    res = <span class="hljs-number">2</span> * x<br>    <span class="hljs-keyword">if</span> y &gt; x:<br>        res+=<span class="hljs-number">2</span> * (y-x)-<span class="hljs-number">1</span><br><br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
-
-<h2 id="B"><a href="#B" class="headerlink" title="B"></a>B</h2><h3 id="题意-1"><a href="#题意-1" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 给出一些区间 $[t_{i}, t_{i}+w], t_{i} \le t_{i+1},i \in [1, n]$，要求使用数量最少的个区间 $[x, x+w]$，其中 $x$ 自定，使得所有的区间和 $[x, x+w]$ 有交集。</p>
-<h3 id="题解-1"><a href="#题解-1" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 考虑贪心。从前往后遍历 $t_{i}$，以 $t_{i} + w$ 作为左边界，$t_{i} + w+d$ 作为右边界，寻找和该区间相交的区间，直到下一个区间不再与该区间相交，则另起一个新的区间。</p>
-<h3 id="python-代码-1"><a href="#python-代码-1" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> *<br>T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, d, w = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    right = -<span class="hljs-number">1</span><br>    res = <span class="hljs-number">0</span><br>    nowk = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>        <span class="hljs-keyword">if</span> a[i] &lt;= right <span class="hljs-keyword">and</span> nowk:<br>            nowk -= <span class="hljs-number">1</span><br>        <span class="hljs-keyword">else</span>:<br>            res += <span class="hljs-number">1</span><br>            right = a[i] + w + d<br>            nowk = k - <span class="hljs-number">1</span><br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
-
-<h2 id="C"><a href="#C" class="headerlink" title="C"></a>C</h2><h3 id="题意-2"><a href="#题意-2" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 找到一个 $f, f \in [1, p]$，使得 $(x + \frac{f * (f + 1)}{2}) % n &#x3D;&#x3D; 0$ 成立。</p>
-<h3 id="题解-2"><a href="#题解-2" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 上结论，<br>$$<br>\frac{(a * n + b) * (a * n + b + 1)}{2} \ % n &#x3D; (\frac{(a * n) * (a * n + 1)}{2} % n + \frac{b * (b + 1)}{2} % n) % n<br>$$<br>$~~~~$ 证明待补。<br>$~~~~$ 因此，$f &#x3D; a * n + b, b &lt; n$，枚举 $a$ 即可。</p>
-<h3 id="python-代码-2"><a href="#python-代码-2" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> *<br>T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, x, p = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    s = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    mp = <span class="hljs-built_in">dict</span>()<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        s[i] = i*(i+<span class="hljs-number">1</span>)//<span class="hljs-number">2</span> % n<br>        <span class="hljs-keyword">if</span> mp.__contains__(s[i]):<br>            mp[s[i]] = <span class="hljs-built_in">min</span>(mp[s[i]], i)<br>        <span class="hljs-keyword">else</span>:<br>            mp.update(&#123;s[i]: i&#125;)<br>    ok = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>        now = (<span class="hljs-number">2</span>*n-s[n]*a%n-x)%n<br>        <span class="hljs-keyword">if</span> mp.__contains__(now) <span class="hljs-keyword">and</span> mp[now] + a*n &lt;= p:<br>            ok = <span class="hljs-number">1</span><br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">if</span> ok:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;YES&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;NO&#x27;</span>)<br></code></pre></td></tr></table></figure>
-
-<h2 id="D"><a href="#D" class="headerlink" title="D"></a>D</h2><h3 id="题意-3"><a href="#题意-3" class="headerlink" title="题意"></a>题意</h3><p>$~~~~$ 给一个 $ n \times m , 4|m$ 的 $01$ 矩阵，对于每一行，满足两个连在一起的块数量和单个块的数量都为 $\frac{m}{4}$。<br>$~~~~$ 要求分配两种块的位置，使得至少有一个 $1$ 的块的数量最少或最多。</p>
-<h3 id="题解-3"><a href="#题解-3" class="headerlink" title="题解"></a>题解</h3><p>$~~~~$ 显然每一行是独立的。记每一行 $1$ 的数量为 $ cnt1 $。<br>$~~~~$ 对于最小值，贪心的找每一行 $11$ 块数量 $ cnt11 $。  </p>
+<h2 id="链接">链接</h2>
+<p><a
+target="_blank" rel="noopener" href="https://codeforces.com/contest/1804">https://codeforces.com/contest/1804</a></p>
+<h2 id="a">A</h2>
+<h3 id="题意">题意</h3>
+<p><span class="math inline">\(~~~~\)</span> 从 <span
+class="math inline">\((0, 0)\)</span>
+开始走，每次只能走上下左右四个方向，走一步，且方向和上一次不同，问走到
+<span class="math inline">\((a, b)\)</span> 最短步数。</p>
+<h3 id="题解">题解</h3>
+<p><span class="math inline">\(~~~~\)</span> 一般地，将 <span
+class="math inline">\((0, 0)\)</span> 和 <span class="math inline">\((a,
+b)(a &lt; b \ and \ a &gt; 0 \ and \ b &gt; 0)\)</span>
+视为长方形的两个顶点，则最优策略是从 <span class="math inline">\((0,
+0)\)</span> 走到 <span class="math inline">\((a, a)\)</span>，在从 <span
+class="math inline">\((a, a)\)</span> 走到 <span
+class="math inline">\((a, b)\)</span>。<br />
+<span class="math inline">\(~~~~\)</span> 则答案为 <span
+class="math inline">\(2 * (b - a) - 1\)</span></p>
+<h3 id="python-代码">python 代码</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    x, y = [<span class="hljs-built_in">abs</span>(<span class="hljs-built_in">int</span>(_)) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    <span class="hljs-keyword">if</span> x &gt; y:<br>        x, y = y, x<br>    res = <span class="hljs-number">2</span> * x<br>    <span class="hljs-keyword">if</span> y &gt; x:<br>        res+=<span class="hljs-number">2</span> * (y-x)-<span class="hljs-number">1</span><br><br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
+<h2 id="b">B</h2>
+<h3 id="题意-1">题意</h3>
+<p><span class="math inline">\(~~~~\)</span> 给出一些区间 <span
+class="math inline">\([t_{i}, t_{i}+w], t_{i} \le t_{i+1},i \in [1,
+n]\)</span>，要求使用数量最少的个区间 <span class="math inline">\([x,
+x+w]\)</span>，其中 <span class="math inline">\(x\)</span>
+自定，使得所有的区间和 <span class="math inline">\([x, x+w]\)</span>
+有交集。</p>
+<h3 id="题解-1">题解</h3>
+<p><span class="math inline">\(~~~~\)</span> 考虑贪心。从前往后遍历
+<span class="math inline">\(t_{i}\)</span>，以 <span
+class="math inline">\(t_{i} + w\)</span> 作为左边界，<span
+class="math inline">\(t_{i} + w+d\)</span>
+作为右边界，寻找和该区间相交的区间，直到下一个区间不再与该区间相交，则另起一个新的区间。</p>
+<h3 id="python-代码-1">python 代码</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> *<br>T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, d, w = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    right = -<span class="hljs-number">1</span><br>    res = <span class="hljs-number">0</span><br>    nowk = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>        <span class="hljs-keyword">if</span> a[i] &lt;= right <span class="hljs-keyword">and</span> nowk:<br>            nowk -= <span class="hljs-number">1</span><br>        <span class="hljs-keyword">else</span>:<br>            res += <span class="hljs-number">1</span><br>            right = a[i] + w + d<br>            nowk = k - <span class="hljs-number">1</span><br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
+<h2 id="c">C</h2>
+<h3 id="题意-2">题意</h3>
+<p><span class="math inline">\(~~~~\)</span> 找到一个 <span
+class="math inline">\(f, f \in [1, p]\)</span>，使得 <span
+class="math inline">\((x + \frac{f * (f + 1)}{2}) \% n == 0\)</span>
+成立。</p>
+<h3 id="题解-2">题解</h3>
+<p><span class="math inline">\(~~~~\)</span> 上结论， <span
+class="math display">\[
+\frac{(a * n + b) * (a * n + b + 1)}{2} \ \% n = (\frac{(a * n) * (a * n
++ 1)}{2} \% n + \frac{b * (b + 1)}{2} \% n) \% n
+\]</span> <span class="math inline">\(~~~~\)</span> 证明待补。<br />
+<span class="math inline">\(~~~~\)</span> 因此，<span
+class="math inline">\(f = a * n + b, b &lt; n\)</span>，枚举 <span
+class="math inline">\(a\)</span> 即可。</p>
+<h3 id="python-代码-2">python 代码</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> math <span class="hljs-keyword">import</span> *<br>T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, x, p = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    s = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    mp = <span class="hljs-built_in">dict</span>()<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        s[i] = i*(i+<span class="hljs-number">1</span>)//<span class="hljs-number">2</span> % n<br>        <span class="hljs-keyword">if</span> mp.__contains__(s[i]):<br>            mp[s[i]] = <span class="hljs-built_in">min</span>(mp[s[i]], i)<br>        <span class="hljs-keyword">else</span>:<br>            mp.update(&#123;s[i]: i&#125;)<br>    ok = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> a <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>        now = (<span class="hljs-number">2</span>*n-s[n]*a%n-x)%n<br>        <span class="hljs-keyword">if</span> mp.__contains__(now) <span class="hljs-keyword">and</span> mp[now] + a*n &lt;= p:<br>            ok = <span class="hljs-number">1</span><br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">if</span> ok:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;YES&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;NO&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<h2 id="d">D</h2>
+<h3 id="题意-3">题意</h3>
+<p><span class="math inline">\(~~~~\)</span> 给一个 $ n m , 4|m$ 的
+<span class="math inline">\(01\)</span>
+矩阵，对于每一行，满足两个连在一起的块数量和单个块的数量都为 <span
+class="math inline">\(\frac{m}{4}\)</span>。<br />
+<span class="math inline">\(~~~~\)</span>
+要求分配两种块的位置，使得至少有一个 <span
+class="math inline">\(1\)</span> 的块的数量最少或最多。</p>
+<h3 id="题解-3">题解</h3>
+<p><span class="math inline">\(~~~~\)</span>
+显然每一行是独立的。记每一行 <span class="math inline">\(1\)</span>
+的数量为 $ cnt1 $。<br />
+<span class="math inline">\(~~~~\)</span> 对于最小值，贪心的找每一行
+<span class="math inline">\(11\)</span> 块数量 $ cnt11 $。</p>
 <ul>
-<li>如果 $cnt11 \le \frac{m}{4}$，答案为 $cnt1 - 2 \times cnt11 + cnt11$   </li>
-<li>如果 $cnt11 &gt; \frac{m}{4}$，答案为 $cnt1 - 2 \times \frac{m}{4} + \frac{m}{4}$</li>
+<li>如果 <span class="math inline">\(cnt11 \le
+\frac{m}{4}\)</span>，答案为 <span class="math inline">\(cnt1 - 2 \times
+cnt11 + cnt11\)</span><br />
+</li>
+<li>如果 <span class="math inline">\(cnt11 &gt;
+\frac{m}{4}\)</span>，答案为 <span class="math inline">\(cnt1 - 2 \times
+\frac{m}{4} + \frac{m}{4}\)</span></li>
 </ul>
-<p>$~~~~$ 对于最大值，贪心的找每一个不是 $11$ 块的数量 $cnt11n$。  </p>
+<p><span class="math inline">\(~~~~\)</span>
+对于最大值，贪心的找每一个不是 <span class="math inline">\(11\)</span>
+块的数量 <span class="math inline">\(cnt11n\)</span>。</p>
 <ul>
-<li>如果 $cnt11 \le \frac{m}{4}$，则 $cnt11 &#x3D; \frac{m}{4} - cnt11n$，答案为 $cnt1 - 2 \times cnt11 + cnt11$   </li>
-<li>如果 $cnt11 &gt; \frac{m}{4}$，则 $cnt11 &#x3D; \frac{m}{4} - cnt11n$, 答案为 $cnt1$</li>
+<li>如果 <span class="math inline">\(cnt11 \le \frac{m}{4}\)</span>，则
+<span class="math inline">\(cnt11 = \frac{m}{4} -
+cnt11n\)</span>，答案为 <span class="math inline">\(cnt1 - 2 \times
+cnt11 + cnt11\)</span><br />
+</li>
+<li>如果 <span class="math inline">\(cnt11 &gt; \frac{m}{4}\)</span>，则
+<span class="math inline">\(cnt11 = \frac{m}{4} - cnt11n\)</span>,
+答案为 <span class="math inline">\(cnt1\)</span></li>
 </ul>
-<h3 id="python-代码-3"><a href="#python-代码-3" class="headerlink" title="python 代码"></a>python 代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python">n, m = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>mn, mx = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>    s = <span class="hljs-built_in">input</span>()<br>    cnt1 = s.count(<span class="hljs-string">&#x27;1&#x27;</span>)<br>    x = <span class="hljs-number">0</span><br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; m:<br>        <span class="hljs-keyword">if</span> i + <span class="hljs-number">1</span> &lt; m <span class="hljs-keyword">and</span> s[i] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> s[i+<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>            x += <span class="hljs-number">1</span><br>            i += <span class="hljs-number">1</span><br>        i += <span class="hljs-number">1</span><br>    mn += cnt1 - <span class="hljs-built_in">min</span>(m//<span class="hljs-number">4</span>, x)<br>    x = <span class="hljs-number">0</span><br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; m:<br>        <span class="hljs-keyword">if</span> i + <span class="hljs-number">1</span> &lt; m <span class="hljs-keyword">and</span> (s[i] == <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">or</span> s[i] != s[i+<span class="hljs-number">1</span>]):<br>            x += <span class="hljs-number">1</span><br>            i += <span class="hljs-number">1</span><br>        i += <span class="hljs-number">1</span><br>    mx += cnt1 - <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, (m//<span class="hljs-number">4</span> - x))<br><span class="hljs-built_in">print</span>(mn, mx)<br></code></pre></td></tr></table></figure>
+<h3 id="python-代码-3">python 代码</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python">n, m = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>mn, mx = <span class="hljs-number">0</span>, <span class="hljs-number">0</span><br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n):<br>    s = <span class="hljs-built_in">input</span>()<br>    cnt1 = s.count(<span class="hljs-string">&#x27;1&#x27;</span>)<br>    x = <span class="hljs-number">0</span><br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; m:<br>        <span class="hljs-keyword">if</span> i + <span class="hljs-number">1</span> &lt; m <span class="hljs-keyword">and</span> s[i] == <span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">and</span> s[i+<span class="hljs-number">1</span>] == <span class="hljs-string">&#x27;1&#x27;</span>:<br>            x += <span class="hljs-number">1</span><br>            i += <span class="hljs-number">1</span><br>        i += <span class="hljs-number">1</span><br>    mn += cnt1 - <span class="hljs-built_in">min</span>(m//<span class="hljs-number">4</span>, x)<br>    x = <span class="hljs-number">0</span><br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">while</span> i &lt; m:<br>        <span class="hljs-keyword">if</span> i + <span class="hljs-number">1</span> &lt; m <span class="hljs-keyword">and</span> (s[i] == <span class="hljs-string">&#x27;0&#x27;</span> <span class="hljs-keyword">or</span> s[i] != s[i+<span class="hljs-number">1</span>]):<br>            x += <span class="hljs-number">1</span><br>            i += <span class="hljs-number">1</span><br>        i += <span class="hljs-number">1</span><br>    mx += cnt1 - <span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, (m//<span class="hljs-number">4</span> - x))<br><span class="hljs-built_in">print</span>(mn, mx)<br></code></pre></td></tr></table></figure>
+
                 
               </div>
             
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%A2%98%E8%A7%A3/" class="category-chain-item">题解</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
@@ -334,7 +421,7 @@
       
         <div class="license-meta-item">
           <div>作者</div>
-          <div>��ϲ</div>
+          <div>唐喜</div>
         </div>
       
       
@@ -440,6 +527,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -633,6 +726,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

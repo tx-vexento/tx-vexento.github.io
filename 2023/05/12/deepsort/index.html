@@ -1,0 +1,910 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="?????ú???????? https:&#x2F;&#x2F;github.com&#x2F;mikel-brostrom&#x2F;yolov8_tracking ?????olab?????????????emo  ?????olab??????????????????ipynb ?????????????????? from google.colab import drive drive.mount(&#39;&#x2F;cont">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Deepsort ??????????????">
+<meta property="og:url" content="https://vexentox.github.io/2023/05/12/deepsort/index.html">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="?????ú???????? https:&#x2F;&#x2F;github.com&#x2F;mikel-brostrom&#x2F;yolov8_tracking ?????olab?????????????emo  ?????olab??????????????????ipynb ?????????????????? from google.colab import drive drive.mount(&#39;&#x2F;cont">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-12T03:40:00.000Z">
+<meta property="article:modified_time" content="2023-05-13T01:40:27.587Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="deepsort">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Deepsort ?????????????? - 唐喜的个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Deepsort ??????????????"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-12 11:40" pubdate>
+          2023年5月12日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          81 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Deepsort ??????????????</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="ú">?????ú????????</h1>
+<p>https://github.com/mikel-brostrom/yolov8_tracking</p>
+<h1 id="olabemo">?????olab<code>?????????????emo</code></h1>
+<ul>
+<li>?????olab<code>??????????????????ipynb</code></li>
+<li>??????????????????<br />
+<code>from google.colab import drive</code><br />
+<code>drive.mount('/content/gdrive')</code></li>
+<li>????????ynb??????????????????????????%cd
+/content/gdrive/MyDrive`</li>
+<li>??????????????????????????????????????? github?????!mkdir
+github`<br />
+</li>
+<li>?????????????????????????%cd github`</li>
+<li>??????? <code>repo</code>?????<br />
+<code>!git clone --recurse-submodules https://github.com/mikel-brostrom/yolov8_tracking.git</code><br />
+<code>%cd yolov8_tracking</code></li>
+<li>?????????????????????<br />
+<code>%pip install -qr requirements.txt</code><br />
+<code>%pip install thop</code><br />
+</li>
+<li>?????????????????????????????????????? <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> IPython.display <span class="hljs-keyword">import</span> Image, clear_output  <span class="hljs-comment"># ?????????????</span><br>clear_output()<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&quot;Setup complete. Using torch <span class="hljs-subst">&#123;torch.__version__&#125;</span> (<span class="hljs-subst">&#123;torch.cuda.get_device_properties().name <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;CPU&#x27;</span>&#125;</span>)&quot;</span>)<br></code></pre></td></tr></table></figure></li>
+<li>?????·???????????????????????????????????????????????<br />
+<code>!wget -nc https://github.com/mikel-brostrom/yolov8_tracking/releases/download/v.2./test.avi</code><br />
+<code>!yes | ffmpeg -ss :: -i test.avi -t ::5 -vf fps=3 out.avi</code><br />
+?????</li>
+<li>??????? demo:
+<code>!python track.py --yolo-weights yolov8s.pt --reid-weights osnet_x_25_msmt17.pt --source out.avi --save-vid</code></li>
+</ul>
+<h1 id="section">???????????????</h1>
+<table>
+
+<thead>
+<tr class="header">
+<th>argument</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>--yolo-weights</code></td>
+<td>YOLOv8????????????????????????????????????????????????????????????'WEIGHTS/yolov8s-seg.pt'</td>
+</tr>
+<tr class="even">
+<td><code>--reid-weights</code></td>
+<td>???????????????????????????????????????????????????????????'WEIGHTS/lmbn_n_cuhk3_d.pt'</td>
+</tr>
+<tr class="odd">
+<td><code>--tracking-method</code></td>
+<td>???????????????????????????????????????'deepocsort', 'botsort',
+'strongsort', 'ocsort', 'bytetrack'??????????????'deepocsort'</td>
+</tr>
+<tr class="even">
+<td><code>--tracking-config</code></td>
+<td>?????????????????????????????????????????????????ne</td>
+</tr>
+<tr class="odd">
+<td><code>--source</code></td>
+<td>?????????????????????????????????????ú???????????????????????????????????????????????????????????????????????????????????''</td>
+</tr>
+<tr class="even">
+<td><code>--imgsz</code></td>
+<td>???????????????????????????????????????????????????????????????????????????64]</td>
+</tr>
+<tr class="odd">
+<td><code>--conf-thres</code></td>
+<td>????????????????????????????????.5</td>
+</tr>
+<tr class="even">
+<td><code>--iou-thres</code></td>
+<td>?????????????????????????oU???????????????????????.5</td>
+</tr>
+<tr class="odd">
+<td><code>--max-det</code></td>
+<td>??????????????????????????????????????????????1</td>
+</tr>
+<tr class="even">
+<td><code>--device</code></td>
+<td>??????????????????????????cuda?????·????????????????????''??????????????????????????????????????????????',1,2,3'??????????????????????????????????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--show-vid</code></td>
+<td>???????????????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--save-txt</code></td>
+<td>?????????????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--save-conf</code></td>
+<td>???????????????????????????????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--save-crop</code></td>
+<td>???????????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--save-trajectories</code></td>
+<td>??????????????????????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--save-vid</code></td>
+<td>???????????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--nosave</code></td>
+<td>?????????????????????????/???????</td>
+</tr>
+<tr class="even">
+<td><code>--classes</code></td>
+<td>?????????????????????--classes ???????--classes 2 3</td>
+</tr>
+<tr class="odd">
+<td><code>--agnostic-nms</code></td>
+<td>?????????????????????????????????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--augment</code></td>
+<td>???????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--visualize</code></td>
+<td>??????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--update</code></td>
+<td>??????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--project</code></td>
+<td>?????????????????????????????????????????/????????????????????????OOT
+/ runs /track</td>
+</tr>
+<tr class="even">
+<td><code>--name</code></td>
+<td>?????????????????????????????????????????/name ?????</td>
+</tr>
+<tr class="odd">
+<td><code>--exist-ok</code></td>
+<td>?????????????????????????????????/????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--line-thickness</code></td>
+<td>?????????????????????????????????? g</td>
+</tr>
+<tr class="odd">
+<td><code>--hide-labels</code></td>
+<td>?????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--hide-conf</code></td>
+<td>???????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--hide-class</code></td>
+<td>????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--half</code></td>
+<td>??????????????P16??????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--dnn</code></td>
+<td>??????????????penCV DNN????????NX???????</td>
+</tr>
+<tr class="even">
+<td><code>--vid-stride</code></td>
+<td>?????????????????????????????????1</td>
+</tr>
+<tr class="odd">
+<td><code>--line-thickness</code></td>
+<td>??????????????????????????????????</td>
+</tr>
+<tr class="even">
+<td><code>--retina-masks</code></td>
+<td>????????????????????????????????????????</td>
+</tr>
+<tr class="odd">
+<td><code>--line-thickness</code></td>
+<td>??????????????????????????????????</td>
+</tr>
+</tbody>
+</table>
+<h1 id="section-1">??????????????</h1>
+<h2 id="track.py"><code>track.py</code></h2>
+<h3 id="main"><code>main</code></h3>
+<h4 id="section-2">1. ???????????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ????????????????????????????????????????&#x27;tensorboard&#x27;?????&#x27;thop&#x27;</span><br>check_requirements(requirements=ROOT / <span class="hljs-string">&#x27;requirements.txt&#x27;</span>, exclude=(<span class="hljs-string">&#x27;tensorboard&#x27;</span>, <span class="hljs-string">&#x27;thop&#x27;</span>)) <br></code></pre></td></tr></table></figure>
+<h4 id="run">2. ??????? <code>run()</code></h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ???????????????????????????opt?????????????????????????</span><br>run(**<span class="hljs-built_in">vars</span>(opt))<br></code></pre></td></tr></table></figure>
+<h3 id="run-1"><code>run</code></h3>
+<h4 id="section-3">1. ?????·?</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs python">source = <span class="hljs-built_in">str</span>(source)<br><span class="hljs-comment"># ??????????????????????????????????</span><br>save_img = <span class="hljs-keyword">not</span> nosave <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> source.endswith(<span class="hljs-string">&#x27;.txt&#x27;</span>) <br><span class="hljs-comment"># ??????????????????????????????????</span><br>is_file = Path(source).suffix[<span class="hljs-number">1</span>:] <span class="hljs-keyword">in</span> (VID_FORMATS)  <br><span class="hljs-comment"># ???????????????????????????RL</span><br>is_url = source.lower().startswith((<span class="hljs-string">&#x27;rtsp://&#x27;</span>, <span class="hljs-string">&#x27;rtmp://&#x27;</span>, <span class="hljs-string">&#x27;http://&#x27;</span>, <span class="hljs-string">&#x27;https://&#x27;</span>))  <br><span class="hljs-comment"># ?????????????????????????????????????????RL</span><br>webcam = source.isnumeric() <span class="hljs-keyword">or</span> source.endswith(<span class="hljs-string">&#x27;.txt&#x27;</span>) <span class="hljs-keyword">or</span> (is_url <span class="hljs-keyword">and</span> <span class="hljs-keyword">not</span> is_file)  <br><br><span class="hljs-comment"># ??????????????</span><br><span class="hljs-keyword">if</span> is_url <span class="hljs-keyword">and</span> is_file:<br>    source = check_file(source)  <br></code></pre></td></tr></table></figure>
+<h4 id="section-4">2. ??????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ?????????????</span><br><span class="hljs-comment"># ??????? YOLO ?????????</span><br><span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">isinstance</span>(yolo_weights, <span class="hljs-built_in">list</span>):  <br>    exp_name = yolo_weights.stem<br><span class="hljs-keyword">elif</span> <span class="hljs-built_in">type</span>(yolo_weights) <span class="hljs-keyword">is</span> <span class="hljs-built_in">list</span> <span class="hljs-keyword">and</span> <span class="hljs-built_in">len</span>(yolo_weights) == <span class="hljs-number">1</span>:  <br>    exp_name = Path(yolo_weights[<span class="hljs-number">0</span>]).stem<br><span class="hljs-comment"># ????????????????????????? --yolo_weights ????????????</span><br><span class="hljs-keyword">else</span>: <br>    exp_name = <span class="hljs-string">&#x27;ensemble&#x27;</span><br>exp_name = name <span class="hljs-keyword">if</span> name <span class="hljs-keyword">else</span> exp_name + <span class="hljs-string">&quot;_&quot;</span> + reid_weights.stem<br><span class="hljs-comment"># ????????????????????????????????</span><br>save_dir = increment_path(Path(project) / exp_name, exist_ok=exist_ok) <br><span class="hljs-comment"># ????????????????????????????????</span><br>(save_dir / <span class="hljs-string">&#x27;tracks&#x27;</span> <span class="hljs-keyword">if</span> save_txt <span class="hljs-keyword">else</span> save_dir).mkdir(parents=<span class="hljs-literal">True</span>, exist_ok=<span class="hljs-literal">True</span>)  <br><span class="hljs-comment"># ??????????????</span><br><span class="hljs-comment"># ??????????????????PU ????? GPU?????</span><br>device = select_device(device)  <br><span class="hljs-comment"># ??????????????????????????????????????</span><br>is_seg = <span class="hljs-string">&#x27;-seg&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">str</span>(yolo_weights)  <br><span class="hljs-comment"># ????????LO?????????</span><br>model = AutoBackend(yolo_weights, device=device, dnn=dnn, fp16=half)  <br><span class="hljs-comment"># ???????????????????????????????????????????????????????????????????</span><br>stride, names, pt = model.stride, model.names, model.pt <br><span class="hljs-comment"># ???????????????????????</span><br>imgsz = check_imgsz(imgsz, stride=stride)  <br></code></pre></td></tr></table></figure>
+<h4 id="section-5">3. ??????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ???????????????????</span><br>bs = <span class="hljs-number">1</span>  <span class="hljs-comment"># ??????????????????????????? 1</span><br><span class="hljs-keyword">if</span> webcam:<br>    <span class="hljs-comment"># ????????????????????????????????</span><br>    show_vid = check_imshow(warn=<span class="hljs-literal">True</span>)  <br>    <span class="hljs-comment"># ????????????????????????????</span><br>    dataset = LoadStreams(<br>        source,<br>        imgsz=imgsz,<br>        stride=stride,<br>        auto=pt,<br>        transforms=<span class="hljs-built_in">getattr</span>(model.model, <span class="hljs-string">&#x27;transforms&#x27;</span>, <span class="hljs-literal">None</span>),<br>        vid_stride=vid_stride<br>    )  <br>    <span class="hljs-comment"># ?????????????????????????</span><br>    bs = <span class="hljs-built_in">len</span>(dataset)  <br><span class="hljs-keyword">else</span>:<br>    <span class="hljs-comment"># ?????????????????????????</span><br>    dataset = LoadImages(<br>        source,<br>        imgsz=imgsz,<br>        stride=stride,<br>        auto=pt,<br>        transforms=<span class="hljs-built_in">getattr</span>(model.model, <span class="hljs-string">&#x27;transforms&#x27;</span>, <span class="hljs-literal">None</span>),<br>        vid_stride=vid_stride<br>    )  <br><span class="hljs-comment"># ???????????????????????????????????????????????????????????????????????</span><br>vid_path, vid_writer, txt_path = [<span class="hljs-literal">None</span>] * bs, [<span class="hljs-literal">None</span>] * bs, [<span class="hljs-literal">None</span>] * bs  <br></code></pre></td></tr></table></figure>
+<h4 id="section-6">4. ???????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ???????????????</span><br>model.warmup(imgsz=(<span class="hljs-number">1</span> <span class="hljs-keyword">if</span> pt <span class="hljs-keyword">or</span> model.triton <span class="hljs-keyword">else</span> bs, <span class="hljs-number">3</span>, *imgsz)) <br></code></pre></td></tr></table></figure>
+<h4 id="trackers">5. ??????? trackers</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ??????????????????????????????????????????????????????????????????</span><br>tracker_list = []<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(bs):<br>    <span class="hljs-comment"># ?????????????????????????</span><br>    tracker = create_tracker(tracking_method, <br>    tracking_config, reid_weights, device, half)  <br>    <span class="hljs-comment"># ????????????????????????????????????????</span><br>    tracker_list.append(tracker)  <br>    <span class="hljs-comment"># ????????????????????????????????&#x27;model&#x27;?????????</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(tracker_list[i], <span class="hljs-string">&#x27;model&#x27;</span>):  <br>        <span class="hljs-comment"># ???????????????????????????????????????????&#x27;warmup&#x27;???????</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(tracker_list[i].model, <span class="hljs-string">&#x27;warmup&#x27;</span>):<br>            <span class="hljs-comment"># ???????????????????&#x27;warmup&#x27;?????????????????????????????</span><br>            tracker_list[i].model.warmup() <br><span class="hljs-comment"># ??????????????????????????????????????????????????????????????????????????????????</span><br>outputs = [<span class="hljs-literal">None</span>] * bs  <br> <span class="hljs-comment"># ??????????????????en?????ndows?????</span><br>seen, windows, dt = <span class="hljs-number">0</span>, [], (Profile(), Profile(), Profile(), Profile()) <br><span class="hljs-comment"># ??????????????????????????????????????????????????????????????????????????????????????ne</span><br>curr_frames, prev_frames = [<span class="hljs-literal">None</span>] * bs, [<span class="hljs-literal">None</span>] * bs  <br><br></code></pre></td></tr></table></figure>
+<h4 id="section-7">6 ????????????????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> frame_idx, batch <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(dataset):  <br></code></pre></td></tr></table></figure>
+<h5 id="section-8">6.1 ???????????????????</h5>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ???????????????????????????????</span><br>path, im, im0s, vid_cap, s = batch<br><br><span class="hljs-comment"># ???????? visualize ????? True????????????????????????????????????????????????????????????</span><br><span class="hljs-comment"># ???????????? visualize ???????????? False</span><br>visualize = increment_path(save_dir / Path(path[<span class="hljs-number">0</span>]).stem, mkdir=<span class="hljs-literal">True</span>) <span class="hljs-keyword">if</span> visualize <span class="hljs-keyword">else</span> <span class="hljs-literal">False</span><br><span class="hljs-keyword">with</span> dt[<span class="hljs-number">0</span>]:<br>    <span class="hljs-comment"># ????? NumPy ?????????????????? PyTorch ????????????????????????????????????????????????????????? GPU?????</span><br>    im = torch.from_numpy(im).to(device)<br>    <br>    <span class="hljs-comment"># ???????? half ????? True?????????????????????????????????????????p16???????????????????????????????????????p32?????</span><br>    im = im.half() <span class="hljs-keyword">if</span> half <span class="hljs-keyword">else</span> im.<span class="hljs-built_in">float</span>()<br>    <br>    <span class="hljs-comment"># ???????????????????????ú? 0 - 255 ??????????????????? 0.0 - 1.0</span><br>    im /= <span class="hljs-number">255.0</span>  <span class="hljs-comment"># 0 - 255 ???????????? 0.0 - 1.0</span><br>    <br>    <span class="hljs-comment"># ????????????????????????????????????????????????????? 0 ?????????????????????????????????????????????????????????????</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(im.shape) == <span class="hljs-number">3</span>:<br>        im = im[<span class="hljs-literal">None</span>]<br></code></pre></td></tr></table></figure>
+<h5 id="section-9">6.2 ??????????????</h5>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ??????????????</span><br><span class="hljs-keyword">with</span> dt[<span class="hljs-number">1</span>]:<br>    preds = model(im, augment=augment, visualize=visualize)<br></code></pre></td></tr></table></figure>
+<h5 id="section-10">6.3 ???????????????????????</h5>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># ??????? NMS???????????????????????????????????????????????????????</span><br><span class="hljs-keyword">with</span> dt[<span class="hljs-number">2</span>]:<br>    <span class="hljs-keyword">if</span> is_seg:<br>        masks = []<br>        p = non_max_suppression(preds[<span class="hljs-number">0</span>], conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det, nm=<span class="hljs-number">32</span>)<br>        proto = preds[<span class="hljs-number">1</span>][-<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">else</span>:<br>        p = non_max_suppression(preds, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)<br></code></pre></td></tr></table></figure>
+<h4 id="section-11">7 ??????????????????????????????</h4>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> i, det <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(p):<br></code></pre></td></tr></table></figure>
+<h5 id="section-12">7.1 ?????????????????????</h5>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs python">seen += <span class="hljs-number">1</span><br><span class="hljs-comment"># bs &gt;= 1</span><br><span class="hljs-comment"># ????????????  </span><br><span class="hljs-keyword">if</span> webcam: <br>    p, im0, _ = path[i], im0s[i].copy(), dataset.count<br>    p = Path(p) <br>    s += <span class="hljs-string">f&#x27;<span class="hljs-subst">&#123;i&#125;</span>: &#x27;</span><br>    txt_file_name = p.name<br>    save_path = <span class="hljs-built_in">str</span>(save_dir / p.name)  <span class="hljs-comment"># im.jpg, vid.mp4, ...</span><br><span class="hljs-keyword">else</span>:<br>    p, im0, _ = path, im0s.copy(), <span class="hljs-built_in">getattr</span>(dataset, <span class="hljs-string">&#x27;frame&#x27;</span>, <span class="hljs-number">0</span>)<br>    p = Path(p)<br>    <span class="hljs-comment"># ??????????????</span><br>    <span class="hljs-keyword">if</span> source.endswith(VID_FORMATS):<br>        txt_file_name = p.stem<br>        save_path = <span class="hljs-built_in">str</span>(save_dir / p.name)  <span class="hljs-comment"># im.jpg, vid.mp4, ...</span><br>    <span class="hljs-comment"># ???????????????????????????</span><br>    <span class="hljs-keyword">else</span>:<br>        txt_file_name = p.parent.name  <span class="hljs-comment"># ??????????????????????????????????????????????</span><br>        save_path = <span class="hljs-built_in">str</span>(save_dir / p.parent.name)  <span class="hljs-comment"># im.jpg, vid.mp4, ...</span><br>curr_frames[i] = im0<br>txt_path = <span class="hljs-built_in">str</span>(save_dir / <span class="hljs-string">&#x27;tracks&#x27;</span> / txt_file_name)  <span class="hljs-comment"># im.txt</span><br>s += <span class="hljs-string">&#x27;%gx%g &#x27;</span> % im.shape[<span class="hljs-number">2</span>:]  <span class="hljs-comment"># ???????????????????</span><br>imc = im0.copy() <span class="hljs-keyword">if</span> save_crop <span class="hljs-keyword">else</span> im0  <span class="hljs-comment"># ??????? save_crop</span><br><br>annotator = Annotator(im0, line_width=line_thickness, example=<span class="hljs-built_in">str</span>(names))<br><br><span class="hljs-keyword">if</span> <span class="hljs-built_in">hasattr</span>(tracker_list[i], <span class="hljs-string">&#x27;tracker&#x27;</span>) <span class="hljs-keyword">and</span> <span class="hljs-built_in">hasattr</span>(tracker_list[i].tracker, <span class="hljs-string">&#x27;camera_update&#x27;</span>):<br>    <span class="hljs-keyword">if</span> prev_frames[i] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">and</span> curr_frames[i] <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:  <span class="hljs-comment"># ?????????????????????</span><br>        tracker_list[i].tracker.camera_update(prev_frames[i], curr_frames[i])<br></code></pre></td></tr></table></figure>
+<h5 id="section-13">7.2 ?????????????????????</h5>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><br><br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0/" class="category-chain-item">论文复现</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/deepsort/">#deepsort</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Deepsort ??????????????</div>
+      <div>https://vexentox.github.io/2023/05/12/deepsort/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/12/rnn/" title="RNN 网络复现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">RNN 网络复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/03/23/python_IO_%E4%BC%98%E5%8C%96/" title="Python IO 优化">
+                        <span class="hidden-mobile">Python IO 优化</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

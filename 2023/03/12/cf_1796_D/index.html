@@ -13,27 +13,25 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="��ϲ">
-  <meta name="keywords" content="">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
     <meta name="description" content="D (dp)">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp)">
 <meta property="og:url" content="https://vexentox.github.io/2023/03/12/cf_1796_D/index.html">
-<meta property="og:site_name" content="��ϲ�ĸ��˲���">
+<meta property="og:site_name" content="唐喜的个人博客">
 <meta property="og:description" content="D (dp)">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://vexentox.github.io/img/cf_1796_D.png">
 <meta property="article:published_time" content="2023-03-12T08:40:00.000Z">
-<meta property="article:modified_time" content="2023-03-15T15:02:59.483Z">
-<meta property="article:author" content="��ϲ">
+<meta property="article:modified_time" content="2023-05-13T01:40:15.943Z">
+<meta property="article:author" content="唐喜">
 <meta property="article:tag" content="codeforce, cf, D, Maximum Subarray, dp, DP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://vexentox.github.io/img/cf_1796_D.png">
   
   
   
-  <title>Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp) - ��ϲ�ĸ��˲���</title>
+  <title>Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp) - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -193,7 +191,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/cf_1796_D.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -222,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.3k 字
+          1.5k 字
         
       </span>
     
@@ -233,7 +231,7 @@
         
         
         
-          12 分钟
+          13 分钟
         
       </span>
     
@@ -276,31 +274,69 @@
             
               <div class="markdown-body">
                 
-                <p>D (dp)</p>
-<span id="more"></span>
-
-<h1 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h1><p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/1796/problem/D">https://codeforces.com/contest/1796/problem/D</a></p>
-<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>$~~~~$给一个数组 $a$，要求选出 $a$ 的一个长度为 $k$ 的子序列 $b_{1}, b_{2}, …, b_{k}$，让 $\forall i<br>\in [1, k], b_{i} +&#x3D; x$，而让 $\forall a_{i} \in a \ and \ a_{i} \notin b, a_{i} -&#x3D; x$，使得形成的新数组最大子段和最大。</p>
-<h1 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h1><p>$~~~~$考虑 DP。  </p>
-<p>$~~~~$设 $f[i][j]$ : 考虑前 $i$ 个数，已经选择了 $j$ 个数执行 “$+x$” 操作的大子段和。</p>
-<p>$~~~~$分类讨论：  </p>
+                <p>D (dp) <span id="more"></span></p>
+<h1 id="閾炬帴">閾炬帴</h1>
+<p><a
+target="_blank" rel="noopener" href="https://codeforces.com/contest/1796/problem/D">https://codeforces.com/contest/1796/problem/D</a></p>
+<h1 id="棰樻剰">棰樻剰</h1>
+<p><span class="math inline">\(~~~~\)</span>缁欎竴涓暟缁� <span
+class="math inline">\(a\)</span>锛岃姹傞€夊嚭 <span
+class="math inline">\(a\)</span> 鐨勪竴涓暱搴︿负 <span
+class="math inline">\(k\)</span> 鐨勫瓙搴忓垪 <span
+class="math inline">\(b_{1}, b_{2}, ..., b_{k}\)</span>锛岃 <span
+class="math inline">\(\forall i \in [1, k], b_{i} += x\)</span>锛岃€岃
+<span class="math inline">\(\forall a_{i} \in a \ and \ a_{i} \notin b,
+a_{i} -= x\)</span>锛屼娇寰楀舰鎴愮殑鏂版暟缁勬渶澶у瓙娈靛拰鏈€澶с€�</p>
+<h1 id="棰樿в">棰樿В</h1>
+<p><span class="math inline">\(~~~~\)</span>鑰冭檻 DP銆�</p>
+<p><span class="math inline">\(~~~~\)</span>璁� <span
+class="math inline">\(f[i][j]\)</span> : 鑰冭檻鍓� <span
+class="math inline">\(i\)</span> 涓暟锛屽凡缁忛€夋嫨浜� <span
+class="math inline">\(j\)</span> 涓暟鎵ц "<span
+class="math inline">\(+x\)</span>" 鎿嶄綔鐨勫ぇ瀛愭鍜屻€�</p>
+<p><span class="math inline">\(~~~~\)</span>鍒嗙被璁ㄨ锛�</p>
 <ul>
-<li>$a[i]$ 不执行 “$+x$” 操作   <ul>
-<li>必须满足 $i &gt; j$，因为如果 $i&#x3D;j$ 则意味着前 $i$ 个数全部执行了 “$+x$” 操作，因此 $a[i]$ 必须执行 “$+x$” 操作  </li>
-<li>$a[i]$ 必须执行 “$-x$” 操作</li>
-<li>$a[i]$ 单独作为一个子段和，即 $a[i] - x$</li>
-<li>$a[i]$ 合并到 $[1, i-1]$ 的最大子段和中，即 $f[i-1, j] + a[i] - x$</li>
-</ul>
+<li><span class="math inline">\(a[i]\)</span> 涓嶆墽琛� "<span
+class="math inline">\(+x\)</span>" 鎿嶄綔
+<ul>
+<li>蹇呴』婊¤冻 <span class="math inline">\(i &gt;
+j\)</span>锛屽洜涓哄鏋� <span class="math inline">\(i=j\)</span>
+鍒欐剰鍛崇潃鍓� <span class="math inline">\(i\)</span>
+涓暟鍏ㄩ儴鎵ц浜� "<span class="math inline">\(+x\)</span>"
+鎿嶄綔锛屽洜姝� <span class="math inline">\(a[i]\)</span> 蹇呴』鎵ц
+"<span class="math inline">\(+x\)</span>" 鎿嶄綔<br />
 </li>
-<li>$a[i]$ 执行 “$+x$” 操作<ul>
-<li>$a[i]$ 单独作为一个子段和，即 $a[i] + x$</li>
-<li>$a[i]$ 合并到 $[1, i-1]$ 的最大子段和中，即 $f[i-1, j-1] + a[i] + x$</li>
+<li><span class="math inline">\(a[i]\)</span> 蹇呴』鎵ц "<span
+class="math inline">\(-x\)</span>" 鎿嶄綔</li>
+<li><span class="math inline">\(a[i]\)</span>
+鍗曠嫭浣滀负涓€涓瓙娈靛拰锛屽嵆 <span class="math inline">\(a[i] -
+x\)</span></li>
+<li><span class="math inline">\(a[i]\)</span> 鍚堝苟鍒� <span
+class="math inline">\([1, i-1]\)</span> 鐨勬渶澶у瓙娈靛拰涓紝鍗� <span
+class="math inline">\(f[i-1, j] + a[i] - x\)</span></li>
+</ul></li>
+<li><span class="math inline">\(a[i]\)</span> 鎵ц "<span
+class="math inline">\(+x\)</span>" 鎿嶄綔
+<ul>
+<li><span class="math inline">\(a[i]\)</span>
+鍗曠嫭浣滀负涓€涓瓙娈靛拰锛屽嵆 <span class="math inline">\(a[i] +
+x\)</span></li>
+<li><span class="math inline">\(a[i]\)</span> 鍚堝苟鍒� <span
+class="math inline">\([1, i-1]\)</span> 鐨勬渶澶у瓙娈靛拰涓紝鍗� <span
+class="math inline">\(f[i-1, j-1] + a[i] + x\)</span></li>
+</ul></li>
 </ul>
-</li>
-</ul>
-<p>$~~~~$因此，状态转移方程为：<br>$$<br>f[i,j]&#x3D;\left{\begin{matrix}max(a[i]-x,f[i-1,j]+a[i]-x)\ \ j&lt;i<br> \max(a[i]+x, f[i-1, j-1]+a[i]+x)\ \ j &gt; 0<br>\end{matrix}\right.<br>$$</p>
-<p>$~~~~$初始条件为：$f[0, 0] &#x3D; 0$</p>
-<h1 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, x = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    inf = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    f = [[-inf <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k+<span class="hljs-number">1</span>)] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    res = <span class="hljs-number">0</span><br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最少为 k-(n-i)，即让 i 后面的数全部执行 &quot;+x&quot; 操作</span><br>        <span class="hljs-comment"># 当前已经使用的 &quot;+x&quot; 操作 j 最多为 i，即让 i 前面的数全部执行 &quot;+x&quot; 操作</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, k-(n-i)), <span class="hljs-built_in">min</span>(i, k)+<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j &lt; i:<br>                f[i][j] = <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] - x, f[i-<span class="hljs-number">1</span>][j] + a[i-<span class="hljs-number">1</span>] - x)<br>            <span class="hljs-keyword">if</span> j:<br>                <span class="hljs-comment"># 注意此处 f[i][j] 可能已经被更新，因此要带上</span><br>                f[i][j] = <span class="hljs-built_in">max</span>(f[i][j], <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] + x, f[i-<span class="hljs-number">1</span>][j-<span class="hljs-number">1</span>] + a[i-<span class="hljs-number">1</span>] + x))<br>            <span class="hljs-comment"># 若只考虑当前的最大子段和，其他的 &quot;+x&quot; 操作发生在什么地方对当前结果没有影响</span><br>            res = <span class="hljs-built_in">max</span>(res, f[i][j])<br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
+<p><span
+class="math inline">\(~~~~\)</span>鍥犳锛岀姸鎬佽浆绉绘柟绋嬩负锛�
+<span class="math display">\[
+f[i,j]=\left\{\begin{matrix}max(a[i]-x,f[i-1,j]+a[i]-x)\ \ j&lt;i
+\\max(a[i]+x, f[i-1, j-1]+a[i]+x)\ \ j &gt; 0
+\end{matrix}\right.
+\]</span></p>
+<p><span class="math inline">\(~~~~\)</span>鍒濆鏉′欢涓猴細<span
+class="math inline">\(f[0, 0] = 0\)</span></p>
+<h1 id="python-浠ｇ爜">python 浠ｇ爜</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, x = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    inf = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    f = [[-inf <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k+<span class="hljs-number">1</span>)] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    res = <span class="hljs-number">0</span><br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 褰撳墠宸茬粡浣跨敤鐨� &quot;+x&quot; 鎿嶄綔 j 鏈€灏戜负 k-(n-i)锛屽嵆璁� i 鍚庨潰鐨勬暟鍏ㄩ儴鎵ц &quot;+x&quot; 鎿嶄綔</span><br>        <span class="hljs-comment"># 褰撳墠宸茬粡浣跨敤鐨� &quot;+x&quot; 鎿嶄綔 j 鏈€澶氫负 i锛屽嵆璁� i 鍓嶉潰鐨勬暟鍏ㄩ儴鎵ц &quot;+x&quot; 鎿嶄綔</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, k-(n-i)), <span class="hljs-built_in">min</span>(i, k)+<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j &lt; i:<br>                f[i][j] = <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] - x, f[i-<span class="hljs-number">1</span>][j] + a[i-<span class="hljs-number">1</span>] - x)<br>            <span class="hljs-keyword">if</span> j:<br>                <span class="hljs-comment"># 娉ㄦ剰姝ゅ f[i][j] 鍙兘宸茬粡琚洿鏂帮紝鍥犳瑕佸甫涓�</span><br>                f[i][j] = <span class="hljs-built_in">max</span>(f[i][j], <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] + x, f[i-<span class="hljs-number">1</span>][j-<span class="hljs-number">1</span>] + a[i-<span class="hljs-number">1</span>] + x))<br>            <span class="hljs-comment"># 鑻ュ彧鑰冭檻褰撳墠鐨勬渶澶у瓙娈靛拰锛屽叾浠栫殑 &quot;+x&quot; 鎿嶄綔鍙戠敓鍦ㄤ粈涔堝湴鏂瑰褰撳墠缁撴灉娌℃湁褰卞搷</span><br>            res = <span class="hljs-built_in">max</span>(res, f[i][j])<br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>
 
                 
               </div>
@@ -308,6 +344,27 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%A2%98%E8%A7%A3/" class="category-chain-item">题解</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
@@ -332,7 +389,7 @@
       
         <div class="license-meta-item">
           <div>作者</div>
-          <div>��ϲ</div>
+          <div>唐喜</div>
         </div>
       
       
@@ -438,6 +495,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -631,6 +694,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 

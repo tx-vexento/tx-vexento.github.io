@@ -13,27 +13,25 @@
   <meta http-equiv="x-ua-compatible" content="ie=edge">
   
   <meta name="theme-color" content="#2f4154">
-  <meta name="author" content="��ϲ">
-  <meta name="keywords" content="">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
     <meta name="description" content="线段树优化dp">
 <meta property="og:type" content="article">
 <meta property="og:title" content="裁剪序列 (线段树优化Dp) From 算法进阶指南">
 <meta property="og:url" content="https://vexentox.github.io/2023/03/23/%E7%AE%97%E6%B3%95%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97_%E8%A3%81%E5%89%AA%E5%BA%8F%E5%88%97/index.html">
-<meta property="og:site_name" content="��ϲ�ĸ��˲���">
+<meta property="og:site_name" content="唐喜的个人博客">
 <meta property="og:description" content="线段树优化dp">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://vexentox.github.io/img/%E7%AE%97%E6%B3%95%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97_%E8%A3%81%E5%89%AA%E5%BA%8F%E5%88%97.png">
 <meta property="article:published_time" content="2023-03-23T11:54:00.000Z">
-<meta property="article:modified_time" content="2023-03-23T12:24:34.493Z">
-<meta property="article:author" content="��ϲ">
+<meta property="article:modified_time" content="2023-05-13T01:39:59.785Z">
+<meta property="article:author" content="唐喜">
 <meta property="article:tag" content="裁剪序列, 算法进阶指南, 线段树, DP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://vexentox.github.io/img/%E7%AE%97%E6%B3%95%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97_%E8%A3%81%E5%89%AA%E5%BA%8F%E5%88%97.png">
   
   
   
-  <title>裁剪序列 (线段树优化Dp) From 算法进阶指南 - ��ϲ�ĸ��˲���</title>
+  <title>裁剪序列 (线段树优化Dp) From 算法进阶指南 - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -193,7 +191,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/%E7%AE%97%E6%B3%95%E8%BF%9B%E9%98%B6%E6%8C%87%E5%8D%97_%E8%A3%81%E5%89%AA%E5%BA%8F%E5%88%97.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -222,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          2.7k 字
+          2.8k 字
         
       </span>
     
@@ -233,7 +231,7 @@
         
         
         
-          23 分钟
+          24 分钟
         
       </span>
     
@@ -278,23 +276,89 @@
                 
                 <p>线段树优化dp</p>
 <span id="more"></span>
-
-<h2 id="链接"><a href="#链接" class="headerlink" title="链接"></a>链接</h2><p><a target="_blank" rel="noopener" href="https://www.acwing.com/problem/content/description/301/">https://www.acwing.com/problem/content/description/301/</a></p>
-<h2 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h2><p>$~~~~$给定一个长度为 $N$ 的序列 $A$，要求把该序列分成若干段，在满足每段中所有数的和不超过 $M$ 的前提下，让每段中所有数的最大值之和最小。<br>$~~~~$试计算这个最小值。</p>
-<h2 id="题解"><a href="#题解" class="headerlink" title="题解"></a>题解</h2><p>$~~~~$考虑 $DP$。<br>$~~~~$设状态：<br>$$<br>f[i]：前 i 个数中每段中所有数的最大值之和的最小值， i \in [1, n]<br>$$<br>$~~~~$ 对于 $i$，枚举它转移的上一个答案 $f[j]$，更新为 $i$ 前面的若干个数（满足 $\sum_{k&#x3D;j+1}^{i} a[k] &lt;&#x3D; M$）中的最大值，取最小值。<br>$~~~~$ 即状态转移方程为：<br>$$<br>f[i] &#x3D; \min{f[j] + \max{a[j+1], a[j+2], …, a[i]}}, 其中j \in [1, i], \sum_{k&#x3D;j+1}^{i} a[k] &lt;&#x3D; M<br>$$<br>$~~~~$ 注意到<br>$$<br>\max{a[i]} &lt;&#x3D; \max{a[i], a[i-1]} &lt;&#x3D; … &lt;&#x3D; \max{a[j+1], a[j+2], …, a[i]}<br>$$<br>$~~~~$ 因此对于每一个 $i$，可以用单调栈找到  $&gt;a[i]$ 的第一个数 $a[pre[i]]$，维护 $i$ 之前 $\le a[i]$ 的一段连续的区间 $[pre[i]+1, i]$，这段区间的最大值即为 $a[i]$。<br>$~~~~$ 考虑线段树优化，对于 $i$，由于 $f[i]$ 是固定的，因此  </p>
+<h2 id="链接">链接</h2>
+<p><a
+target="_blank" rel="noopener" href="https://www.acwing.com/problem/content/description/301/">https://www.acwing.com/problem/content/description/301/</a></p>
+<h2 id="题意">题意</h2>
+<p><span class="math inline">\(~~~~\)</span>给定一个长度为 <span
+class="math inline">\(N\)</span> 的序列 <span
+class="math inline">\(A\)</span>，要求把该序列分成若干段，在满足每段中所有数的和不超过
+<span class="math inline">\(M\)</span>
+的前提下，让每段中所有数的最大值之和最小。<br />
+<span class="math inline">\(~~~~\)</span>试计算这个最小值。</p>
+<h2 id="题解">题解</h2>
+<p><span class="math inline">\(~~~~\)</span>考虑 <span
+class="math inline">\(DP\)</span>。<br />
+<span class="math inline">\(~~~~\)</span>设状态： <span
+class="math display">\[
+f[i]：前 i 个数中每段中所有数的最大值之和的最小值， i \in [1, n]
+\]</span> <span class="math inline">\(~~~~\)</span> 对于 <span
+class="math inline">\(i\)</span>，枚举它转移的上一个答案 <span
+class="math inline">\(f[j]\)</span>，更新为 <span
+class="math inline">\(i\)</span> 前面的若干个数（满足 <span
+class="math inline">\(\sum_{k=j+1}^{i} a[k] &lt;=
+M\)</span>）中的最大值，取最小值。<br />
+<span class="math inline">\(~~~~\)</span> 即状态转移方程为： <span
+class="math display">\[
+f[i] = \min\{f[j] + \max\{a[j+1], a[j+2], ..., a[i]\}\}, 其中j \in [1,
+i], \sum_{k=j+1}^{i} a[k] &lt;= M
+\]</span> <span class="math inline">\(~~~~\)</span> 注意到 <span
+class="math display">\[
+\max\{a[i]\} &lt;= \max\{a[i], a[i-1]\} &lt;= ... &lt;= \max\{a[j+1],
+a[j+2], ..., a[i]\}
+\]</span> <span class="math inline">\(~~~~\)</span> 因此对于每一个 <span
+class="math inline">\(i\)</span>，可以用单调栈找到 <span
+class="math inline">\(&gt;a[i]\)</span> 的第一个数 <span
+class="math inline">\(a[pre[i]]\)</span>，维护 <span
+class="math inline">\(i\)</span> 之前 <span class="math inline">\(\le
+a[i]\)</span> 的一段连续的区间 <span class="math inline">\([pre[i]+1,
+i]\)</span>，这段区间的最大值即为 <span
+class="math inline">\(a[i]\)</span>。<br />
+<span class="math inline">\(~~~~\)</span> 考虑线段树优化，对于 <span
+class="math inline">\(i\)</span>，由于 <span
+class="math inline">\(f[i]\)</span> 是固定的，因此</p>
 <ul>
-<li>将 $f[i]$ 赋给线段树的第 $i$ 位  </li>
-<li>在由单调栈维护出来的区间 $[pre[i]+1, i]$ 加上 $a[i]$  </li>
-<li>使用二分找到满足 $\sum_{k&#x3D;j+1}^{i} a[k] &lt;&#x3D; M$ 的 $j$  </li>
-<li>$f[i] &#x3D; query(j+1, i)$</li>
+<li>将 <span class="math inline">\(f[i]\)</span> 赋给线段树的第 <span
+class="math inline">\(i\)</span> 位<br />
+</li>
+<li>在由单调栈维护出来的区间 <span class="math inline">\([pre[i]+1,
+i]\)</span> 加上 <span class="math inline">\(a[i]\)</span><br />
+</li>
+<li>使用二分找到满足 <span class="math inline">\(\sum_{k=j+1}^{i} a[k]
+&lt;= M\)</span> 的 <span class="math inline">\(j\)</span><br />
+</li>
+<li><span class="math inline">\(f[i] = query(j+1, i)\)</span></li>
 </ul>
-<h2 id="python-代码"><a href="#python-代码" class="headerlink" title="python 代码"></a>python 代码</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> sys<br>sys.setrecursionlimit(<span class="hljs-built_in">int</span>(<span class="hljs-number">1e7</span>))<br><span class="hljs-built_in">input</span> = sys.stdin.readline<br><span class="hljs-built_in">print</span> = sys.stdout.write<br>n, L = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>inf = <span class="hljs-built_in">int</span>(<span class="hljs-number">1e18</span>)<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Node</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, l=<span class="hljs-number">0</span>, r=<span class="hljs-number">0</span>, v=inf, mn=inf, add=inf</span>):<br>        self.l, self.r, self.v, self.mn, self.add = l, r, v, mn, add<br>tr = [Node() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">int</span>(<span class="hljs-number">1e5</span>)&lt;&lt;<span class="hljs-number">2</span>)]<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ls</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> u &lt;&lt; <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rs</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> u &lt;&lt; <span class="hljs-number">1</span> | <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">mid</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> tr[u].l + tr[u].r &gt;&gt; <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">build</span>(<span class="hljs-params">u, l, r</span>):<br>    tr[u] = Node(l, r)<br>    <span class="hljs-keyword">if</span> l == r:<br>        <span class="hljs-keyword">return</span><br>    build(ls(u), l, mid(u))<br>    build(rs(u), mid(u)+<span class="hljs-number">1</span>, r)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pushup</span>(<span class="hljs-params">u</span>):<br>    tr[u].mn = <span class="hljs-built_in">min</span>(tr[ls(u)].mn, tr[rs(u)].mn)<br>    tr[u].v = <span class="hljs-built_in">min</span>(tr[ls(u)].v, tr[rs(u)].v)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pushdown</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">if</span> tr[u].add != inf:<br>        tr[ls(u)].mn = tr[ls(u)].v + tr[u].add<br>        tr[rs(u)].mn = tr[rs(u)].v + tr[u].add<br>        tr[ls(u)].add = tr[u].add<br>        tr[rs(u)].add = tr[u].add<br>        tr[u].add = inf<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">change</span>(<span class="hljs-params">u, x, v</span>):<br>    <span class="hljs-keyword">if</span> tr[u].l == tr[u].r:<br>        tr[u].mn = inf<br>        tr[u].v = v<br>        <span class="hljs-keyword">return</span><br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> x &lt;= mid(u):<br>        change(ls(u), x, v)<br>    <span class="hljs-keyword">else</span>:<br>        change(rs(u), x, v)<br>    pushup(u)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update</span>(<span class="hljs-params">u, l, r, v</span>):<br>    <span class="hljs-keyword">if</span> l &lt;= tr[u].l <span class="hljs-keyword">and</span> tr[u].r &lt;= r:<br>        tr[u].mn = tr[u].v + v<br>        tr[u].add = v<br>        <span class="hljs-keyword">return</span><br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> l &lt;= mid(u):<br>        update(ls(u), l, r, v)<br>    <span class="hljs-keyword">if</span> r &gt; mid(u):<br>        update(rs(u), l, r, v)<br>    pushup(u)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">query</span>(<span class="hljs-params">u, l, r</span>):<br>    <span class="hljs-keyword">if</span> l &lt;= tr[u].l <span class="hljs-keyword">and</span> tr[u].r &lt;= r:<br>        <span class="hljs-keyword">return</span> tr[u].mn<br>    res = inf<br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> l &lt;= mid(u):<br>        res = <span class="hljs-built_in">min</span>(res, query(ls(u), l, r))<br>    <span class="hljs-keyword">if</span> r &gt; mid(u):<br>        res = <span class="hljs-built_in">min</span>(res, query(rs(u), l, r))<br>    <span class="hljs-keyword">return</span> res<br>h = [<span class="hljs-number">0</span>] + [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>sw = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>    sw[i] = sw[i-<span class="hljs-number">1</span>] + h[i]<br>stk = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>top = <span class="hljs-number">1</span><br>stk[top] = <span class="hljs-number">1</span><br>pre = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>, n+<span class="hljs-number">1</span>):<br>    <span class="hljs-keyword">while</span> top &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> h[stk[top]] &lt;= h[i]:<br>        top -= <span class="hljs-number">1</span><br>    <span class="hljs-keyword">if</span> top &gt; <span class="hljs-number">0</span>:<br>        pre[i] = stk[top]<br>    top += <span class="hljs-number">1</span><br>    stk[top] = i<br>f = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">lower_bound</span>(<span class="hljs-params">l, r, x</span>):<br>    <span class="hljs-keyword">while</span> l &lt; r:<br>        mid = l + r &gt;&gt; <span class="hljs-number">1</span><br>        <span class="hljs-keyword">if</span> sw[mid] &gt;= x:<br>            r = mid<br>        <span class="hljs-keyword">else</span>:<br>            l = mid + <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> r<br>build(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, n)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>    change(<span class="hljs-number">1</span>, i, f[i-<span class="hljs-number">1</span>])<br>    <span class="hljs-keyword">if</span> pre[i] + <span class="hljs-number">1</span> &lt;= i:<br>        update(<span class="hljs-number">1</span>, pre[i] + <span class="hljs-number">1</span>, i, h[i])<br>    left = lower_bound(<span class="hljs-number">0</span>, i, sw[i] - L)<br>    <span class="hljs-keyword">if</span> left &lt; i:<br>        f[i] = query(<span class="hljs-number">1</span>, left+<span class="hljs-number">1</span>, i)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d\n&#x27;</span> % f[n])<br><br></code></pre></td></tr></table></figure>
+<h2 id="python-代码">python 代码</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> sys<br>sys.setrecursionlimit(<span class="hljs-built_in">int</span>(<span class="hljs-number">1e7</span>))<br><span class="hljs-built_in">input</span> = sys.stdin.readline<br><span class="hljs-built_in">print</span> = sys.stdout.write<br>n, L = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>inf = <span class="hljs-built_in">int</span>(<span class="hljs-number">1e18</span>)<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Node</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, l=<span class="hljs-number">0</span>, r=<span class="hljs-number">0</span>, v=inf, mn=inf, add=inf</span>):<br>        self.l, self.r, self.v, self.mn, self.add = l, r, v, mn, add<br>tr = [Node() <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">int</span>(<span class="hljs-number">1e5</span>)&lt;&lt;<span class="hljs-number">2</span>)]<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">ls</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> u &lt;&lt; <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">rs</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> u &lt;&lt; <span class="hljs-number">1</span> | <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">mid</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">return</span> tr[u].l + tr[u].r &gt;&gt; <span class="hljs-number">1</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">build</span>(<span class="hljs-params">u, l, r</span>):<br>    tr[u] = Node(l, r)<br>    <span class="hljs-keyword">if</span> l == r:<br>        <span class="hljs-keyword">return</span><br>    build(ls(u), l, mid(u))<br>    build(rs(u), mid(u)+<span class="hljs-number">1</span>, r)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pushup</span>(<span class="hljs-params">u</span>):<br>    tr[u].mn = <span class="hljs-built_in">min</span>(tr[ls(u)].mn, tr[rs(u)].mn)<br>    tr[u].v = <span class="hljs-built_in">min</span>(tr[ls(u)].v, tr[rs(u)].v)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">pushdown</span>(<span class="hljs-params">u</span>):<br>    <span class="hljs-keyword">if</span> tr[u].add != inf:<br>        tr[ls(u)].mn = tr[ls(u)].v + tr[u].add<br>        tr[rs(u)].mn = tr[rs(u)].v + tr[u].add<br>        tr[ls(u)].add = tr[u].add<br>        tr[rs(u)].add = tr[u].add<br>        tr[u].add = inf<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">change</span>(<span class="hljs-params">u, x, v</span>):<br>    <span class="hljs-keyword">if</span> tr[u].l == tr[u].r:<br>        tr[u].mn = inf<br>        tr[u].v = v<br>        <span class="hljs-keyword">return</span><br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> x &lt;= mid(u):<br>        change(ls(u), x, v)<br>    <span class="hljs-keyword">else</span>:<br>        change(rs(u), x, v)<br>    pushup(u)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">update</span>(<span class="hljs-params">u, l, r, v</span>):<br>    <span class="hljs-keyword">if</span> l &lt;= tr[u].l <span class="hljs-keyword">and</span> tr[u].r &lt;= r:<br>        tr[u].mn = tr[u].v + v<br>        tr[u].add = v<br>        <span class="hljs-keyword">return</span><br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> l &lt;= mid(u):<br>        update(ls(u), l, r, v)<br>    <span class="hljs-keyword">if</span> r &gt; mid(u):<br>        update(rs(u), l, r, v)<br>    pushup(u)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">query</span>(<span class="hljs-params">u, l, r</span>):<br>    <span class="hljs-keyword">if</span> l &lt;= tr[u].l <span class="hljs-keyword">and</span> tr[u].r &lt;= r:<br>        <span class="hljs-keyword">return</span> tr[u].mn<br>    res = inf<br>    pushdown(u)<br>    <span class="hljs-keyword">if</span> l &lt;= mid(u):<br>        res = <span class="hljs-built_in">min</span>(res, query(ls(u), l, r))<br>    <span class="hljs-keyword">if</span> r &gt; mid(u):<br>        res = <span class="hljs-built_in">min</span>(res, query(rs(u), l, r))<br>    <span class="hljs-keyword">return</span> res<br>h = [<span class="hljs-number">0</span>] + [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>sw = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>    sw[i] = sw[i-<span class="hljs-number">1</span>] + h[i]<br>stk = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>top = <span class="hljs-number">1</span><br>stk[top] = <span class="hljs-number">1</span><br>pre = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">2</span>, n+<span class="hljs-number">1</span>):<br>    <span class="hljs-keyword">while</span> top &gt; <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> h[stk[top]] &lt;= h[i]:<br>        top -= <span class="hljs-number">1</span><br>    <span class="hljs-keyword">if</span> top &gt; <span class="hljs-number">0</span>:<br>        pre[i] = stk[top]<br>    top += <span class="hljs-number">1</span><br>    stk[top] = i<br>f = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">lower_bound</span>(<span class="hljs-params">l, r, x</span>):<br>    <span class="hljs-keyword">while</span> l &lt; r:<br>        mid = l + r &gt;&gt; <span class="hljs-number">1</span><br>        <span class="hljs-keyword">if</span> sw[mid] &gt;= x:<br>            r = mid<br>        <span class="hljs-keyword">else</span>:<br>            l = mid + <span class="hljs-number">1</span><br>    <span class="hljs-keyword">return</span> r<br>build(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>, n)<br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>    change(<span class="hljs-number">1</span>, i, f[i-<span class="hljs-number">1</span>])<br>    <span class="hljs-keyword">if</span> pre[i] + <span class="hljs-number">1</span> &lt;= i:<br>        update(<span class="hljs-number">1</span>, pre[i] + <span class="hljs-number">1</span>, i, h[i])<br>    left = lower_bound(<span class="hljs-number">0</span>, i, sw[i] - L)<br>    <span class="hljs-keyword">if</span> left &lt; i:<br>        f[i] = query(<span class="hljs-number">1</span>, left+<span class="hljs-number">1</span>, i)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d\n&#x27;</span> % f[n])<br><br></code></pre></td></tr></table></figure>
+
                 
               </div>
             
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%A2%98%E8%A7%A3/" class="category-chain-item">题解</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
@@ -319,7 +383,7 @@
       
         <div class="license-meta-item">
           <div>作者</div>
-          <div>��ϲ</div>
+          <div>唐喜</div>
         </div>
       
       
@@ -425,6 +489,12 @@
 
 
   
+
+
+  
+  
+
+
 
 
 
@@ -618,6 +688,49 @@
 
 
   <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
 
   <script  src="/js/local-search.js" ></script>
 
