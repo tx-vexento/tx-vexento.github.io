@@ -1,0 +1,733 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="GoogLeNet 网络复现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GoogLeNet 网络复现">
+<meta property="og:url" content="https://vexentox.github.io/2023/05/12/googlenet/index.html">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="GoogLeNet 网络复现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/GoogLeNet/inception.png?raw=true">
+<meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/GoogLeNet/GoogLeNet%E6%9E%B6%E6%9E%84.png?raw=true">
+<meta property="article:published_time" content="2023-05-12T14:59:00.000Z">
+<meta property="article:modified_time" content="2023-05-15T01:21:35.737Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="GoogLeNet、复现">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://github.com/vexentox/reproduction/blob/main/GoogLeNet/inception.png?raw=true">
+  
+  
+  
+  <title>GoogLeNet 网络复现 - 唐喜的个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="GoogLeNet 网络复现"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-12 22:59" pubdate>
+          2023年5月12日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          59 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">GoogLeNet 网络复现</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>GoogLeNet 网络复现</p>
+<span id="more"></span>
+<h1 id="架构">架构</h1>
+<p><img src="https://github.com/vexentox/reproduction/blob/main/GoogLeNet/inception.png?raw=true" srcset="/img/loading.gif" lazyload></p>
+<p><img src="https://github.com/vexentox/reproduction/blob/main/GoogLeNet/GoogLeNet%E6%9E%B6%E6%9E%84.png?raw=true" srcset="/img/loading.gif" lazyload></p>
+<h1 id="导入-torch">导入 torch</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> torch <span class="hljs-keyword">import</span> nn<br><span class="hljs-keyword">from</span> d2l <span class="hljs-keyword">import</span> torch <span class="hljs-keyword">as</span> d2l<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br></code></pre></td></tr></table></figure>
+<h1 id="卷积">卷积</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-string">&quot;&quot;&quot; </span><br><span class="hljs-string"># 卷积朴素实现</span><br><span class="hljs-string">def conv2d(input, weight, bias=None, stride=1, padding=0):</span><br><span class="hljs-string">    batch_size, in_channels, in_height, in_width = input.size()</span><br><span class="hljs-string">    out_channels, _, kernel_height, kernel_width = weight.size()</span><br><span class="hljs-string">    out_height = int((in_height + 2 * padding - kernel_height) / stride) + 1</span><br><span class="hljs-string">    out_width = int((in_width + 2 * padding - kernel_width) / stride) + 1</span><br><span class="hljs-string">    padded_input = torch.nn.functional.pad(input, (padding, padding, padding, padding))</span><br><span class="hljs-string">    output = torch.zeros(batch_size, out_channels, out_height, out_width)</span><br><span class="hljs-string">    for b in range(batch_size):</span><br><span class="hljs-string">        for c_out in range(out_channels):</span><br><span class="hljs-string">            for h_out in range(out_height):</span><br><span class="hljs-string">                for w_out in range(out_width):</span><br><span class="hljs-string">                    h_start = h_out * stride</span><br><span class="hljs-string">                    w_start = w_out * stride</span><br><span class="hljs-string">                    h_end = h_start + kernel_height</span><br><span class="hljs-string">                    w_end = w_start + kernel_width</span><br><span class="hljs-string">                    input_patch = padded_input[b, :, h_start:h_end, w_start:w_end]</span><br><span class="hljs-string">                    output[b, c_out, h_out, w_out] = torch.sum(input_patch * weight[c_out]) + (bias[c_out] if bias is not None else 0)</span><br><span class="hljs-string">    return output</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br><br><span class="hljs-comment"># &quot;&quot;&quot;</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">conv2d</span>(<span class="hljs-params">inputs, weight, bias=<span class="hljs-literal">None</span>, stride=<span class="hljs-number">1</span>, padding=<span class="hljs-number">0</span></span>):<br>    padded_input = torch.nn.functional.pad(inputs, (padding, padding, padding, padding))<br>    output = torch.nn.functional.conv2d(padded_input, weight, bias=bias, stride=stride)<br>    <span class="hljs-keyword">return</span> output<br><span class="hljs-comment"># &quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+<h1 id="池化">池化</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># &quot;&quot;&quot;</span><br><span class="hljs-comment"># max 池化朴素实现</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">max_pool2d</span>(<span class="hljs-params">inputs, kernel_size, stride=<span class="hljs-literal">None</span>, padding=<span class="hljs-number">0</span></span>):<br>    batch_size, channels, height, width = inputs.size()<br>    output_height = <span class="hljs-built_in">int</span>((height + <span class="hljs-number">2</span> * padding - kernel_size) / stride) + <span class="hljs-number">1</span><br>    output_width = <span class="hljs-built_in">int</span>((width + <span class="hljs-number">2</span> * padding - kernel_size) / stride) + <span class="hljs-number">1</span><br>    unfolded = torch.nn.functional.unfold(<br>        inputs,<br>        kernel_size=kernel_size,<br>        dilation=<span class="hljs-number">1</span>,<br>        padding=padding,<br>        stride=stride<br>    )<br>    unfolded = unfolded.view(batch_size, channels, -<span class="hljs-number">1</span>, output_height, output_width)<br>    output, _ = torch.<span class="hljs-built_in">max</span>(unfolded, dim=<span class="hljs-number">2</span>)<br>    <span class="hljs-keyword">return</span> output<br><span class="hljs-comment"># &quot;&quot;&quot;</span><br><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">def max_pool2d(input, kernel_size, stride=1, padding=0):</span><br><span class="hljs-string">    output = torch.nn.functional.max_pool2d(input, kernel_size, stride=stride, padding=padding)</span><br><span class="hljs-string">    return output</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+<h1 id="dropout">dropout</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">dropout</span>(<span class="hljs-params">X, p</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;dropout&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> X * (torch.rand_like(X) &gt; p).<span class="hljs-built_in">float</span>() / (<span class="hljs-number">1</span> - p)<br></code></pre></td></tr></table></figure>
+<h1 id="relu">relu</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">dropout</span>(<span class="hljs-params">X, p</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;dropout&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> X * (torch.rand_like(X) &gt; p).<span class="hljs-built_in">float</span>() / (<span class="hljs-number">1</span> - p)<br></code></pre></td></tr></table></figure>
+<h1 id="sigmoid">sigmoid</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">sigmoid</span>(<span class="hljs-params">x</span>):<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> / (<span class="hljs-number">1</span> + torch.exp(-x))<br></code></pre></td></tr></table></figure>
+<h1 id="全局平均汇聚">全局平均汇聚</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># &quot;&quot;&quot;</span><br><span class="hljs-comment"># 全局平均汇聚层朴素实现</span><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">AdaptiveAvgPool2d</span>(<span class="hljs-params">x, output_size</span>):<br>    batch_size, channels, height, width = x.size()<br>    output_h, output_w = output_size<br>    stride_h = height // output_h<br>    stride_w = width // output_w<br>    output = []<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(output_h):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(output_w):<br>            h_start = i * stride_h<br>            h_end = <span class="hljs-built_in">min</span>(h_start + stride_h, height)<br>            w_start = j * stride_w<br>            w_end = <span class="hljs-built_in">min</span>(w_start + stride_w, width)<br>            pool_region = x[:, :, h_start:h_end, w_start:w_end]<br>            pool_avg = torch.mean(pool_region, dim=(<span class="hljs-number">2</span>, <span class="hljs-number">3</span>))<br>            output.append(pool_avg)<br>    output = torch.stack(output, dim=<span class="hljs-number">2</span>)<br>    output = output.view(batch_size, channels, output_h, output_w)<br><br>    <span class="hljs-keyword">return</span> output<br><span class="hljs-comment"># &quot;&quot;&quot;</span><br><br><span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string">def AdaptiveAvgPool2d(x, output_size):</span><br><span class="hljs-string">    return torch.nn.AdaptiveAvgPool2d(output_size)(x)</span><br><span class="hljs-string">&quot;&quot;&quot;</span><br></code></pre></td></tr></table></figure>
+<h1 id="构建-googlenet-网络">构建 GoogLeNet 网络</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">GoogLeNet</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self</span>):<br>        self._init_params()<br></code></pre></td></tr></table></figure>
+<h2 id="初始化参数">初始化参数</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_init_params</span>(<span class="hljs-params">self</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;初始化参数&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">normal</span>(<span class="hljs-params">shape</span>):<br>        <span class="hljs-keyword">return</span> torch.nn.init.xavier_uniform_(torch.empty(shape))<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">Inception</span>(<span class="hljs-params">in_channels, c1, c2, c3, c4</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;输出通道 * 输入通道 * 卷积核边长 * 卷积核边长&quot;&quot;&quot;</span><br>        W_1 = normal((c1, in_channels, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)); b_1 = torch.zeros(c1, device=device)<br>        W_21 = normal((c2[<span class="hljs-number">0</span>], in_channels, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)); b_21 = torch.zeros(c2[<span class="hljs-number">0</span>], device=device)<br>        W_22 = normal((c2[<span class="hljs-number">1</span>], c2[<span class="hljs-number">0</span>], <span class="hljs-number">3</span>, <span class="hljs-number">3</span>)); b_22 = torch.zeros(c2[<span class="hljs-number">1</span>], device=device)<br>        W_31 = normal((c3[<span class="hljs-number">0</span>], in_channels, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)); b_31 = torch.zeros(c3[<span class="hljs-number">0</span>], device=device)<br>        W_32 = normal((c3[<span class="hljs-number">1</span>], c3[<span class="hljs-number">0</span>], <span class="hljs-number">5</span>, <span class="hljs-number">5</span>)); b_32 = torch.zeros(c3[<span class="hljs-number">1</span>], device=device)<br>        W_4 = normal((c4, in_channels, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)); b_4 = torch.zeros(c4, device=device)<br>        <span class="hljs-keyword">return</span> [W_1, b_1, W_21, b_21, W_22, b_22, W_31, b_31, W_32, b_32, W_4, b_4]<br>    W_1 = normal((<span class="hljs-number">64</span>, <span class="hljs-number">1</span>, <span class="hljs-number">7</span>, <span class="hljs-number">7</span>)); b_1 = torch.zeros(<span class="hljs-number">64</span>, device=device)<br>    W_21 = normal((<span class="hljs-number">64</span>, <span class="hljs-number">64</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)); b_21 = torch.zeros(<span class="hljs-number">64</span>, device=device)<br>    W_22 = normal((<span class="hljs-number">192</span>, <span class="hljs-number">64</span>, <span class="hljs-number">7</span>, <span class="hljs-number">7</span>)); b_22 = torch.zeros(<span class="hljs-number">192</span>, device=device)<br>    inc1 = Inception(<span class="hljs-number">192</span>, <span class="hljs-number">64</span>, (<span class="hljs-number">96</span>, <span class="hljs-number">128</span>), (<span class="hljs-number">16</span>, <span class="hljs-number">32</span>), <span class="hljs-number">32</span>)<br>    inc2 = Inception(<span class="hljs-number">256</span>, <span class="hljs-number">128</span>, (<span class="hljs-number">128</span>, <span class="hljs-number">192</span>), (<span class="hljs-number">32</span>, <span class="hljs-number">96</span>), <span class="hljs-number">64</span>)<br>    W_3 = [inc1, inc2]<br>    inc1 = Inception(<span class="hljs-number">480</span>, <span class="hljs-number">192</span>, (<span class="hljs-number">96</span>, <span class="hljs-number">208</span>), (<span class="hljs-number">16</span>, <span class="hljs-number">48</span>), <span class="hljs-number">64</span>)<br>    inc2 = Inception(<span class="hljs-number">512</span>, <span class="hljs-number">160</span>, (<span class="hljs-number">112</span>, <span class="hljs-number">224</span>), (<span class="hljs-number">24</span>, <span class="hljs-number">64</span>), <span class="hljs-number">64</span>)<br>    inc3 = Inception(<span class="hljs-number">512</span>, <span class="hljs-number">128</span>, (<span class="hljs-number">128</span>, <span class="hljs-number">256</span>), (<span class="hljs-number">24</span>, <span class="hljs-number">64</span>), <span class="hljs-number">64</span>)<br>    inc4 = Inception(<span class="hljs-number">512</span>, <span class="hljs-number">112</span>, (<span class="hljs-number">144</span>, <span class="hljs-number">288</span>), (<span class="hljs-number">32</span>, <span class="hljs-number">64</span>), <span class="hljs-number">64</span>)<br>    inc5 = Inception(<span class="hljs-number">528</span>, <span class="hljs-number">256</span>, (<span class="hljs-number">160</span>, <span class="hljs-number">320</span>), (<span class="hljs-number">32</span>, <span class="hljs-number">128</span>), <span class="hljs-number">128</span>)<br>    W_4 = [inc1, inc2, inc3, inc4, inc5]<br>    inc1 = Inception(<span class="hljs-number">832</span>, <span class="hljs-number">256</span>, (<span class="hljs-number">160</span>, <span class="hljs-number">320</span>), (<span class="hljs-number">32</span>, <span class="hljs-number">128</span>), <span class="hljs-number">128</span>)<br>    inc2 = Inception(<span class="hljs-number">832</span>, <span class="hljs-number">384</span>, (<span class="hljs-number">192</span>, <span class="hljs-number">384</span>), (<span class="hljs-number">48</span>, <span class="hljs-number">128</span>), <span class="hljs-number">128</span>)<br>    W_5 = [inc1, inc2]<br>    W_6 = normal((<span class="hljs-number">1024</span>, <span class="hljs-number">10</span>)); b_6 = torch.zeros(<span class="hljs-number">10</span>, device=device)<br>    self.params = [W_1, b_1, W_21, b_21, W_22, b_22, W_3, W_4, W_5, W_6, b_6]<br>    self.flt_params = [W_1, b_1, W_21, b_21, W_22, b_22]<br>    <span class="hljs-keyword">for</span> W <span class="hljs-keyword">in</span> [W_3, W_4, W_5]:<br>        <span class="hljs-keyword">for</span> inc <span class="hljs-keyword">in</span> W:<br>            <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> inc:<br>                self.flt_params.append(param)<br>    self.flt_params.extend([W_6, b_6])<br>    <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> self.flt_params:<br>        param.requires_grad_(<span class="hljs-literal">True</span>)     <br></code></pre></td></tr></table></figure>
+<h2 id="前向推理">前向推理</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_forward</span>(<span class="hljs-params">self, X</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;推理函数&quot;&quot;&quot;</span><br>    W_1, b_1, W_21, b_21, W_22, b_22, W_3, W_4, W_5, W_6, b_6 = self.params<br>    X = relu(conv2d(X, W_1, b_1, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">3</span>))<br>    X = max_pool2d(X, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br>    X = relu(conv2d(X, W_21, b_21))<br>    X = relu(conv2d(X, W_22, b_22, padding=<span class="hljs-number">1</span>))<br>    X = max_pool2d(X, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">Inception</span>(<span class="hljs-params">X, inc</span>):<br>        [W_1, b_1, W_21, b_21, W_22, b_22, W_31, b_31, W_32, b_32, W_4, b_4] = inc<br>        p1 = relu(conv2d(X, W_1, b_1))<br>        p2 = relu(conv2d(X, W_21, b_21))<br>        p2 = relu(conv2d(p2, W_22, b_22, padding=<span class="hljs-number">1</span>))<br>        p3 = relu(conv2d(X, W_31, b_31))<br>        p3 = relu(conv2d(p3, W_32, b_32, padding=<span class="hljs-number">2</span>))<br>        p4 = max_pool2d(X, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">1</span>, padding=<span class="hljs-number">1</span>)<br>        p4 = relu(conv2d(p4, W_4, b_4))<br>        <span class="hljs-keyword">return</span> torch.cat((p1, p2, p3, p4), dim=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">for</span> W <span class="hljs-keyword">in</span> [W_3, W_4]:<br>        <span class="hljs-keyword">for</span> inc <span class="hljs-keyword">in</span> W:<br>            X = Inception(X, inc)<br>        X = max_pool2d(X, kernel_size=<span class="hljs-number">3</span>, stride=<span class="hljs-number">2</span>, padding=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">for</span> inc <span class="hljs-keyword">in</span> W_5:<br>        X = Inception(X, inc)<br>    X = AdaptiveAvgPool2d(X, (<span class="hljs-number">1</span>, <span class="hljs-number">1</span>))<br>    X = X.reshape(X.size(<span class="hljs-number">0</span>), -<span class="hljs-number">1</span>)<br>    X = X @ W_6 + b_6<br>    Y = sigmoid(X)<br>    <span class="hljs-keyword">return</span> Y<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, X</span>):<br>    <span class="hljs-keyword">return</span> self._forward(X)<br></code></pre></td></tr></table></figure>
+<h2 id="参数更新">参数更新</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">update</span>(<span class="hljs-params">self, X, y, lr</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;更新函数&quot;&quot;&quot;</span><br>    y_hat = self._forward(X)<br>    l = self._loss(y_hat, y)<br>    l.mean().backward()<br>    self.grad_clipping(<span class="hljs-number">1</span>)<br>    <span class="hljs-string">&quot;&quot;&quot;sgd&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> self.flt_params:<br>            param -= lr * param.grad / X.shape[<span class="hljs-number">0</span>]<br>            param.grad.zero_()<br>    <span class="hljs-keyword">return</span> l<br></code></pre></td></tr></table></figure>
+<h2 id="交叉熵损失">交叉熵损失</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_loss</span>(<span class="hljs-params">self, y_hat, y</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;交叉熵损失&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> - torch.log(y_hat[<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(y_hat)), y])<br></code></pre></td></tr></table></figure>
+<h2 id="梯度剪裁">梯度剪裁</h2>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">grad_clipping</span>(<span class="hljs-params">self, theta</span>):<br>    norm = torch.sqrt(<span class="hljs-built_in">sum</span>([torch.<span class="hljs-built_in">sum</span>(p ** <span class="hljs-number">2</span>) <span class="hljs-keyword">for</span> p <span class="hljs-keyword">in</span> self.flt_params]))<br>    <span class="hljs-keyword">if</span> norm &gt; theta:<br>        <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> self.flt_params:<br>            param.grad[:] *= theta / norm<br></code></pre></td></tr></table></figure>
+<h1 id="训练">训练</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs python">net = GoogLeNet()<br>lr, num_epochs, batch_size = <span class="hljs-number">0.1</span>, <span class="hljs-number">1</span>, <span class="hljs-number">16</span><br>train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size, resize=<span class="hljs-number">224</span>)<br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    metrics = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br>    i = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> train_iter:<br>        l = net.update(X, y, lr=lr)<br>        metrics[<span class="hljs-number">0</span>] += l.<span class="hljs-built_in">sum</span>(); metrics[<span class="hljs-number">1</span>] += y.numel()<br>        i += <span class="hljs-number">1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;i %d loss %f&#x27;</span> % (i + <span class="hljs-number">1</span>, metrics[<span class="hljs-number">0</span>] / metrics[<span class="hljs-number">1</span>]))<br>        <span class="hljs-keyword">if</span> i &gt; <span class="hljs-number">30</span>:<br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;epoch %d loss %f&#x27;</span> % (epoch + <span class="hljs-number">1</span>, metrics[<span class="hljs-number">0</span>] / metrics[<span class="hljs-number">1</span>]))<br></code></pre></td></tr></table></figure>
+<h1 id="预测">预测</h1>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> test_iter:<br>    <span class="hljs-keyword">break</span><br>n = <span class="hljs-number">4</span><br>trues = d2l.get_fashion_mnist_labels(y)<br>preds = d2l.get_fashion_mnist_labels(net(X).argmax(axis=<span class="hljs-number">1</span>))<br>titles = [true +<span class="hljs-string">&#x27;\n&#x27;</span> + pred <span class="hljs-keyword">for</span> true, pred <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(trues, preds)]<br>d2l.show_images(<br>    X[<span class="hljs-number">0</span>:n, <span class="hljs-number">0</span>, :, :], <span class="hljs-number">1</span>, n, titles=titles[<span class="hljs-number">0</span>:n])<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87%E5%A4%8D%E7%8E%B0/" class="category-chain-item">论文复现</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/googlenet%E3%80%81%E5%A4%8D%E7%8E%B0/">#GoogLeNet、复现</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>GoogLeNet 网络复现</div>
+      <div>https://vexentox.github.io/2023/05/12/googlenet/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月12日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/12/gru/" title="GRU 网络复现">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">GRU 网络复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/12/resnet/" title="ResNet 网络复现">
+                        <span class="hidden-mobile">ResNet 网络复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
