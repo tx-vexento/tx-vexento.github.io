@@ -1,0 +1,913 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="YOLOv5 实现目标检测">
+<meta property="og:type" content="article">
+<meta property="og:title" content="YOLOv5 实现目标检测">
+<meta property="og:url" content="https://vexentox.github.io/2023/05/17/yolov5%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/index.html">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="YOLOv5 实现目标检测">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-17T14:08:00.000Z">
+<meta property="article:modified_time" content="2023-05-18T13:04:02.892Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="YOLOv5 目标检测">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>YOLOv5 实现目标检测 - 唐喜的个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>唐喜的个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="YOLOv5 实现目标检测"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-17 22:08" pubdate>
+          2023年5月17日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          80 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">YOLOv5 实现目标检测</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>YOLOv5 实现目标检测</p>
+<span id="more"></span>
+<h1 id="环境配置">1 环境配置</h1>
+<h2 id="代码克隆">1.1 代码克隆</h2>
+<p><a target="_blank" rel="noopener" href="https://github.com/ultralytics/yolov5/tree/v5.0">YOLOv5
+代码仓库</a></p>
+<h2 id="目录解析">1.2 目录解析</h2>
+<ul>
+<li>data</li>
+<li>images：官方提供的测试图片</li>
+<li>script</li>
+<li>.yaml 文件：用于配置训练集、验证集、类别数、类名的文件
+<ul>
+<li>train：训练集路径</li>
+<li>val：验证集路径</li>
+<li>nc：类别数量</li>
+<li>names：类别名称列表</li>
+</ul></li>
+<li>models：YOLO
+网络的配置文件以及函数，包含了s（small）、m（medium）、l（large）、x四个不同的版本</li>
+<li>utils：存放的是工具类的函数，包括 loss 函数，metrics 函数，plots
+函数等</li>
+<li>weights：权重参数</li>
+<li>detect.py：推理函数，即目标检测</li>
+<li>train.py：训练</li>
+<li>test.py：测试</li>
+<li>requirements.txt：所需要的依赖包</li>
+</ul>
+<h2 id="安装依赖">1.3 安装依赖</h2>
+<ul>
+<li>创建新的环境：<code>conda create -n BR python=3.8</code></li>
+<li>进入 YOLO 文件：<code>cd yolov5</code></li>
+<li>将 requirements.txt 中的 <code>pycocotools&gt;=2.0</code> 替换为
+<code>pycocotools-windows</code></li>
+<li>pip
+下载：<code>pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</code></li>
+</ul>
+<h1 id="目标检测预训练模型">2 目标检测（预训练模型）</h1>
+<h2 id="下载预训练模型">2.1 下载预训练模型</h2>
+<p><a
+target="_blank" rel="noopener" href="https://github.com/ultralytics/yolov5/releases/download/v5.0/yolov5s.pt">yolov5s</a></p>
+<p>放入 weights 文件夹中</p>
+<h2 id="检测图片">2.2 检测图片</h2>
+<p><code>python .\detect.py --weights .\weights\yolov5s.pt --source .\data\images\bus.jpg</code></p>
+<h2 id="检测视频">2.3 检测视频</h2>
+<p><code>python .\detect.py --weights .\weights\yolov5s.pt --source .\data\videos\1.mp4</code></p>
+<h2 id="可能出现的-error">2.4 可能出现的 Error</h2>
+<p><strong>Error</strong>：<code>AttributeError: Can't get attribute 'SPPF' on &lt;module 'models.common' from 'D:\\TX\\Behavior Recognition\\yolov5\\models\\common.py'&gt;</code></p>
+<p><strong>Solution</strong>：在 <code>models\\common.py</code>
+添加下面这段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> warnings<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">SPPF</span>(nn.Module):<br>    <span class="hljs-comment"># Spatial Pyramid Pooling - Fast (SPPF) layer for YOLOv5 by Glenn Jocher</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, c1, c2, k=<span class="hljs-number">5</span></span>):  <span class="hljs-comment"># equivalent to SPP(k=(5, 9, 13))</span><br>        <span class="hljs-built_in">super</span>().__init__()<br>        c_ = c1 // <span class="hljs-number">2</span>  <span class="hljs-comment"># hidden channels</span><br>        self.cv1 = Conv(c1, c_, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>        self.cv2 = Conv(c_ * <span class="hljs-number">4</span>, c2, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>)<br>        self.m = nn.MaxPool2d(kernel_size=k, stride=<span class="hljs-number">1</span>, padding=k // <span class="hljs-number">2</span>)<br> <br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">forward</span>(<span class="hljs-params">self, x</span>):<br>        x = self.cv1(x)<br>        <span class="hljs-keyword">with</span> warnings.catch_warnings():<br>            warnings.simplefilter(<span class="hljs-string">&#x27;ignore&#x27;</span>)  <span class="hljs-comment"># suppress torch 1.9.0 max_pool2d() warning</span><br>            y1 = self.m(x)<br>            y2 = self.m(y1)<br>            <span class="hljs-keyword">return</span> self.cv2(torch.cat([x, y1, y2, self.m(y2)], <span class="hljs-number">1</span>))<br></code></pre></td></tr></table></figure>
+<p><strong>Error</strong>：<code>AttributeError: 'Upsample' object has no attribute 'recompute_scale_factor'</code></p>
+<p><strong>Solution</strong>：在 yolo.py 第 127
+行下，添加下面这段代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(m, nn.Upsample):<br>	m.recompute_scale_factor = <span class="hljs-literal">None</span><br></code></pre></td></tr></table></figure>
+<p>即：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">forward_once</span>(<span class="hljs-params">self, x, profile=<span class="hljs-literal">False</span></span>):<br>    y, dt = [], []  <span class="hljs-comment"># outputs</span><br>    <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> self.model:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(m, nn.Upsample):<br>            m.recompute_scale_factor = <span class="hljs-literal">None</span><br>            <span class="hljs-keyword">if</span> m.f != -<span class="hljs-number">1</span>:  <span class="hljs-comment"># if not from previous layer</span><br>                x = y[m.f] <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(m.f, <span class="hljs-built_in">int</span>) <span class="hljs-keyword">else</span> [x <span class="hljs-keyword">if</span> j == -<span class="hljs-number">1</span> <span class="hljs-keyword">else</span> y[j] <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> m.f] <br>                <span class="hljs-keyword">if</span> profile:<br>                    o = thop.profile(m, inputs=(x,), verbose=<span class="hljs-literal">False</span>)[<span class="hljs-number">0</span>] / <span class="hljs-number">1E9</span> * <span class="hljs-number">2</span> <span class="hljs-keyword">if</span> thop <span class="hljs-keyword">else</span> <span class="hljs-number">0</span>  <span class="hljs-comment"># FLOPS</span><br>                    t = time_synchronized()<br>                    <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">10</span>):<br>                        _ = m(x)<br>                        dt.append((time_synchronized() - t) * <span class="hljs-number">100</span>)<br>                        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%10.1f%10.0f%10.1fms %-40s&#x27;</span> % (o, m.np, dt[-<span class="hljs-number">1</span>], m.<span class="hljs-built_in">type</span>))<br><br>                        x = m(x)  <span class="hljs-comment"># run</span><br>                        y.append(x <span class="hljs-keyword">if</span> m.i <span class="hljs-keyword">in</span> self.save <span class="hljs-keyword">else</span> <span class="hljs-literal">None</span>)  <span class="hljs-comment"># save output</span><br><br>                        <span class="hljs-keyword">if</span> profile:<br>                            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%.1fms total&#x27;</span> % <span class="hljs-built_in">sum</span>(dt))<br>                            <span class="hljs-keyword">return</span> x<br></code></pre></td></tr></table></figure>
+<p><strong>Error</strong>：<code>RuntimeError: The size of tensor a (60) must match the size of tensor b (56) at non-singleton dimension 3</code></p>
+<p><strong>Solution</strong>：将 yolov5s.pt 替换为 5.0 版本，即 <a
+target="_blank" rel="noopener" href="https://github.com/ultralytics/yolov5/releases/download/v5.0/yolov5s.pt">yolov5s
+5.0 权重</a>。</p>
+<h2 id="查看结果">2.5 查看结果</h2>
+<p>在目录 runs\detect\exp下查看生成的文件</p>
+<h1 id="数据集准备">3 数据集准备</h1>
+<h2 id="数据标注">3.1 数据标注</h2>
+<h3 id="安装-labelimg">3.1.1 安装 labelimg</h3>
+<p><code>pip install labelimg -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
+<h3 id="创建-voc-格式目录">3.1.2 创建 VOC 格式目录</h3>
+<ul>
+<li><p>yolov5：项目文件夹</p></li>
+<li><p>Data</p>
+<ul>
+<li>JPEGImages：存放图片文件</li>
+<li>Annotations：存放标注的标签文件</li>
+<li>classes.txt：定义自己要标注的所有类别</li>
+</ul></li>
+</ul>
+<h3 id="运行-labelimg">3.1.3 运行 labelimg</h3>
+<p>进入 Data
+文件夹，运行：<code>labelimg JPEGImages classes.txt</code></p>
+<h2 id="进行标注">3.2 进行标注</h2>
+<p><strong>Open Dir</strong>：打开图片文件夹</p>
+<p><strong>Create RectBox</strong>：选择目标框</p>
+<p><strong>Change Save Dir</strong>：选择生成的 xml 文件的保存目录</p>
+<h2 id="数据分割">3.3 数据分割</h2>
+<p>在 Data 文件夹下创建一个文件夹 YOLOv5 用来存放YOLOv5 训练数据。</p>
+<p>在 Data / YOLOv5 文件夹下创建一个 run.py：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> os, random, argparse<br><span class="hljs-keyword">import</span> xml.etree.ElementTree <span class="hljs-keyword">as</span> ET<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">convert_xml_to_txt</span>(<span class="hljs-params">xml_file, txt_file</span>):<br>    tree = ET.parse(xml_file)<br>    root = tree.getroot()<br>    image_width = <span class="hljs-built_in">int</span>(root.find(<span class="hljs-string">&quot;size/width&quot;</span>).text)<br>    image_height = <span class="hljs-built_in">int</span>(root.find(<span class="hljs-string">&quot;size/height&quot;</span>).text)<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(txt_file, <span class="hljs-string">&quot;w&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> obj <span class="hljs-keyword">in</span> root.<span class="hljs-built_in">iter</span>(<span class="hljs-string">&quot;object&quot;</span>):<br>            name = obj.find(<span class="hljs-string">&quot;name&quot;</span>).text<br>            class_index = class_mapping[name]<br><br>            xmin = <span class="hljs-built_in">int</span>(obj.find(<span class="hljs-string">&quot;bndbox/xmin&quot;</span>).text)<br>            ymin = <span class="hljs-built_in">int</span>(obj.find(<span class="hljs-string">&quot;bndbox/ymin&quot;</span>).text)<br>            xmax = <span class="hljs-built_in">int</span>(obj.find(<span class="hljs-string">&quot;bndbox/xmax&quot;</span>).text)<br>            ymax = <span class="hljs-built_in">int</span>(obj.find(<span class="hljs-string">&quot;bndbox/ymax&quot;</span>).text)<br><br>            x_center = (xmin + xmax) / <span class="hljs-number">2</span> / image_width<br>            y_center = (ymin + ymax) / <span class="hljs-number">2</span> / image_height<br>            width = (xmax - xmin) / image_width<br>            height = (ymax - ymin) / image_height<br><br>            line = <span class="hljs-string">f&quot;<span class="hljs-subst">&#123;class_index&#125;</span> <span class="hljs-subst">&#123;x_center&#125;</span> <span class="hljs-subst">&#123;y_center&#125;</span> <span class="hljs-subst">&#123;width&#125;</span> <span class="hljs-subst">&#123;height&#125;</span>\n&quot;</span><br>            f.write(line)<br><br>parser = argparse.ArgumentParser()<br>parser.add_argument(<span class="hljs-string">&#x27;--train_scale&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">float</span>, default=<span class="hljs-number">0.8</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;Training scale&#x27;</span>)<br>args = parser.parse_args()<br><br>train_scale = args.train_scale<br>train_scale = <span class="hljs-number">0.5</span><br>train_folder = <span class="hljs-string">&#x27;./labels/train&#x27;</span><br>val_folder = <span class="hljs-string">&#x27;./labels/val&#x27;</span><br>os.makedirs(train_folder, exist_ok=<span class="hljs-literal">True</span>)<br>os.makedirs(val_folder, exist_ok=<span class="hljs-literal">True</span>)<br>annotations_file = <span class="hljs-string">&#x27;../Annotations&#x27;</span><br><br><span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;../classes.txt&quot;</span>, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>    class_mapping = &#123;line.strip(): i <span class="hljs-keyword">for</span> i, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(f.read().splitlines())&#125;<br><br>annotations_list = os.listdir(annotations_file)<br>random.shuffle(annotations_list)<br>split_index = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">len</span>(annotations_list) * train_scale)<br>train_list = annotations_list[:split_index]<br>val_list = annotations_list[split_index:]<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">process_data</span>(<span class="hljs-params">file_list, folder, name</span>):<br>    <span class="hljs-keyword">for</span> file_name <span class="hljs-keyword">in</span> tqdm(file_list, name, ncols=<span class="hljs-number">100</span>):<br>        <span class="hljs-keyword">if</span> file_name.endswith(<span class="hljs-string">&#x27;.xml&#x27;</span>):<br>            xml_file = os.path.join(annotations_file, file_name)<br>            txt_file = os.path.join(folder, os.path.splitext(file_name)[<span class="hljs-number">0</span>] + <span class="hljs-string">&#x27;.txt&#x27;</span>)<br>            convert_xml_to_txt(xml_file, txt_file)<br><br>process_data(train_list, train_folder, <span class="hljs-string">&#x27;train&#x27;</span>)<br>process_data(val_list, val_folder, <span class="hljs-string">&#x27;validation&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p>参数表为：</p>
+<table>
+<thead>
+<tr class="header">
+<th>参数</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>train_scale</td>
+<td>训练集的比例</td>
+</tr>
+</tbody>
+</table>
+<p>运行 run.py：<code>python run.py --train_scale 0.8</code></p>
+<p>Data / YOLOv5 文件夹下将产生两个文件夹 train 和
+val，分别包含了训练集的 txt 标签文件和验证集的 txt 标签文件。</p>
+<h2 id="文件结构">3.4 文件结构</h2>
+<ul>
+<li>Data
+<ul>
+<li>Annotations</li>
+<li>JPEGImages</li>
+<li>YOLOv5
+<ul>
+<li>images
+<ul>
+<li>train</li>
+<li>val</li>
+</ul></li>
+<li>labels
+<ul>
+<li>train</li>
+<li>val</li>
+</ul></li>
+<li>run.py</li>
+</ul></li>
+</ul></li>
+</ul>
+<p>在查询标签文件时，<strong>会自动将 images 替换为
+labels</strong>，因此 images、labels、train、val
+这几个文件夹的名字一定要和上面一样。</p>
+<p>参考：<a
+target="_blank" rel="noopener" href="https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data">https://github.com/ultralytics/yolov5/wiki/Train-Custom-Data</a></p>
+<h1 id="配置文件">4 配置文件</h1>
+<p>为了方便，我们把所有配置文件放在一个文件夹下。</p>
+<h2 id="数据集配置">4.1 数据集配置</h2>
+<p>在 yolov5（项目文件夹）下创建一个 config 目录，在 config 目录下创建
+data.yaml：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># 训练和验证图片文件夹</span><br><span class="hljs-attr">train:</span> <span class="hljs-string">../Data/YOLOv5/images/train</span><br><span class="hljs-attr">val:</span> <span class="hljs-string">../Data/YOLOv5/images/val</span><br><span class="hljs-comment"># 类别数</span><br><span class="hljs-attr">nc:</span> <span class="hljs-number">2</span><br><span class="hljs-comment"># 类名</span><br><span class="hljs-attr">names:</span> [ <span class="hljs-string">&#x27;xx&#x27;</span>, <span class="hljs-string">&#x27;wcq&#x27;</span> ]<br></code></pre></td></tr></table></figure>
+<p><strong>注意：相对路径是以 train.py 为起始</strong></p>
+<h2 id="网络结构配置">4.2 网络结构配置</h2>
+<p>将 yolov5中的 yolov5s.yaml 复制到 config 文件夹下，并修改
+yolov5s.yaml 中的：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-attr">nc:</span> <span class="hljs-number">2</span>  <span class="hljs-comment"># 类别数</span><br></code></pre></td></tr></table></figure>
+<p>yolov5s.yaml 的内容为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># parameters</span><br><span class="hljs-attr">nc:</span> <span class="hljs-number">2</span>  <span class="hljs-comment"># number of classes</span><br><span class="hljs-attr">depth_multiple:</span> <span class="hljs-number">0.33</span>  <span class="hljs-comment"># model depth multiple</span><br><span class="hljs-attr">width_multiple:</span> <span class="hljs-number">0.50</span>  <span class="hljs-comment"># layer channel multiple</span><br><br><span class="hljs-comment"># anchors</span><br><span class="hljs-attr">anchors:</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">10</span>,<span class="hljs-number">13</span>, <span class="hljs-number">16</span>,<span class="hljs-number">30</span>, <span class="hljs-number">33</span>,<span class="hljs-number">23</span>]  <span class="hljs-comment"># P3/8</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">30</span>,<span class="hljs-number">61</span>, <span class="hljs-number">62</span>,<span class="hljs-number">45</span>, <span class="hljs-number">59</span>,<span class="hljs-number">119</span>]  <span class="hljs-comment"># P4/16</span><br>  <span class="hljs-bullet">-</span> [<span class="hljs-number">116</span>,<span class="hljs-number">90</span>, <span class="hljs-number">156</span>,<span class="hljs-number">198</span>, <span class="hljs-number">373</span>,<span class="hljs-number">326</span>]  <span class="hljs-comment"># P5/32</span><br><br><span class="hljs-comment"># YOLOv5 backbone</span><br><span class="hljs-attr">backbone:</span><br>  <span class="hljs-comment"># [from, number, module, args]</span><br>  [[<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Focus</span>, [<span class="hljs-number">64</span>, <span class="hljs-number">3</span>]],  <span class="hljs-comment"># 0-P1/2</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">128</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],  <span class="hljs-comment"># 1-P2/4</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">128</span>]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],  <span class="hljs-comment"># 3-P3/8</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">9</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">256</span>]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],  <span class="hljs-comment"># 5-P4/16</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">9</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">1024</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],  <span class="hljs-comment"># 7-P5/32</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">SPP</span>, [<span class="hljs-number">1024</span>, [<span class="hljs-number">5</span>, <span class="hljs-number">9</span>, <span class="hljs-number">13</span>]]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">1024</span>, <span class="hljs-literal">False</span>]],  <span class="hljs-comment"># 9</span><br>  ]<br><br><span class="hljs-comment"># YOLOv5 head</span><br><span class="hljs-attr">head:</span><br>  [[<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">nn.Upsample</span>, [<span class="hljs-string">None</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;nearest&#x27;</span>]],<br>   [[<span class="hljs-number">-1</span>, <span class="hljs-number">6</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]],  <span class="hljs-comment"># cat backbone P4</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>, <span class="hljs-literal">False</span>]],  <span class="hljs-comment"># 13</span><br><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">1</span>, <span class="hljs-number">1</span>]],<br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">nn.Upsample</span>, [<span class="hljs-string">None</span>, <span class="hljs-number">2</span>, <span class="hljs-string">&#x27;nearest&#x27;</span>]],<br>   [[<span class="hljs-number">-1</span>, <span class="hljs-number">4</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]],  <span class="hljs-comment"># cat backbone P3</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">256</span>, <span class="hljs-literal">False</span>]],  <span class="hljs-comment"># 17 (P3/8-small)</span><br><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">256</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],<br>   [[<span class="hljs-number">-1</span>, <span class="hljs-number">14</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]],  <span class="hljs-comment"># cat head P4</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">512</span>, <span class="hljs-literal">False</span>]],  <span class="hljs-comment"># 20 (P4/16-medium)</span><br><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">1</span>, <span class="hljs-string">Conv</span>, [<span class="hljs-number">512</span>, <span class="hljs-number">3</span>, <span class="hljs-number">2</span>]],<br>   [[<span class="hljs-number">-1</span>, <span class="hljs-number">10</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Concat</span>, [<span class="hljs-number">1</span>]],  <span class="hljs-comment"># cat head P5</span><br>   [<span class="hljs-number">-1</span>, <span class="hljs-number">3</span>, <span class="hljs-string">C3</span>, [<span class="hljs-number">1024</span>, <span class="hljs-literal">False</span>]],  <span class="hljs-comment"># 23 (P5/32-large)</span><br><br>   [[<span class="hljs-number">17</span>, <span class="hljs-number">20</span>, <span class="hljs-number">23</span>], <span class="hljs-number">1</span>, <span class="hljs-string">Detect</span>, [<span class="hljs-string">nc</span>, <span class="hljs-string">anchors</span>]],  <span class="hljs-comment"># Detect(P3, P4, P5)</span><br>  ]<br></code></pre></td></tr></table></figure>
+<h2 id="超参数配置">4.3 超参数配置</h2>
+<p>将 yolov5/data/hyp.scratch.yaml 复制到 config 文件夹中：</p>
+<p>hyp.scratch.yaml （从头开始训练）的内容为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Hyperparameters for COCO training from scratch</span><br><span class="hljs-comment"># python train.py --batch 40 --cfg yolov5m.yaml --weights &#x27;&#x27; --data coco.yaml --img 640 --epochs 300</span><br><br><span class="hljs-attr">lr0:</span> <span class="hljs-number">0.01</span>  <span class="hljs-comment"># initial learning rate (SGD=1E-2, Adam=1E-3)</span><br><span class="hljs-attr">lrf:</span> <span class="hljs-number">0.2</span>  <span class="hljs-comment"># final OneCycleLR learning rate (lr0 * lrf)</span><br><span class="hljs-attr">momentum:</span> <span class="hljs-number">0.937</span>  <span class="hljs-comment"># SGD momentum/Adam beta1</span><br><span class="hljs-attr">weight_decay:</span> <span class="hljs-number">0.0005</span>  <span class="hljs-comment"># optimizer weight decay 5e-4</span><br><span class="hljs-attr">warmup_epochs:</span> <span class="hljs-number">3.0</span>  <span class="hljs-comment"># warmup epochs (fractions ok)</span><br><span class="hljs-attr">warmup_momentum:</span> <span class="hljs-number">0.8</span>  <span class="hljs-comment"># warmup initial momentum</span><br><span class="hljs-attr">warmup_bias_lr:</span> <span class="hljs-number">0.1</span>  <span class="hljs-comment"># warmup initial bias lr</span><br><span class="hljs-attr">box:</span> <span class="hljs-number">0.05</span>  <span class="hljs-comment"># box loss gain</span><br><span class="hljs-attr">cls:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># cls loss gain</span><br><span class="hljs-attr">cls_pw:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># cls BCELoss positive_weight</span><br><span class="hljs-attr">obj:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># obj loss gain (scale with pixels)</span><br><span class="hljs-attr">obj_pw:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># obj BCELoss positive_weight</span><br><span class="hljs-attr">iou_t:</span> <span class="hljs-number">0.20</span>  <span class="hljs-comment"># IoU training threshold</span><br><span class="hljs-attr">anchor_t:</span> <span class="hljs-number">4.0</span>  <span class="hljs-comment"># anchor-multiple threshold</span><br><span class="hljs-comment"># anchors: 3  # anchors per output layer (0 to ignore)</span><br><span class="hljs-attr">fl_gamma:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># focal loss gamma (efficientDet default gamma=1.5)</span><br><span class="hljs-attr">hsv_h:</span> <span class="hljs-number">0.015</span>  <span class="hljs-comment"># image HSV-Hue augmentation (fraction)</span><br><span class="hljs-attr">hsv_s:</span> <span class="hljs-number">0.7</span>  <span class="hljs-comment"># image HSV-Saturation augmentation (fraction)</span><br><span class="hljs-attr">hsv_v:</span> <span class="hljs-number">0.4</span>  <span class="hljs-comment"># image HSV-Value augmentation (fraction)</span><br><span class="hljs-attr">degrees:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># image rotation (+/- deg)</span><br><span class="hljs-attr">translate:</span> <span class="hljs-number">0.1</span>  <span class="hljs-comment"># image translation (+/- fraction)</span><br><span class="hljs-attr">scale:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># image scale (+/- gain)</span><br><span class="hljs-attr">shear:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># image shear (+/- deg)</span><br><span class="hljs-attr">perspective:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># image perspective (+/- fraction), range 0-0.001</span><br><span class="hljs-attr">flipud:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># image flip up-down (probability)</span><br><span class="hljs-attr">fliplr:</span> <span class="hljs-number">0.5</span>  <span class="hljs-comment"># image flip left-right (probability)</span><br><span class="hljs-attr">mosaic:</span> <span class="hljs-number">1.0</span>  <span class="hljs-comment"># image mosaic (probability)</span><br><span class="hljs-attr">mixup:</span> <span class="hljs-number">0.0</span>  <span class="hljs-comment"># image mixup (probability)</span><br></code></pre></td></tr></table></figure>
+<p>将 yolov5/data/hyp.finetune.yaml 复制到 config 文件夹中：</p>
+<p>hyp.finetune.yaml（从预训练模型开始训练）的内容为：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-comment"># Hyperparameters for VOC finetuning</span><br><span class="hljs-comment"># python train.py --batch 64 --weights yolov5m.pt --data voc.yaml --img 512 --epochs 50</span><br><br><span class="hljs-comment"># Hyperparameter Evolution Results</span><br><span class="hljs-comment"># Generations: 306</span><br><span class="hljs-comment">#                   P         R     mAP.5 mAP.5:.95       box       obj       cls</span><br><span class="hljs-comment"># Metrics:        0.6     0.936     0.896     0.684    0.0115   0.00805   0.00146</span><br><br><span class="hljs-attr">lr0:</span> <span class="hljs-number">0.0032</span><br><span class="hljs-attr">lrf:</span> <span class="hljs-number">0.12</span><br><span class="hljs-attr">momentum:</span> <span class="hljs-number">0.843</span><br><span class="hljs-attr">weight_decay:</span> <span class="hljs-number">0.00036</span><br><span class="hljs-attr">warmup_epochs:</span> <span class="hljs-number">2.0</span><br><span class="hljs-attr">warmup_momentum:</span> <span class="hljs-number">0.5</span><br><span class="hljs-attr">warmup_bias_lr:</span> <span class="hljs-number">0.05</span><br><span class="hljs-attr">box:</span> <span class="hljs-number">0.0296</span><br><span class="hljs-attr">cls:</span> <span class="hljs-number">0.243</span><br><span class="hljs-attr">cls_pw:</span> <span class="hljs-number">0.631</span><br><span class="hljs-attr">obj:</span> <span class="hljs-number">0.301</span><br><span class="hljs-attr">obj_pw:</span> <span class="hljs-number">0.911</span><br><span class="hljs-attr">iou_t:</span> <span class="hljs-number">0.2</span><br><span class="hljs-attr">anchor_t:</span> <span class="hljs-number">2.91</span><br><span class="hljs-comment"># anchors: 3.63</span><br><span class="hljs-attr">fl_gamma:</span> <span class="hljs-number">0.0</span><br><span class="hljs-attr">hsv_h:</span> <span class="hljs-number">0.0138</span><br><span class="hljs-attr">hsv_s:</span> <span class="hljs-number">0.664</span><br><span class="hljs-attr">hsv_v:</span> <span class="hljs-number">0.464</span><br><span class="hljs-attr">degrees:</span> <span class="hljs-number">0.373</span><br><span class="hljs-attr">translate:</span> <span class="hljs-number">0.245</span><br><span class="hljs-attr">scale:</span> <span class="hljs-number">0.898</span><br><span class="hljs-attr">shear:</span> <span class="hljs-number">0.602</span><br><span class="hljs-attr">perspective:</span> <span class="hljs-number">0.0</span><br><span class="hljs-attr">flipud:</span> <span class="hljs-number">0.00856</span><br><span class="hljs-attr">fliplr:</span> <span class="hljs-number">0.5</span><br><span class="hljs-attr">mosaic:</span> <span class="hljs-number">1.0</span><br><span class="hljs-attr">mixup:</span> <span class="hljs-number">0.243</span><br></code></pre></td></tr></table></figure>
+<h2 id="文件结构-1">4.4 文件结构</h2>
+<ul>
+<li>config：配置文件夹
+<ul>
+<li>data.yaml：数据集配置</li>
+<li>yolov5s.yaml：网络结构配置</li>
+<li>hyp.scratch.yaml：超参数配置（从零开始训练）</li>
+<li>hyp.finetune.yaml：超参数配置（从预训练模型开始训练）</li>
+</ul></li>
+</ul>
+<h1 id="训练">5 训练</h1>
+<h2 id="参数表">5.1 参数表</h2>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">参数</th>
+<th style="text-align: left;">意义</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">weights</td>
+<td style="text-align: left;">预训练权重</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cfg</td>
+<td style="text-align: left;">模型配置文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">data</td>
+<td style="text-align: left;">数据集配置文件</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">hyp</td>
+<td style="text-align: left;">超参数配置文件</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">epochs</td>
+<td style="text-align: left;">训练世代</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">batch-size</td>
+<td style="text-align: left;">批量大小</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">device</td>
+<td style="text-align: left;">设备</td>
+</tr>
+</tbody>
+</table>
+<h2 id="开始训练">5.2 开始训练</h2>
+<p><code>python .\train.py --weights weights/yolov5s.pt --cfg models/yolov5s.yaml --data data/voc.yaml</code></p>
+<h2 id="可能出现的-error-1">5.3 可能出现的 Error</h2>
+<p><strong>Error</strong>：<code>AttributeError: module 'numpy' has no attribute 'int'</code></p>
+<p><strong>Solution</strong>：</p>
+<p>在 utils\datasets.py 413 行， 将 np.int 改为 int，即</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">bi = np.floor(np.arange(n) / batch_size).astype(<span class="hljs-built_in">int</span>)  <span class="hljs-comment"># batch index</span><br></code></pre></td></tr></table></figure>
+<p>在 utils\datasets.py 441 行， 将 np.int 改为 int，即</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">self.batch_shapes = np.ceil(np.array(shapes) * img_size / stride + pad).astype(<span class="hljs-built_in">int</span>) * stride<br></code></pre></td></tr></table></figure>
+<p>在 utils\general.py 222 行， 将 np.int 改为 int，即</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">classes = labels[:, <span class="hljs-number">0</span>].astype(<span class="hljs-built_in">int</span>)  <span class="hljs-comment"># labels = [class xywh]</span><br></code></pre></td></tr></table></figure>
+<p><strong>Error</strong>：<code>RuntimeError: result type Float can't be cast to the desired output type __int64</code></p>
+<p><strong>Solution</strong>：</p>
+<p>在 utils\loss.py 212 行，将 gain 强制转为 int，即</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">indices.append((b, a, gj.clamp_(<span class="hljs-number">0</span>, <span class="hljs-built_in">int</span>(gain[<span class="hljs-number">3</span>]) - <span class="hljs-number">1</span>), gi.clamp_(<span class="hljs-number">0</span>, <span class="hljs-built_in">int</span>(gain[<span class="hljs-number">2</span>]) - <span class="hljs-number">1</span>)))<br></code></pre></td></tr></table></figure>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E9%A1%B9%E7%9B%AE/" class="category-chain-item">项目</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/yolov5-%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/">#YOLOv5 目标检测</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>YOLOv5 实现目标检测</div>
+      <div>https://vexentox.github.io/2023/05/17/yolov5目标检测/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月17日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/18/yolov5_deepsort%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" title="YOLOv5 + DeepSort 实现多目标跟踪">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">YOLOv5 + DeepSort 实现多目标跟踪</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/05/16/yolov1/" title="YOLOv1 网络复现">
+                        <span class="hidden-mobile">YOLOv1 网络复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
