@@ -4,6 +4,56 @@
   
   
   <entry>
+    <title>YOLOv2 论文解析</title>
+    <link href="/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/"/>
+    <url>/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<p>YOLOv2 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1506.02640.pdf">论文地址</a></p><h1 id="改进">1 改进</h1><h2 id="batch-normalization批量规范化">1.1 BatchNormalization（批量规范化）</h2><p><strong>对每一层的输出向量进行归一化</strong></p><p>批量归一化在收敛性方面取得了显著的改进，同时消除了其他形式的正则化的需求。通过在YOLO的所有卷积层上添加批量归一化，我们的mAP得到了超过2%的提高。批量归一化还有助于对模型进行正则化。通过批量归一化，我们可以在不过拟合的情况下移除模型中的dropout。</p><h2 id="high-resolution-classifier">1.2 High Resolution Classifier</h2><p><strong>将输入向量大小从 224 * 224 扩大到 448 * 448</strong></p><p>所有最先进的检测方法都使用在ImageNet上预训练的分类器。从AlexNet开始，大多数分类器在小于256×256的输入图像上进行操作。最初的YOLO在224×224的分辨率下训练分类器网络，并将其增加到448用于检测。这意味着网络必须同时切换到学习目标检测并适应新的输入分辨率。</p><p>对于YOLOv2，我们首先在ImageNet上对完整的448×448分辨率下的分类网络进行了10个epoch的微调。这给网络足够的时间来调整其滤波器，以更好地适应更高分辨率的输入。然后，我们对结果进行目标检测的微调。这个高分辨率分类网络使我们的mAP增加了近4%。</p><h2 id="convolutional-with-anchor-boxes-anchor-boxes">1.3 ConvolutionalWith Anchor Boxes (Anchor Boxes)</h2><p><strong>使用 Anchor Boxes 机制，改变输出向量的意义（坐标 --&gt; 与Anchor Box的坐标差）和损失函数的计算方式（通过坐标差计算出预测坐标）</strong></p><p>YOLO 直接使用全连接层在卷积特征提取器之上预测边界框的坐标。而FasterR-CNN则通过手动选择的先验框来预测边界框[15]。在FasterR-CNN中，仅使用卷积层的区域建议网络（RPN）为锚定框预测偏移量和置信度。由于预测层是卷积层，RPN在特征图的每个位置预测这些偏移量。预测偏移量而不是坐标简化了问题，并使网络更容易学习。</p><p>我们从YOLO中移除全连接层，并使用锚定框来预测边界框。首先，我们去掉一个池化层，以使网络的卷积层输出更高分辨率。我们还将网络缩小，使其处理416×416的输入图像，而不是448×448。我们这样做是因为我们希望特征图中有奇数个位置，以便有一个单独的中心单元格。对象，特别是大对象，倾向于占据图像的中心，因此在中心位置预测这些对象比在附近的四个位置预测更好。YOLO的卷积层将图像下采样32倍，因此通过使用416的输入图像，我们得到一个13×13的输出特征图。</p><p>当我们转向锚定框时，我们还将类别预测机制与空间位置解耦，并为每个锚定框预测类别和物体性质。在YOLO之后，物体性质预测仍然预测真实值和提议框的IOU，而类别预测则预测在存在物体的情况下给出该类别的条件概率。</p><p>使用锚定框会导致准确率略微降低。YOLO每张图像仅预测98个框，但使用锚定框后，我们的模型预测超过一千个框。在没有锚定框的情况下，我们的中间模型的mAP为69.5%，召回率为81%。使用锚定框后，我们的模型的mAP为69.2%，召回率为88%。尽管mAP降低了，但召回率的增加意味着我们的模型有更大的改进空间。</p><h2 id="dimension-clusters">1.4 Dimension Clusters</h2><p><strong>kmeans 构造 Anchor Boxes</strong></p><p>在使用YOLO时，锚定框存在两个问题。第一个问题是锚定框的尺寸是手动选择的。尽管网络可以学习适应性地调整锚定框，但如果我们在网络初始阶段选择更好的先验框，可以更容易地帮助网络学习预测良好的检测结果。为了避免手动选择先验框，我们在训练集的边界框上运行k-means聚类算法，自动地找到良好的先验框。</p><h2 id="direct-location-prediction">1.5 Direct location prediction</h2><p><strong>细说 1.3 中的坐标偏差</strong></p><p>在使用YOLO的过程中，使用锚定框会遇到第二个问题：模型的不稳定性，尤其是在早期迭代阶段。大部分的不稳定性来自于对边界框的（x，y）位置的预测。在区域建议网络中，网络预测了tx和ty的值，而（x，y）中心坐标的计算方式如下：<span class="math display">\[\begin{matrix}x=(t_{x}*w_{\alpha })+x_{\alpha }  \\y=(t_{y}*w_{\alpha })+y_{\alpha }\end{matrix}\]</span> 例如，对于预测的tx =1，会将边界框向右平移一个锚定框的宽度，而tx =-1的预测会将其向左平移相同的距离。这种表达方式是无约束的，因此任何锚定框都可能出现在图像的任何位置，无论哪个位置预测了该框。在随机初始化的情况下，模型需要很长时间才能稳定下来，以预测合理的偏移量。</p><p>与预测偏移量不同，我们遵循YOLO的方法，预测相对于网格单元位置的坐标。这将使真实值限制在0到1之间。我们使用逻辑激活函数将网络的预测限制在此范围内。网络在输出特征图的每个单元格中预测5个边界框。网络为每个边界框预测5个坐标，tx、ty、tw、th和to。如果单元格相对于图像的左上角偏移了(cx，cy)，并且边界框先验具有宽度和高度pw、ph，则预测对应于：<span class="math display">\[\begin{matrix} b_{x}  =\sigma(t_{x})+c_{x}\\ b_{y}  =\sigma(t_{y})+c_{y} \\b_{w}  =p_{w} e^{t_{w}} \\b_{h}  =p_{h} e^{t_{h}} \\\operatorname{Pr}(\text { object }) * \operatorname{IOU}(b, \text {object })  =\sigma(t_{o})\end{matrix}\]</span></p><p>由于我们对位置预测进行了约束，参数化更容易学习，从而使网络更加稳定。通过使用尺寸聚类以及直接预测边界框中心位置，相比使用锚定框的版本，YOLO的性能提高了近5%。</p><h2 id="fine-grained-features">1.6 Fine-Grained Features</h2><p><strong>降低特征提取网络输出的特征图的大小，增加输出通道</strong></p><p>这种修改后的YOLO在一个13×13的特征图上进行目标检测。虽然这对于大型物体已经足够，但对于定位较小物体可能会受益于更精细的特征。FasterR-CNN和SSD都在网络的不同特征图上运行其候选框网络，以获得不同的分辨率。我们采取了不同的方法，只需添加一个传递层，将26×26分辨率的较早层的特征传递到当前层。传递层通过将高分辨率特征与低分辨率特征进行连接，将相邻特征堆叠到不同的通道中，而不是在空间位置上堆叠，类似于ResNet中的身份映射。这将26×26×512的特征图转换为13×13×2048的特征图，可以与原始特征进行级联。我们的检测器在这个扩展的特征图上运行，以便可以使用细粒度的特征。这使得性能增加了1%左右。</p><h1 id="网络结构">网络结构</h1><p><ahref="https://github.com/pjreddie/darknet/blob/master/cfg/yolov1.cfg">cfg文件下载</a></p><p><img src="https://raw.githubusercontent.com/vexentox/reproduction/dad190f79839608ee59b76d89809a60bde7769b0/YOLOv1/weights/yolov1.cfg.svg"></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文解析</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>YOLOv2、论文解析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>YOLOv1 论文解析</title>
+    <link href="/2023/05/24/YOLOv1%E8%A7%A3%E6%9E%90/"/>
+    <url>/2023/05/24/YOLOv1%E8%A7%A3%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<p>YOLOv1 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1506.02640.pdf">论文地址</a></p><h1 id="思路">思路</h1><p>​ 将输入图像划分为 S × S 网格。如果一个物体的中心落在一个网格单元中，则该网格单元负责检测该物体。</p><p>​ 每个网格单元预测 B 个边界框和这些框的置信度。置信度反映了对于模型是盒子包含一个对象，以及它认为盒子是它预测的准确度的信任程度。将置信度定义为 <span class="math display">\[\operatorname{Pr}(\text { Object }) * \mathrm{IOU}_{\text {pred}}^{\text {truth }}\]</span> ​ 如果该单元格中不存在对象，则置信度分数应为零。否则，置信度分数等于预测框和真实框之间的 IOU。</p><p>​ 每个边界框由 5 个预测组成：x、y、w、h 和置信度。 (x, y)坐标表示框相对于网格单元边界的中心，w 和 h是相对于整个图像预测的，置信度表示预测框与实际框之间的IOU。因此，预测的值范围是 [0, 1]。</p><p>​ 同时，每个网格单元还预测类别的条件概率，即 <spanclass="math display">\[\operatorname{Pr}\left(\text { Class }_{i} \mid \text { Object }\right)\]</span> ​ 无论该单元格需要预测几个框，它只预测一组条件概率。</p><p>​ 在测试时，将条件概率和单个预测框的置信度相乘，即 <spanclass="math display">\[\operatorname{Pr}\left(\text { Class }_{i} \mid \text { Object }\right)* \operatorname{Pr}(\text { Object }) * \mathrm{IOU}_{\text {pred}}^{\text {truth }}=\operatorname{Pr}\left(\text { Class }_{i}\right) *\mathrm{IOU}_{\text {pred }}^{\text {truth }}\]</span> ​ 得到每个盒子的特定类别的置信度。</p><p>​ 最终输出的向量大小为 <span class="math display">\[(bathsize, S*S*(5*B+C))\]</span></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文解析</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>YOLOv1、论文解析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>YOLOv5 + DeepSort 实现多目标跟踪</title>
     <link href="/2023/05/18/yolov5_deepsort%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/"/>
     <url>/2023/05/18/yolov5_deepsort%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/</url>

@@ -16,22 +16,22 @@
   <meta name="author" content="唐喜">
   <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
-    <meta name="description" content="YOLOv5 + DeepSort 实现多目标跟踪">
+    <meta name="description" content="YOLOv1 论文解析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="YOLOv5 + DeepSort 实现多目标跟踪">
-<meta property="og:url" content="https://vexentox.github.io/2023/05/18/yolov5_deepsort%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/index.html">
+<meta property="og:title" content="YOLOv1 论文解析">
+<meta property="og:url" content="https://vexentox.github.io/2023/05/24/YOLOv1%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="唐喜的个人博客">
-<meta property="og:description" content="YOLOv5 + DeepSort 实现多目标跟踪">
+<meta property="og:description" content="YOLOv1 论文解析">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-05-18T09:44:00.000Z">
-<meta property="article:modified_time" content="2023-05-18T13:31:09.907Z">
+<meta property="article:published_time" content="2023-05-24T11:14:00.000Z">
+<meta property="article:modified_time" content="2023-05-25T09:59:07.308Z">
 <meta property="article:author" content="唐喜">
-<meta property="article:tag" content="YOLOv5 + DeepSort 实现多目标跟踪">
+<meta property="article:tag" content="YOLOv1、论文解析">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>YOLOv5 + DeepSort 实现多目标跟踪 - 唐喜的个人博客</title>
+  <title>YOLOv1 论文解析 - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="YOLOv5 + DeepSort 实现多目标跟踪"></span>
+            <span id="subtitle" data-typed-text="YOLOv1 论文解析"></span>
           
         </div>
 
@@ -208,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-18 17:44" pubdate>
-          2023年5月18日 下午
+        <time datetime="2023-05-24 19:14" pubdate>
+          2023年5月24日 晚上
         </time>
       </span>
     
@@ -220,7 +220,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          3.2k 字
+          785 字
         
       </span>
     
@@ -231,7 +231,7 @@
         
         
         
-          28 分钟
+          7 分钟
         
       </span>
     
@@ -269,124 +269,42 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">YOLOv5 + DeepSort 实现多目标跟踪</h1>
+            <h1 style="display: none">YOLOv1 论文解析</h1>
             
             
               <div class="markdown-body">
                 
-                <p>YOLOv5 + DeepSort 实现多目标跟踪</p>
+                <p>YOLOv1 论文解析</p>
 <span id="more"></span>
-<h1 id="部署-yolov5">0 部署 YOLOv5</h1>
-<p>参考博文 <a
-href="https://vexentox.github.io/2023/05/17/yolov5%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/">YOLOv5
-实现目标检测</a></p>
-<h1 id="环境配置">1 环境配置</h1>
-<h2 id="克隆项目">1.1 克隆项目</h2>
-<p>下载 <a
-target="_blank" rel="noopener" href="https://gitcode.net/mirrors/mikel-brostrom/Yolov5_DeepSort_Pytorch/-/tree/v3.0">项目</a></p>
-<p>将 yolov5 文件夹替换为我们部署的 yolov5 项目文件夹</p>
-<p>项目结构为：</p>
-<ul>
-<li>YOLOv5_DeepSort
-<ul>
-<li>deep_sort_pytorch</li>
-<li>MOT16_eval</li>
-<li>yolov5</li>
-</ul></li>
-</ul>
-<h2 id="安装依赖">1.2 安装依赖</h2>
-<p><code>pip install -r .\requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
-<h1 id="数据集准备">2 数据集准备</h1>
-<h2 id="文件布置">2.1 文件布置</h2>
-<p>根据 <a
-href="https://vexentox.github.io/2023/05/17/yolov5%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/">YOLOv5
-实现目标检测</a> 数据格式，在 Data 下创建 DeepSort 文件夹，表示这是
-DeepSort 的训练数据。</p>
-<h2 id="分割数据集">2.2 分割数据集</h2>
-<p>在 deep_sort_pytorch\deep_sort\deep\data 文件夹下创建一个
-run.py：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> cv2, os, random, shutil, argparse<br><span class="hljs-keyword">import</span> xml.etree.ElementTree <span class="hljs-keyword">as</span> ET<br><span class="hljs-keyword">from</span> tqdm <span class="hljs-keyword">import</span> tqdm<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">split</span>(<span class="hljs-params">train_scale</span>):<br>    img_path = <span class="hljs-string">&#x27;../JPEGImages/&#x27;</span><br>    anno_path = <span class="hljs-string">&#x27;../Annotations/&#x27;</span><br>    cut_path = <span class="hljs-string">&#x27;train/&#x27;</span><br><br>    os.makedirs(cut_path, exist_ok=<span class="hljs-literal">True</span>)<br><br>    txt_file = <span class="hljs-string">&quot;../classes.txt&quot;</span><br><br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(txt_file, <span class="hljs-string">&quot;r&quot;</span>) <span class="hljs-keyword">as</span> f:<br>        dict_obj_i = &#123;line.strip(): i <span class="hljs-keyword">for</span> i, line <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(f.read().splitlines())&#125;<br><br>    <span class="hljs-keyword">for</span> xml_file <span class="hljs-keyword">in</span> tqdm(os.listdir(anno_path), <span class="hljs-string">&#x27;生成数据集&#x27;</span>, ncols=<span class="hljs-number">100</span>):<br>        xml_pre, ext = os.path.splitext(xml_file)<br>        img_file = os.path.join(img_path, xml_pre + <span class="hljs-string">&#x27;.jpg&#x27;</span>)<br>        xml_file = os.path.join(anno_path, xml_file)<br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> os.path.exists(img_file):<br>            <span class="hljs-keyword">continue</span><br>        img = cv2.imread(img_file)<br>        tree = ET.parse(xml_file)<br>        root = tree.getroot()<br>        <span class="hljs-keyword">for</span> obj <span class="hljs-keyword">in</span> root.<span class="hljs-built_in">iter</span>(<span class="hljs-string">&#x27;object&#x27;</span>):<br>            cls = obj.find(<span class="hljs-string">&#x27;name&#x27;</span>).text<br>            <span class="hljs-keyword">if</span> cls <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> dict_obj_i:<br>                <span class="hljs-keyword">continue</span><br>            obj_i = dict_obj_i[cls]<br>            xmlbox = obj.find(<span class="hljs-string">&#x27;bndbox&#x27;</span>)<br>            b = [<span class="hljs-built_in">int</span>(<span class="hljs-built_in">float</span>(xmlbox.find(name).text)) <span class="hljs-keyword">for</span> name <span class="hljs-keyword">in</span> [<span class="hljs-string">&#x27;xmin&#x27;</span>, <span class="hljs-string">&#x27;ymin&#x27;</span>, <span class="hljs-string">&#x27;xmax&#x27;</span>, <span class="hljs-string">&#x27;ymax&#x27;</span>]]<br>            img_cut = img[b[<span class="hljs-number">1</span>]:b[<span class="hljs-number">3</span>], b[<span class="hljs-number">0</span>]:b[<span class="hljs-number">2</span>], :]<br>            cls_path = os.path.join(cut_path, cls)<br>            os.makedirs(cls_path, exist_ok=<span class="hljs-literal">True</span>)<br>            img_cut_file = os.path.join(cls_path, <span class="hljs-string">&#x27;&#123;&#125;_&#123;:0&gt;2d&#125;.jpg&#x27;</span>.<span class="hljs-built_in">format</span>(xml_pre, obj_i))<br>            cv2.imwrite(img_cut_file, img_cut)<br><br>    src_path = <span class="hljs-string">&#x27;train&#x27;</span><br>    dst_path = <span class="hljs-string">&#x27;val&#x27;</span><br>    os.makedirs(dst_path, exist_ok=<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">for</span> classes <span class="hljs-keyword">in</span> tqdm(os.listdir(src_path), <span class="hljs-string">&#x27;分割数据集&#x27;</span>, ncols=<span class="hljs-number">100</span>):<br>        dst_dir = os.path.join(dst_path, classes)<br>        os.makedirs(dst_dir, exist_ok=<span class="hljs-literal">True</span>)<br>        deal_class = os.path.join(src_path, classes)<br>        in_class = os.listdir(deal_class)<br>        total_num = <span class="hljs-built_in">len</span>(in_class)<br>        train_num = <span class="hljs-built_in">int</span>(total_num * train_scale)<br>        <span class="hljs-built_in">print</span>(train_num)<br>        val_num = total_num - train_num<br>        <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(val_num):<br>            val_jpg = random.choice(in_class)<br>            in_class.remove(val_jpg)<br>            val_path = os.path.join(deal_class, val_jpg)<br>            <span class="hljs-comment"># if not os.path.exists(val_path):</span><br>            shutil.move(val_path, dst_dir)<br><br><br>parser = argparse.ArgumentParser()<br>parser.add_argument(<span class="hljs-string">&#x27;--train_scale&#x27;</span>, <span class="hljs-built_in">type</span>=<span class="hljs-built_in">float</span>, default=<span class="hljs-number">0.8</span>, <span class="hljs-built_in">help</span>=<span class="hljs-string">&#x27;Training scale&#x27;</span>)<br>args = parser.parse_args()<br>train_scale = args.train_scale<br>split(train_scale)<br></code></pre></td></tr></table></figure>
-<p>参数表为：</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">参数</th>
-<th style="text-align: left;">意义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">train_scale</td>
-<td style="text-align: left;">训练集的比例</td>
-</tr>
-</tbody>
-</table>
-<p>运行 run.py：<code>python run.py --train_scale 0.8</code></p>
-<p>Data / DeepSort 文件夹下将产生两个文件夹 train 和
-val，分别包含了训练集和验证集从检测框中截取的图片。</p>
-<h2 id="文件结构">2.3 文件结构</h2>
-<ul>
-<li>Data
-<ul>
-<li>Annotations</li>
-<li>JPEGImages</li>
-<li>DeepSort
-<ul>
-<li>train
-<ul>
-<li>classx</li>
-<li>...</li>
-</ul></li>
-<li>val
-<ul>
-<li>classx</li>
-<li>...</li>
-</ul></li>
-</ul></li>
-</ul></li>
-</ul>
-<h1 id="训练">3 训练</h1>
-<p>将 deep_sort_pytorch / deep_sort / deep / train.py 32 行改为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">test_dir = os.path.join(root, <span class="hljs-string">&quot;val&quot;</span>)<br></code></pre></td></tr></table></figure>
-<p>进入 deep_sort_pytorch / deep_sort / deep 文件夹，运行 train.py</p>
-<table>
-<thead>
-<tr class="header">
-<th style="text-align: left;">参数</th>
-<th style="text-align: left;">意义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: left;">data-dir</td>
-<td style="text-align: left;">数据集目录</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">no-cuda</td>
-<td style="text-align: left;">是否没有 gpu</td>
-</tr>
-<tr class="odd">
-<td style="text-align: left;">gpu-id</td>
-<td style="text-align: left;">gpu 编号</td>
-</tr>
-<tr class="even">
-<td style="text-align: left;">lr</td>
-<td style="text-align: left;">学习率</td>
-</tr>
-</tbody>
-</table>
-<p><code>python train.py --data-dir 'D:\TX\Behavior Recognition\Data\DeepSort'</code></p>
-<h1 id="多目标跟踪">4 多目标跟踪</h1>
-<p>运行 track.py</p>
-<h2 id="可能出现的-error">4.1 可能出现的 Error</h2>
-<p><strong>Error</strong>：<code>AttributeError: module 'numpy' has no attribute 'float'.</code></p>
-<p><strong>Solution</strong>：</p>
-<p>将 deep_sort_pytorch_sort.py 中的 30 行改为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">self.tlwh = np.asarray(tlwh, dtype=np.float32)<br></code></pre></td></tr></table></figure>
-<p><strong>Error</strong>：<code>AttributeError: module 'numpy' has no attribute 'int'.</code></p>
-<p><strong>Solution</strong>：</p>
-<p>将 deep_sort_pytorch_sort_sort.py 中的 50 行改为：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">outputs.append(np.array([x1, y1, x2, y2, track_id], dtype=np.int32))<br></code></pre></td></tr></table></figure>
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1506.02640.pdf">论文地址</a></p>
+<h1 id="思路">思路</h1>
+<p>​ 将输入图像划分为 S × S 网格。
+如果一个物体的中心落在一个网格单元中，则该网格单元负责检测该物体。</p>
+<p>​ 每个网格单元预测 B 个边界框和这些框的置信度。
+置信度反映了对于模型是盒子包含一个对象，以及它认为盒子是它预测的准确度的信任程度。
+将置信度定义为 <span class="math display">\[
+\operatorname{Pr}(\text { Object }) * \mathrm{IOU}_{\text {pred
+}}^{\text {truth }}
+\]</span> ​ 如果该单元格中不存在对象，则置信度分数应为零。
+否则，置信度分数等于预测框和真实框之间的 IOU。</p>
+<p>​ 每个边界框由 5 个预测组成：x、y、w、h 和置信度。 (x, y)
+坐标表示框相对于网格单元边界的中心，w 和 h
+是相对于整个图像预测的，置信度表示预测框与实际框之间的
+IOU。因此，预测的值范围是 [0, 1]。</p>
+<p>​ 同时，每个网格单元还预测类别的条件概率，即 <span
+class="math display">\[
+\operatorname{Pr}\left(\text { Class }_{i} \mid \text { Object }\right)
+\]</span> ​ 无论该单元格需要预测几个框，它只预测一组条件概率。</p>
+<p>​ 在测试时，将条件概率和单个预测框的置信度相乘，即 <span
+class="math display">\[
+\operatorname{Pr}\left(\text { Class }_{i} \mid \text { Object }\right)
+* \operatorname{Pr}(\text { Object }) * \mathrm{IOU}_{\text {pred
+}}^{\text {truth }}=\operatorname{Pr}\left(\text { Class }_{i}\right) *
+\mathrm{IOU}_{\text {pred }}^{\text {truth }}
+\]</span> ​ 得到每个盒子的特定类别的置信度。</p>
+<p>​ 最终输出的向量大小为 <span class="math display">\[
+(bathsize, S*S*(5*B+C))
+\]</span></p>
 
                 
               </div>
@@ -405,7 +323,7 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
     
       <span class="category-chain">
         
-  <a href="/categories/%E9%A1%B9%E7%9B%AE/" class="category-chain-item">项目</a>
+  <a href="/categories/%E8%AE%BA%E6%96%87%E8%A7%A3%E6%9E%90/" class="category-chain-item">论文解析</a>
   
   
 
@@ -420,7 +338,7 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/yolov5-deepsort-%E5%AE%9E%E7%8E%B0%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/">#YOLOv5 + DeepSort 实现多目标跟踪</a>
+        <a href="/tags/yolov1%E3%80%81%E8%AE%BA%E6%96%87%E8%A7%A3%E6%9E%90/">#YOLOv1、论文解析</a>
       
     </div>
   
@@ -432,8 +350,8 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>YOLOv5 + DeepSort 实现多目标跟踪</div>
-      <div>https://vexentox.github.io/2023/05/18/yolov5_deepsort多目标跟踪/</div>
+      <div>YOLOv1 论文解析</div>
+      <div>https://vexentox.github.io/2023/05/24/YOLOv1解析/</div>
     </div>
     <div class="license-meta">
       
@@ -445,7 +363,7 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月18日</div>
+          <div>2023年5月24日</div>
         </div>
       
       
@@ -477,9 +395,9 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/24/YOLOv1%E8%A7%A3%E6%9E%90/" title="YOLOv1 论文解析">
+                      <a href="/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/" title="YOLOv2 论文解析">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">YOLOv1 论文解析</span>
+                        <span class="hidden-mobile">YOLOv2 论文解析</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -487,8 +405,8 @@ val，分别包含了训练集和验证集从检测框中截取的图片。</p>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/17/yolov5%E7%9B%AE%E6%A0%87%E6%A3%80%E6%B5%8B/" title="YOLOv5 实现目标检测">
-                        <span class="hidden-mobile">YOLOv5 实现目标检测</span>
+                      <a href="/2023/05/18/yolov5_deepsort%E5%A4%9A%E7%9B%AE%E6%A0%87%E8%B7%9F%E8%B8%AA/" title="YOLOv5 + DeepSort 实现多目标跟踪">
+                        <span class="hidden-mobile">YOLOv5 + DeepSort 实现多目标跟踪</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
