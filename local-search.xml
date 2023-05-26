@@ -4,6 +4,56 @@
   
   
   <entry>
+    <title>DeepSort 论文解析</title>
+    <link href="/2023/05/26/DeepSort/"/>
+    <url>/2023/05/26/DeepSort/</url>
+    
+    <content type="html"><![CDATA[<p>DeepSort 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1703.07402.pdf">论文地址</a></p><h1 id="1-轨道处理和状态估计"><a href="#1-轨道处理和状态估计" class="headerlink" title="1 轨道处理和状态估计"></a>1 轨道处理和状态估计</h1><p><strong>定义卡尔曼滤波状态 $(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$</strong></p><p>我们假设相机未校准，且没有可用的自我运动信息，这是一个非常通用的跟踪场景。尽管这些情况对滤波框架构成了挑战，但它是最近多目标跟踪基准测试中最常见的设置。因此，我们的跟踪场景定义在八维状态空间<br>$$<br>(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})<br>$$<br>上，其中包含边界框中心位置 (u, v），纵横比 γ，高度 h 以及它们在图像坐标中的速度 $(\dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$。我们使用具有恒定速度运动和线性观测模型的标准卡尔曼滤波器，其中将边界坐标 $(u, v, \gamma , h)$ 直接作为对象状态的观测值。</p><p><strong>如果某个 trick 连续 $A_{max}$ 帧无法匹配检测结果，则删除；如果某个检测结果无法关联 trick，则增加 trick</strong></p><p>对于每个轨迹 k，我们计算自上次成功关联检测以来的帧数 $\alpha_{k}$。这个计数器在卡尔曼滤波器的预测过程中递增，并在轨迹与测量关联后重置为 0。超过预定义的最大年龄 $A_{max}$ 的轨迹被认为已经离开场景，并从轨迹集合中删除。对于无法与现有轨迹关联的每个检测，都会启动新的轨迹假设。这些新的轨迹在其前三帧中被分类为暂定状态。在此期间，我们期望在每个时间步骤中进行成功的测量关联，在它们的前三帧中没有成功与测量关联的轨迹将被删除。</p><h1 id="2-分配问题"><a href="#2-分配问题" class="headerlink" title="2 分配问题"></a>2 分配问题</h1><p>解决预测的卡尔曼状态和新到达的测量之间的关联的传统方法是构建一个可以使用匈牙利算法解决的分配问题。在这个问题的形式化中，我们通过结合两个合适的度量来整合运动和外观信息。 </p><p><strong>度量运动信息</strong></p><p>为了融入运动信息，我们使用预测的卡尔曼状态和新到达的测量之间的（平方的）马氏距离：<br>$$<br>d^{(1)}(i, j)&#x3D;\left(\boldsymbol{d}<em>{j}-\boldsymbol{y}</em>{i}\right)^{\mathrm{T}} \boldsymbol{S}<em>{i}^{-1}\left(\boldsymbol{d}</em>{j}-\boldsymbol{y}<em>{i}\right)<br>$$<br>我们用 $(y</em>{i}, S_{i})$ 表示第i个轨迹分布在测量空间中的投影，用 $d_{j}$ 表示第j个边界框检测。马氏距离考虑了状态估计的不确定性，通过衡量检测与平均轨迹位置之间相隔多少个标准差来计算。此外，利用这个度量指标，可以通过将马氏距离与从逆 $\chi^{2}$ 分布计算得到的 95% 置信区间进行阈值化，从而排除不太可能的关联。</p><p>我们用一个指示符来表示这个决策：<br>$$<br>b_{i, j}^{(1)}&#x3D;\mathbb{1}\left[d^{(1)}(i, j) \leq t^{(1)}\right]<br>$$<br>如果第i个轨迹和第j个检测之间的关联是可接受的，我们的指示符将评估为1。对于我们的四维测量空间，相应的马氏距离阈值为 $t^{(1)}$ &#x3D; 9.4877。</p><p><strong>度量外观信息</strong></p><p>尽管当运动不确定性较低时，马氏距离是一种适合的关联度量，但在我们的图像空间问题形式化中，从卡尔曼滤波框架得到的预测状态分布仅提供了对象位置的粗略估计。特别是，未考虑的相机运动可能会在图像平面上引入快速位移，使得马氏距离成为在遮挡情况下进行跟踪的一种相对缺乏信息的度量。因此，我们将第二个度量指标整合到分配问题中。对于每个边界框检测 $d_{j}$，我们计算出一个具有 $\left|\boldsymbol{r}<em>{j}\right|&#x3D;1$ 的外观描述符 $r</em>{j}$。此外，我们为每个轨迹k保留一个包含最近 $L_{k} &#x3D; 100$个相关外观描述符 $\left{\boldsymbol{r}<em>{k}^{(i)}\right}</em>{k&#x3D;1}^{L_{k}}$。然后，我们的第二个度量度量外观空间中第 i 个轨迹和第 j 个检测之间的最小余弦距离：<br>$$<br>d^{(2)}(i, j)&#x3D;\min \left{1-\boldsymbol{r}<em>{j}^{\mathrm{T}} \boldsymbol{r}</em>{k}^{(i)} \mid \boldsymbol{r}<em>{k}^{(i)} \in \mathcal{R}</em>{i}\right}<br>$$<br>我们引入一个二进制变量来指示根据这个度量指标是否可以接受关联：<br>$$<br>b_{i, j}^{(2)}&#x3D;\mathbb{1}\left[d^{(2)}(i, j) \leq t^{(2)}\right]<br>$$<br>并且我们在一个单独的训练数据集上找到适合这个指示变量的阈值。实际上，我们应用一个预训练的卷积神经网络来计算边界框的外观描述符。</p><p><strong>综合度量</strong></p><p>为了构建关联问题，我们使用加权和将两个度量结合起来：<br>$$<br>c_{i, j}&#x3D;\lambda d^{(1)}(i, j)+(1-\lambda) d^{(2)}(i, j) \ Eq. 5<br>$$<br>如果一个关联在两个度量的门控区域内，我们称之为可接受的关联：<br>$$<br>b_{i, j}&#x3D;\prod_{m&#x3D;1}^{2} b_{i, j}^{(m)} \<br>Eq. 6<br>$$</p><h1 id="3-级联匹配"><a href="#3-级联匹配" class="headerlink" title="3 级联匹配"></a>3 级联匹配</h1><p><strong>优先匹配距离上一次匹配成功的帧更少的 trick（维持信息更好的 trick）</strong></p><p>我们引入了一个级联结构来解决一系列子问题，而不是在全局关联问题中解决测量与轨迹的关联。为了解释这种方法的动机，考虑以下情况：当一个物体被遮挡了较长一段时间后，随后的卡尔曼滤波预测会增加与物体位置相关的不确定性。因此，概率质量在状态空间中扩散，观测似然变得不太尖锐。直观上，关联度量应该通过增加测量与轨迹之间的距离来考虑概率质量的扩散。令人意外的是，当两个轨迹争夺同一个检测时，马氏距离更偏向于较大的不确定性，因为它有效地减小了任何检测与预测轨迹均值之间的距离，以标准差为单位。这是一种不希望的行为，因为它可能导致轨迹碎片化和不稳定的轨迹。因此，我们引入了一个匹配级联结构，优先考虑更频繁出现的物体，以编码我们关于关联似然中概率扩散的观念：</p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true"><h1 id="4-外观特征提取"><a href="#4-外观特征提取" class="headerlink" title="4 外观特征提取"></a>4 外观特征提取</h1><p>通过使用简单的最近邻查询而无需额外的度量学习，我们的方法成功应用需要在实际的在线跟踪应用之前离线训练一个具有良好区分性的特征嵌入。为此，我们使用了一个在大规模行人重识别数据集上进行训练的 CNN，该数据集包含了超过 1,100,000 张 1,261 个行人的图像，非常适合在人员跟踪环境中进行深度度量学习。</p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96.png?raw=true">]]></content>
+    
+    
+    <categories>
+      
+      <category>论文解析</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>DeepSort、论文解析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>SlowFast 论文解析</title>
+    <link href="/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/"/>
+    <url>/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<p>SlowFast 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1812.03982.pdf">论文地址</a></p><h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h1><p><strong>相比于图像数据（h * w），视频数据（帧 * h * w）无法等价地处理所有的帧</strong></p><p>在图像识别中，习惯上对两个空间维度 x 和 y 进行对称处理。这是基于自然图像的统计学特征的合理性，自然图像在一级近似上是各向同性的，即所有方向的出现概率相等，并且具有平移不变性。但是对于视频信号 I(x, y, t) 呢？运动是时空方向的对应物，但并非所有时空方向的出现概率都相等。缓慢的运动比快速运动更常见（事实上，我们所看到的大部分物体在某一时刻是静止的），这一特点已被贝叶斯模型用于解释人类如何感知运动刺激。例如，当我们看到一个孤立的移动边缘时，我们会感知它垂直于自身移动，即使从原理上讲它也可能具有沿切线方向的任意移动分量（光流中的光圈问题）。如果先验偏向于缓慢的运动，这种感知是合理的。</p><p><strong>提出双路径(Slow 和 Fast)，Slow 提取空间信息，Fast 提取动作信息</strong></p><p>基于这个直觉，我们提出了一种用于视频识别的双路径（SlowFast）模型。其中一个路径旨在捕捉可以通过图像或少数稀疏帧提供的语义信息，它以低帧率和较慢的刷新速度进行操作。相比之下，另一个路径负责捕捉快速变化的运动，它以快速刷新速度和高时间分辨率进行操作。尽管这个路径具有较高的时间率，但它非常轻量级，例如，约占总计算量的20%。这是因为该路径的设计采用了较少的通道和较弱的处理空间信息的能力，而这些信息可以通过第一个路径以较少的冗余方式提供。我们将第一个路径称为Slow路径，将第二个路径称为Fast路径，这是由它们不同的时间速度驱动的。这两个路径通过横向连接进行融合。</p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true"><h1 id="2-网络结构"><a href="#2-网络结构" class="headerlink" title="2 网络结构"></a>2 网络结构</h1><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-"><h2 id="2-1-慢通道"><a href="#2-1-慢通道" class="headerlink" title="2.1 慢通道"></a>2.1 慢通道</h2><p>慢速路径可以是任何卷积模型，它将视频剪辑作为时空体进行处理。我们慢速路径的关键概念是在输入帧上使用较大的时间步长τ，即仅处理τ帧中的一帧。我们研究的典型τ值为16，这意味着对于30fps的视频，刷新速度大约为每秒采样2帧。将慢速路径采样的帧数表示为T，则原始剪辑的长度为T × τ帧。</p><h2 id="2-2-快通道"><a href="#2-2-快通道" class="headerlink" title="2.2 快通道"></a>2.2 快通道</h2><h3 id="2-2-1-High-frame-rate"><a href="#2-2-1-High-frame-rate" class="headerlink" title="2.2.1 High frame rate"></a>2.2.1 High frame rate</h3><p><strong>帧率高</strong></p><p>我们的目标是在时间维度上获得精细的表示。我们的快速通道使用小的时间跨度τ &#x2F; α，其中α &gt; 1是快速通道和慢速通道之间的帧速率比率。这两个通道在同一原始片段上操作，因此快速通道采样αT帧，比慢速通道密集了α倍。在我们的实验中，典型的值为α &#x3D; 8。</p><h3 id="2-2-2-High-temporal-resolution-features"><a href="#2-2-2-High-temporal-resolution-features" class="headerlink" title="2.2.2 High temporal resolution features"></a>2.2.2 High temporal resolution features</h3><p><strong>分辨率高</strong></p><p>我们的快速通道不仅具有高输入分辨率，还追求整个网络层次结构中的高分辨率特征。在我们的实例中，我们在快速通道中没有使用任何时间降采样层（既没有时间汇聚也没有时间步长卷积），直到分类之前的全局汇聚层。因此，我们的特征张量在时间维度上始终具有αT帧，尽可能地保持时间的准确性。</p><h3 id="2-2-3-Low-channel-capacity"><a href="#2-2-3-Low-channel-capacity" class="headerlink" title="2.2.3 Low channel capacity"></a>2.2.3 Low channel capacity</h3><p><strong>通道少</strong></p><p>我们的快速通道还与现有模型有所区别，它可以使用显著较低的通道容量来实现SlowFast模型的良好准确性。这使得它非常轻量化。</p><h2 id="2-3-Lateral-connections"><a href="#2-3-Lateral-connections" class="headerlink" title="2.3 Lateral connections"></a>2.3 Lateral connections</h2><p>我们的横向连接从快速通道融合到慢速通道。在融合之前，需要匹配特征的尺寸。假设慢速通道的特征形状为{T，S2，C}，快速通道的特征形状为{αT，S2，βC}。我们在横向连接中进行以下转换的实验：</p><ol><li><p>时间到通道：我们将{αT，S2，βC}重新调整形状并转置为{T，S2，αβC}，这意味着我们将所有的α帧打包到一个帧的通道中。</p></li><li><p>时间步长采样：我们简单地从每个α帧中采样一个，因此{αT，S2，βC}变为{T，S2，βC}。</p></li><li><p>时间步长卷积：我们使用5×12大小的内核进行3D卷积，输出通道数为2βC，步长为α。横向连接的输出通过求和或连接的方式融合到慢速通道中。</p></li></ol>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文解析</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>SlowFast、论文解析</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>YOLOv2 论文解析</title>
     <link href="/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/"/>
     <url>/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/</url>

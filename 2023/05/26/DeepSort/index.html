@@ -16,24 +16,25 @@
   <meta name="author" content="唐喜">
   <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
   
-    <meta name="description" content="YOLOv2 论文解析">
+    <meta name="description" content="DeepSort 论文解析">
 <meta property="og:type" content="article">
-<meta property="og:title" content="YOLOv2 论文解析">
-<meta property="og:url" content="https://vexentox.github.io/2023/05/25/YOLOv2%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:title" content="DeepSort 论文解析">
+<meta property="og:url" content="https://vexentox.github.io/2023/05/26/DeepSort/index.html">
 <meta property="og:site_name" content="唐喜的个人博客">
-<meta property="og:description" content="YOLOv2 论文解析">
+<meta property="og:description" content="DeepSort 论文解析">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://raw.githubusercontent.com/vexentox/reproduction/dad190f79839608ee59b76d89809a60bde7769b0/YOLOv1/weights/yolov1.cfg.svg">
-<meta property="article:published_time" content="2023-05-25T09:59:00.000Z">
-<meta property="article:modified_time" content="2023-05-25T11:34:05.847Z">
+<meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true">
+<meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96.png?raw=true">
+<meta property="article:published_time" content="2023-05-26T07:42:00.000Z">
+<meta property="article:modified_time" content="2023-05-26T09:10:26.865Z">
 <meta property="article:author" content="唐喜">
-<meta property="article:tag" content="YOLOv2、论文解析">
+<meta property="article:tag" content="DeepSort、论文解析">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://raw.githubusercontent.com/vexentox/reproduction/dad190f79839608ee59b76d89809a60bde7769b0/YOLOv1/weights/yolov1.cfg.svg">
+<meta name="twitter:image" content="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true">
   
   
   
-  <title>YOLOv2 论文解析 - 唐喜的个人博客</title>
+  <title>DeepSort 论文解析 - 唐喜的个人博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -199,7 +200,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="YOLOv2 论文解析"></span>
+            <span id="subtitle" data-typed-text="DeepSort 论文解析"></span>
           
         </div>
 
@@ -210,8 +211,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-25 17:59" pubdate>
-          2023年5月25日 下午
+        <time datetime="2023-05-26 15:42" pubdate>
+          2023年5月26日 下午
         </time>
       </span>
     
@@ -271,69 +272,34 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">YOLOv2 论文解析</h1>
+            <h1 style="display: none">DeepSort 论文解析</h1>
             
             
               <div class="markdown-body">
                 
-                <p>YOLOv2 论文解析</p>
+                <p>DeepSort 论文解析</p>
 <span id="more"></span>
-<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1506.02640.pdf">论文地址</a></p>
-<h1 id="改进">1 改进</h1>
-<h2 id="batch-normalization批量规范化">1.1 Batch
-Normalization（批量规范化）</h2>
-<p><strong>对每一层的输出向量进行归一化</strong></p>
-<p>批量归一化在收敛性方面取得了显著的改进，同时消除了其他形式的正则化的需求。通过在YOLO的所有卷积层上添加批量归一化，我们的mAP得到了超过2%的提高。批量归一化还有助于对模型进行正则化。通过批量归一化，我们可以在不过拟合的情况下移除模型中的dropout。</p>
-<h2 id="high-resolution-classifier">1.2 High Resolution Classifier</h2>
-<p><strong>将输入向量大小从 224 * 224 扩大到 448 * 448</strong></p>
-<p>所有最先进的检测方法都使用在ImageNet上预训练的分类器。从AlexNet开始，大多数分类器在小于256×256的输入图像上进行操作。最初的YOLO在224×224的分辨率下训练分类器网络，并将其增加到448用于检测。这意味着网络必须同时切换到学习目标检测并适应新的输入分辨率。</p>
-<p>对于YOLOv2，我们首先在ImageNet上对完整的448×448分辨率下的分类网络进行了10个epoch的微调。这给网络足够的时间来调整其滤波器，以更好地适应更高分辨率的输入。然后，我们对结果进行目标检测的微调。这个高分辨率分类网络使我们的mAP增加了近4%。</p>
-<h2 id="convolutional-with-anchor-boxes-anchor-boxes">1.3 Convolutional
-With Anchor Boxes (Anchor Boxes)</h2>
-<p><strong>使用 Anchor Boxes 机制，改变输出向量的意义（坐标 --&gt; 与
-Anchor Box
-的坐标差）和损失函数的计算方式（通过坐标差计算出预测坐标）</strong></p>
-<p>YOLO 直接使用全连接层在卷积特征提取器之上预测边界框的坐标。而Faster
-R-CNN则通过手动选择的先验框来预测边界框[15]。在Faster
-R-CNN中，仅使用卷积层的区域建议网络（RPN）为锚定框预测偏移量和置信度。由于预测层是卷积层，RPN在特征图的每个位置预测这些偏移量。预测偏移量而不是坐标简化了问题，并使网络更容易学习。</p>
-<p>我们从YOLO中移除全连接层，并使用锚定框来预测边界框。首先，我们去掉一个池化层，以使网络的卷积层输出更高分辨率。我们还将网络缩小，使其处理416×416的输入图像，而不是448×448。我们这样做是因为我们希望特征图中有奇数个位置，以便有一个单独的中心单元格。对象，特别是大对象，倾向于占据图像的中心，因此在中心位置预测这些对象比在附近的四个位置预测更好。YOLO的卷积层将图像下采样32倍，因此通过使用416的输入图像，我们得到一个13×13的输出特征图。</p>
-<p>当我们转向锚定框时，我们还将类别预测机制与空间位置解耦，并为每个锚定框预测类别和物体性质。在YOLO之后，物体性质预测仍然预测真实值和提议框的IOU，而类别预测则预测在存在物体的情况下给出该类别的条件概率。</p>
-<p>使用锚定框会导致准确率略微降低。YOLO每张图像仅预测98个框，但使用锚定框后，我们的模型预测超过一千个框。在没有锚定框的情况下，我们的中间模型的mAP为69.5%，召回率为81%。使用锚定框后，我们的模型的mAP为69.2%，召回率为88%。尽管mAP降低了，但召回率的增加意味着我们的模型有更大的改进空间。</p>
-<h2 id="dimension-clusters">1.4 Dimension Clusters</h2>
-<p><strong>kmeans 构造 Anchor Boxes</strong></p>
-<p>在使用YOLO时，锚定框存在两个问题。第一个问题是锚定框的尺寸是手动选择的。尽管网络可以学习适应性地调整锚定框，但如果我们在网络初始阶段选择更好的先验框，可以更容易地帮助网络学习预测良好的检测结果。
-为了避免手动选择先验框，我们在训练集的边界框上运行k-means聚类算法，自动地找到良好的先验框。</p>
-<h2 id="direct-location-prediction">1.5 Direct location prediction</h2>
-<p><strong>细说 1.3 中的坐标偏差</strong></p>
-<p>在使用YOLO的过程中，使用锚定框会遇到第二个问题：模型的不稳定性，尤其是在早期迭代阶段。大部分的不稳定性来自于对边界框的（x，y）位置的预测。在区域建议网络中，网络预测了tx和ty的值，而（x，y）中心坐标的计算方式如下：
-<span class="math display">\[
-\begin{matrix}x=(t_{x}*w_{\alpha })+x_{\alpha }  
-\\y=(t_{y}*w_{\alpha })+y_{\alpha }
-\end{matrix}
-\]</span> 例如，对于预测的tx =
-1，会将边界框向右平移一个锚定框的宽度，而tx =
--1的预测会将其向左平移相同的距离。这种表达方式是无约束的，因此任何锚定框都可能出现在图像的任何位置，无论哪个位置预测了该框。在随机初始化的情况下，模型需要很长时间才能稳定下来，以预测合理的偏移量。</p>
-<p>与预测偏移量不同，我们遵循YOLO的方法，预测相对于网格单元位置的坐标。这将使真实值限制在0到1之间。我们使用逻辑激活函数将网络的预测限制在此范围内。
-网络在输出特征图的每个单元格中预测5个边界框。网络为每个边界框预测5个坐标，tx、ty、tw、th和to。如果单元格相对于图像的左上角偏移了(cx，cy)，并且边界框先验具有宽度和高度pw、ph，则预测对应于：
-<span class="math display">\[
-\begin{matrix} b_{x}  =\sigma(t_{x})+c_{x}
-\\ b_{y}  =\sigma(t_{y})+c_{y} \\
-b_{w}  =p_{w} e^{t_{w}} \\
-b_{h}  =p_{h} e^{t_{h}} \\
-\operatorname{Pr}(\text { object }) * \operatorname{IOU}(b, \text {
-object })  =\sigma(t_{o})
-\end{matrix}
-\]</span></p>
-<p>由于我们对位置预测进行了约束，参数化更容易学习，从而使网络更加稳定。通过使用尺寸聚类以及直接预测边界框中心位置，相比使用锚定框的版本，YOLO的性能提高了近5%。</p>
-<h2 id="fine-grained-features">1.6 Fine-Grained Features</h2>
-<p><strong>降低特征提取网络输出的特征图的大小，增加输出通道</strong></p>
-<p>这种修改后的YOLO在一个13×13的特征图上进行目标检测。虽然这对于大型物体已经足够，但对于定位较小物体可能会受益于更精细的特征。Faster
-R-CNN和SSD都在网络的不同特征图上运行其候选框网络，以获得不同的分辨率。我们采取了不同的方法，只需添加一个传递层，将26×26分辨率的较早层的特征传递到当前层。
-传递层通过将高分辨率特征与低分辨率特征进行连接，将相邻特征堆叠到不同的通道中，而不是在空间位置上堆叠，类似于ResNet中的身份映射。这将26×26×512的特征图转换为13×13×2048的特征图，可以与原始特征进行级联。我们的检测器在这个扩展的特征图上运行，以便可以使用细粒度的特征。这使得性能增加了1%左右。</p>
-<h1 id="网络结构">网络结构</h1>
-<p><a
-target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet/blob/master/cfg/yolov1.cfg">cfg文件下载</a></p>
-<p><img src="https://raw.githubusercontent.com/vexentox/reproduction/dad190f79839608ee59b76d89809a60bde7769b0/YOLOv1/weights/yolov1.cfg.svg" srcset="/img/loading.gif" lazyload></p>
+
+<p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1703.07402.pdf">论文地址</a></p>
+<h1 id="1-轨道处理和状态估计"><a href="#1-轨道处理和状态估计" class="headerlink" title="1 轨道处理和状态估计"></a>1 轨道处理和状态估计</h1><p><strong>定义卡尔曼滤波状态 $(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$</strong></p>
+<p>我们假设相机未校准，且没有可用的自我运动信息，这是一个非常通用的跟踪场景。尽管这些情况对滤波框架构成了挑战，但它是最近多目标跟踪基准测试中最常见的设置。因此，我们的跟踪场景定义在八维状态空间<br>$$<br>(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})<br>$$<br>上，其中包含边界框中心位置 (u, v），纵横比 γ，高度 h 以及它们在图像坐标中的速度 $(\dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$。我们使用具有恒定速度运动和线性观测模型的标准卡尔曼滤波器，其中将边界坐标 $(u, v, \gamma , h)$ 直接作为对象状态的观测值。</p>
+<p><strong>如果某个 trick 连续 $A_{max}$ 帧无法匹配检测结果，则删除；如果某个检测结果无法关联 trick，则增加 trick</strong></p>
+<p>对于每个轨迹 k，我们计算自上次成功关联检测以来的帧数 $\alpha_{k}$。这个计数器在卡尔曼滤波器的预测过程中递增，并在轨迹与测量关联后重置为 0。超过预定义的最大年龄 $A_{max}$ 的轨迹被认为已经离开场景，并从轨迹集合中删除。对于无法与现有轨迹关联的每个检测，都会启动新的轨迹假设。这些新的轨迹在其前三帧中被分类为暂定状态。在此期间，我们期望在每个时间步骤中进行成功的测量关联，在它们的前三帧中没有成功与测量关联的轨迹将被删除。</p>
+<h1 id="2-分配问题"><a href="#2-分配问题" class="headerlink" title="2 分配问题"></a>2 分配问题</h1><p>解决预测的卡尔曼状态和新到达的测量之间的关联的传统方法是构建一个可以使用匈牙利算法解决的分配问题。在这个问题的形式化中，我们通过结合两个合适的度量来整合运动和外观信息。 </p>
+<p><strong>度量运动信息</strong></p>
+<p>为了融入运动信息，我们使用预测的卡尔曼状态和新到达的测量之间的（平方的）马氏距离：<br>$$<br>d^{(1)}(i, j)&#x3D;\left(\boldsymbol{d}<em>{j}-\boldsymbol{y}</em>{i}\right)^{\mathrm{T}} \boldsymbol{S}<em>{i}^{-1}\left(\boldsymbol{d}</em>{j}-\boldsymbol{y}<em>{i}\right)<br>$$<br>我们用 $(y</em>{i}, S_{i})$ 表示第i个轨迹分布在测量空间中的投影，用 $d_{j}$ 表示第j个边界框检测。马氏距离考虑了状态估计的不确定性，通过衡量检测与平均轨迹位置之间相隔多少个标准差来计算。此外，利用这个度量指标，可以通过将马氏距离与从逆 $\chi^{2}$ 分布计算得到的 95% 置信区间进行阈值化，从而排除不太可能的关联。</p>
+<p>我们用一个指示符来表示这个决策：<br>$$<br>b_{i, j}^{(1)}&#x3D;\mathbb{1}\left[d^{(1)}(i, j) \leq t^{(1)}\right]<br>$$<br>如果第i个轨迹和第j个检测之间的关联是可接受的，我们的指示符将评估为1。对于我们的四维测量空间，相应的马氏距离阈值为 $t^{(1)}$ &#x3D; 9.4877。</p>
+<p><strong>度量外观信息</strong></p>
+<p>尽管当运动不确定性较低时，马氏距离是一种适合的关联度量，但在我们的图像空间问题形式化中，从卡尔曼滤波框架得到的预测状态分布仅提供了对象位置的粗略估计。特别是，未考虑的相机运动可能会在图像平面上引入快速位移，使得马氏距离成为在遮挡情况下进行跟踪的一种相对缺乏信息的度量。因此，我们将第二个度量指标整合到分配问题中。对于每个边界框检测 $d_{j}$，我们计算出一个具有 $\left|\boldsymbol{r}<em>{j}\right|&#x3D;1$ 的外观描述符 $r</em>{j}$。此外，我们为每个轨迹k保留一个包含最近 $L_{k} &#x3D; 100$个相关外观描述符 $\left{\boldsymbol{r}<em>{k}^{(i)}\right}</em>{k&#x3D;1}^{L_{k}}$。然后，我们的第二个度量度量外观空间中第 i 个轨迹和第 j 个检测之间的最小余弦距离：<br>$$<br>d^{(2)}(i, j)&#x3D;\min \left{1-\boldsymbol{r}<em>{j}^{\mathrm{T}} \boldsymbol{r}</em>{k}^{(i)} \mid \boldsymbol{r}<em>{k}^{(i)} \in \mathcal{R}</em>{i}\right}<br>$$<br>我们引入一个二进制变量来指示根据这个度量指标是否可以接受关联：<br>$$<br>b_{i, j}^{(2)}&#x3D;\mathbb{1}\left[d^{(2)}(i, j) \leq t^{(2)}\right]<br>$$<br>并且我们在一个单独的训练数据集上找到适合这个指示变量的阈值。实际上，我们应用一个预训练的卷积神经网络来计算边界框的外观描述符。</p>
+<p><strong>综合度量</strong></p>
+<p>为了构建关联问题，我们使用加权和将两个度量结合起来：<br>$$<br>c_{i, j}&#x3D;\lambda d^{(1)}(i, j)+(1-\lambda) d^{(2)}(i, j) \ Eq. 5<br>$$<br>如果一个关联在两个度量的门控区域内，我们称之为可接受的关联：<br>$$<br>b_{i, j}&#x3D;\prod_{m&#x3D;1}^{2} b_{i, j}^{(m)} \<br>Eq. 6<br>$$</p>
+<h1 id="3-级联匹配"><a href="#3-级联匹配" class="headerlink" title="3 级联匹配"></a>3 级联匹配</h1><p><strong>优先匹配距离上一次匹配成功的帧更少的 trick（维持信息更好的 trick）</strong></p>
+<p>我们引入了一个级联结构来解决一系列子问题，而不是在全局关联问题中解决测量与轨迹的关联。为了解释这种方法的动机，考虑以下情况：当一个物体被遮挡了较长一段时间后，随后的卡尔曼滤波预测会增加与物体位置相关的不确定性。因此，概率质量在状态空间中扩散，观测似然变得不太尖锐。直观上，关联度量应该通过增加测量与轨迹之间的距离来考虑概率质量的扩散。令人意外的是，当两个轨迹争夺同一个检测时，马氏距离更偏向于较大的不确定性，因为它有效地减小了任何检测与预测轨迹均值之间的距离，以标准差为单位。这是一种不希望的行为，因为它可能导致轨迹碎片化和不稳定的轨迹。因此，我们引入了一个匹配级联结构，优先考虑更频繁出现的物体，以编码我们关于关联似然中概率扩散的观念：</p>
+<img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true" srcset="/img/loading.gif" lazyload>
+
+<h1 id="4-外观特征提取"><a href="#4-外观特征提取" class="headerlink" title="4 外观特征提取"></a>4 外观特征提取</h1><p>通过使用简单的最近邻查询而无需额外的度量学习，我们的方法成功应用需要在实际的在线跟踪应用之前离线训练一个具有良好区分性的特征嵌入。为此，我们使用了一个在大规模行人重识别数据集上进行训练的 CNN，该数据集包含了超过 1,100,000 张 1,261 个行人的图像，非常适合在人员跟踪环境中进行深度度量学习。</p>
+<img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96.png?raw=true" srcset="/img/loading.gif" lazyload>
+
 
                 
               </div>
@@ -367,7 +333,7 @@ target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet/blob/ma
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/yolov2%E3%80%81%E8%AE%BA%E6%96%87%E8%A7%A3%E6%9E%90/">#YOLOv2、论文解析</a>
+        <a href="/tags/deepsort%E3%80%81%E8%AE%BA%E6%96%87%E8%A7%A3%E6%9E%90/">#DeepSort、论文解析</a>
       
     </div>
   
@@ -379,8 +345,8 @@ target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet/blob/ma
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>YOLOv2 论文解析</div>
-      <div>https://vexentox.github.io/2023/05/25/YOLOv2解析/</div>
+      <div>DeepSort 论文解析</div>
+      <div>https://vexentox.github.io/2023/05/26/DeepSort/</div>
     </div>
     <div class="license-meta">
       
@@ -392,7 +358,7 @@ target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet/blob/ma
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月25日</div>
+          <div>2023年5月26日</div>
         </div>
       
       
@@ -424,18 +390,12 @@ target="_blank" rel="noopener" href="https://github.com/pjreddie/darknet/blob/ma
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/" title="SlowFast 论文解析">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">SlowFast 论文解析</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/24/YOLOv1%E8%A7%A3%E6%9E%90/" title="YOLOv1 论文解析">
-                        <span class="hidden-mobile">YOLOv1 论文解析</span>
+                      <a href="/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/" title="SlowFast 论文解析">
+                        <span class="hidden-mobile">SlowFast 论文解析</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
