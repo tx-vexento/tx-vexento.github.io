@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>Natural Attack for Pre-Trained Models of Code</title>
+    <link href="/2023/07/22/ALERT/"/>
+    <url>/2023/07/22/ALERT/</url>
+    
+    <content type="html"><![CDATA[<p>ALERT 论文笔记</p><span id="more"></span><h1 id="问题">1 问题</h1><ul><li><p>目前代码模型攻击研究侧重于保留操作语义（通过机器审查），但是缺乏自然语义（通过人审查），可能无法通过<ahref="https://yidatao.github.io/paper/tao_icsme2014.pdf">代码审查</a>。</p></li><li><p><ahref="https://ojs.aaai.org/index.php/AAAI/article/view/5469#:~:text=Zhang%2C%20H.%2C%20Li%2C%20Z.%2C%20Li%2C%20G.%2C%20Ma%2C%20L.%2C,Conference%20on%20Artificial%20Intelligence%2C%2034%20%2801%29%2C%201169-1176.%20https%3A%2F%2Fdoi.org%2F10.1609%2Faaai.v34i01.5469">MHM</a>随机样本策略较慢。</p></li></ul><h1 id="方法">2 方法</h1><h2 id="生成变量替代表">2.1 生成变量替代表</h2><h3 id="处理一个变量">2.1.1 处理一个变量</h3><ol type="1"><li><p>分词。使用 <a href="https://arxiv.org/pdf/1508.07909.pdf">BPE</a>将源代码中包含的许多特定领域的缩写词、行话及其组合分成若干 tokens，解决<a href="https://arxiv.org/pdf/2003.07914.pdf">out-of-vocabulary问题</a>。例如： <span class="math display">\[index2dict --&gt; index, 2, dict\]</span></p></li><li><p>对 token 生成替代项。对于一个被分词的变量名 <spanclass="math display">\[T=\left\langle t_{1}, t_{2}, \cdots, t_{m}\right\rangle\]</span> 其中的每个子 token，利用 <ahref="https://arxiv.org/abs/2002.08155">CodeBERT</a> 和 <ahref="https://arxiv.org/abs/2009.08366">GraphCodeBERT</a>的<strong>掩码预测功能</strong>生成该 token 的替代项列表 <spanclass="math display">\[T^{&#39;}=\left\langle t_{1}^{&#39;}, t_{2}^{&#39;}, \cdots,t_{m}^{&#39;}\right\rangle\]</span></p></li><li><p>排序。对于生成的替代项列表中的每个替代项，利用 <ahref="https://arxiv.org/abs/2002.08155">CodeBERT</a> 和 <ahref="https://arxiv.org/abs/2009.08366">GraphCodeBERT</a>的上下文嵌入功能将其转化为向量，将所有向量连接，计算与 <spanclass="math inline">\(T\)</span>的嵌入向量的余弦相似度，并按其降序排列，取相似度更高的替代项。</p></li></ol><h3 id="处理多个变量">2.1.2 处理多个变量</h3><p>枚举每一个变量的每一个出现的位置，计算此处该变量的替代项，将替代项加入该变量的替代项列表。最后删除重复和无效的单词。</p><p>伪代码如下：</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/1.png?raw=true" /></p><h2 id="贪心算法攻击">2.2 贪心算法攻击</h2><h3 id="重要性分数">2.2.1 重要性分数</h3><p>​ 定义变量的重要性分数，确定被修改的变量。设 <spanclass="math inline">\(y\)</span> 是代码 <spanclass="math inline">\(c\)</span> 的真实标签，<spanclass="math inline">\(M(c)[y]\)</span> 是模型 <spanclass="math inline">\(M\)</span> 预测代码 <spanclass="math inline">\(c\)</span> 对于标签 <spanclass="math inline">\(y\)</span> 的置信度，<spanclass="math inline">\(c_{-i}^{*}\)</span> 是将代码 <spanclass="math inline">\(c\)</span> 中的第 <spanclass="math inline">\(i\)</span> 个 token 替换为 <spanclass="math inline">\(&lt;unk&gt;\)</span> 的代码，<spanclass="math inline">\(M(c_{-i}^{*})[y]\)</span> 是模型 <spanclass="math inline">\(M\)</span> 预测代码 <spanclass="math inline">\(c_{-i}^{*}\)</span> 对于标签 <spanclass="math inline">\(y\)</span> 的置信度，定义第 <spanclass="math inline">\(i\)</span> 个 token 的的重要性分数为 <spanclass="math display">\[IS_{i}=M(c)[y]-M\left(c_{-i}^{*}\right)[y]\]</span> ，即为将第 <span class="math inline">\(i\)</span> 个 token替换为 <unk> 后模型置信度的下降程度，下降的越多，说明越重要。</p><p>​ 每个 token 可能出现若干次，因此将重要性分数拓展为 <spanclass="math display">\[OIS_{var}=\sum_{i \in \operatorname{var}[\text { pos }]} IS_{i}\]</span> ，即将 token 的每个出现位置处的 <spanclass="math inline">\(IS_{i}\)</span> 相加，得到该 token的总体重要性分数。</p><h3 id="贪心">2.2.2 贪心</h3><p>​ 贪心地对 <span class="math inline">\(OIS_{var]}\)</span> 更高的token进行替换，直到攻击成功，即改变模型的输出。如果都未成功，则选用使模型预测置信度下降最大的那个token。</p><p>​ 伪代码如下：</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/2.png?raw=true" /></p><h2 id="遗传算法攻击">2.3 遗传算法攻击</h2><h1 id="实验">3 实验</h1><h2 id="任务与数据集">3.1 任务与数据集</h2><ul><li><p>漏洞检测【判断代码是否有漏洞】：<ahref="https://arxiv.org/abs/1909.03496">Devign 数据集</a>，<ahref="https://arxiv.org/abs/2102.04664">CodeXGLUE 基准数据集</a>的一部分。</p></li><li><p>克隆检测【判断两份代码在操作语义上是否一致】：<ahref="https://www.cs.usask.ca/~croy/papers/2014/SvajlenkoICSME2014BigERA.pdf">BigCloneBench基准数据集</a>。</p></li><li><p>作者分类【预测代码的作者】：<ahref="https://dl.acm.org/doi/10.1145/3292577">Google Code Jam (GCJ)数据集</a>。</p></li></ul><h2 id="目标模型">3.2 目标模型</h2><ul><li><a href="https://arxiv.org/abs/2002.08155">CodeBERT</a></li><li><a href="https://arxiv.org/abs/2009.08366">GraphCodeBert</a></li></ul><p>将两个模型在三个任务上分别进行微调，得到如下结果</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/4.png?raw=true" /></p><h2 id="结果">3.3 结果</h2><h3 id="自然度用户调查">3.3.1 自然度用户调查</h3><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/5.png?raw=true" /></p><h3 id="攻击有效性评估">3.3.2 攻击有效性评估</h3><p>定义三种评估指标：</p><ul><li>Attack Success Rate(ASR)：攻击成功的代码片段数占总代码片段数的比例。</li><li>Variable Change Rate(VCR)：代码中被重命名的变量占总变量的比例。</li><li>Number of Queries (NoQ)：对受害者模型的访问次数。</li></ul><p>结果如下</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/7.png?raw=true" /></p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/ALERT/8.png?raw=true" /></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文笔记</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>ALERT</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>DeepSort 论文解析</title>
     <link href="/2023/05/26/DeepSort/"/>
     <url>/2023/05/26/DeepSort/</url>
