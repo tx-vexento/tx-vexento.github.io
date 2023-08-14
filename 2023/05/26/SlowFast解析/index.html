@@ -26,7 +26,7 @@
 <meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true">
 <meta property="og:image" content="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-">
 <meta property="article:published_time" content="2023-05-26T03:42:00.000Z">
-<meta property="article:modified_time" content="2023-05-26T07:54:26.952Z">
+<meta property="article:modified_time" content="2023-08-12T01:37:04.436Z">
 <meta property="article:author" content="唐喜">
 <meta property="article:tag" content="SlowFast、论文解析">
 <meta name="twitter:card" content="summary_large_image">
@@ -279,31 +279,43 @@
                 
                 <p>SlowFast 论文解析</p>
 <span id="more"></span>
-
 <p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1812.03982.pdf">论文地址</a></p>
-<h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h1><p><strong>相比于图像数据（h * w），视频数据（帧 * h * w）无法等价地处理所有的帧</strong></p>
-<p>在图像识别中，习惯上对两个空间维度 x 和 y 进行对称处理。这是基于自然图像的统计学特征的合理性，自然图像在一级近似上是各向同性的，即所有方向的出现概率相等，并且具有平移不变性。但是对于视频信号 I(x, y, t) 呢？运动是时空方向的对应物，但并非所有时空方向的出现概率都相等。缓慢的运动比快速运动更常见（事实上，我们所看到的大部分物体在某一时刻是静止的），这一特点已被贝叶斯模型用于解释人类如何感知运动刺激。例如，当我们看到一个孤立的移动边缘时，我们会感知它垂直于自身移动，即使从原理上讲它也可能具有沿切线方向的任意移动分量（光流中的光圈问题）。如果先验偏向于缓慢的运动，这种感知是合理的。</p>
-<p><strong>提出双路径(Slow 和 Fast)，Slow 提取空间信息，Fast 提取动作信息</strong></p>
+<h1 id="引言">1 引言</h1>
+<p><strong>相比于图像数据（h * w），视频数据（帧 * h *
+w）无法等价地处理所有的帧</strong></p>
+<p>在图像识别中，习惯上对两个空间维度 x 和 y
+进行对称处理。这是基于自然图像的统计学特征的合理性，自然图像在一级近似上是各向同性的，即所有方向的出现概率相等，并且具有平移不变性。但是对于视频信号
+I(x, y, t)
+呢？运动是时空方向的对应物，但并非所有时空方向的出现概率都相等。缓慢的运动比快速运动更常见（事实上，我们所看到的大部分物体在某一时刻是静止的），这一特点已被贝叶斯模型用于解释人类如何感知运动刺激。例如，当我们看到一个孤立的移动边缘时，我们会感知它垂直于自身移动，即使从原理上讲它也可能具有沿切线方向的任意移动分量（光流中的光圈问题）。如果先验偏向于缓慢的运动，这种感知是合理的。</p>
+<p><strong>提出双路径(Slow 和 Fast)，Slow 提取空间信息，Fast
+提取动作信息</strong></p>
 <p>基于这个直觉，我们提出了一种用于视频识别的双路径（SlowFast）模型。其中一个路径旨在捕捉可以通过图像或少数稀疏帧提供的语义信息，它以低帧率和较慢的刷新速度进行操作。相比之下，另一个路径负责捕捉快速变化的运动，它以快速刷新速度和高时间分辨率进行操作。尽管这个路径具有较高的时间率，但它非常轻量级，例如，约占总计算量的20%。这是因为该路径的设计采用了较少的通道和较弱的处理空间信息的能力，而这些信息可以通过第一个路径以较少的冗余方式提供。我们将第一个路径称为Slow路径，将第二个路径称为Fast路径，这是由它们不同的时间速度驱动的。这两个路径通过横向连接进行融合。</p>
-<img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true" srcset="/img/loading.gif" lazyload>
-
-<h1 id="2-网络结构"><a href="#2-网络结构" class="headerlink" title="2 网络结构"></a>2 网络结构</h1><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-" srcset="/img/loading.gif" lazyload>
-
-<h2 id="2-1-慢通道"><a href="#2-1-慢通道" class="headerlink" title="2.1 慢通道"></a>2.1 慢通道</h2><p>慢速路径可以是任何卷积模型，它将视频剪辑作为时空体进行处理。我们慢速路径的关键概念是在输入帧上使用较大的时间步长τ，即仅处理τ帧中的一帧。我们研究的典型τ值为16，这意味着对于30fps的视频，刷新速度大约为每秒采样2帧。将慢速路径采样的帧数表示为T，则原始剪辑的长度为T × τ帧。</p>
-<h2 id="2-2-快通道"><a href="#2-2-快通道" class="headerlink" title="2.2 快通道"></a>2.2 快通道</h2><h3 id="2-2-1-High-frame-rate"><a href="#2-2-1-High-frame-rate" class="headerlink" title="2.2.1 High frame rate"></a>2.2.1 High frame rate</h3><p><strong>帧率高</strong></p>
-<p>我们的目标是在时间维度上获得精细的表示。我们的快速通道使用小的时间跨度τ &#x2F; α，其中α &gt; 1是快速通道和慢速通道之间的帧速率比率。这两个通道在同一原始片段上操作，因此快速通道采样αT帧，比慢速通道密集了α倍。在我们的实验中，典型的值为α &#x3D; 8。</p>
-<h3 id="2-2-2-High-temporal-resolution-features"><a href="#2-2-2-High-temporal-resolution-features" class="headerlink" title="2.2.2 High temporal resolution features"></a>2.2.2 High temporal resolution features</h3><p><strong>分辨率高</strong></p>
+<p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true" srcset="/img/loading.gif" lazyload></p>
+<h1 id="网络结构">2 网络结构</h1>
+<p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-" srcset="/img/loading.gif" lazyload></p>
+<h2 id="慢通道">2.1 慢通道</h2>
+<p>慢速路径可以是任何卷积模型，它将视频剪辑作为时空体进行处理。我们慢速路径的关键概念是在输入帧上使用较大的时间步长τ，即仅处理τ帧中的一帧。我们研究的典型τ值为16，这意味着对于30fps的视频，刷新速度大约为每秒采样2帧。将慢速路径采样的帧数表示为T，则原始剪辑的长度为T
+× τ帧。</p>
+<h2 id="快通道">2.2 快通道</h2>
+<h3 id="high-frame-rate">2.2.1 High frame rate</h3>
+<p><strong>帧率高</strong></p>
+<p>我们的目标是在时间维度上获得精细的表示。我们的快速通道使用小的时间跨度τ
+/ α，其中α &gt;
+1是快速通道和慢速通道之间的帧速率比率。这两个通道在同一原始片段上操作，因此快速通道采样αT帧，比慢速通道密集了α倍。在我们的实验中，典型的值为α
+= 8。</p>
+<h3 id="high-temporal-resolution-features">2.2.2 High temporal
+resolution features</h3>
+<p><strong>分辨率高</strong></p>
 <p>我们的快速通道不仅具有高输入分辨率，还追求整个网络层次结构中的高分辨率特征。在我们的实例中，我们在快速通道中没有使用任何时间降采样层（既没有时间汇聚也没有时间步长卷积），直到分类之前的全局汇聚层。因此，我们的特征张量在时间维度上始终具有αT帧，尽可能地保持时间的准确性。</p>
-<h3 id="2-2-3-Low-channel-capacity"><a href="#2-2-3-Low-channel-capacity" class="headerlink" title="2.2.3 Low channel capacity"></a>2.2.3 Low channel capacity</h3><p><strong>通道少</strong></p>
+<h3 id="low-channel-capacity">2.2.3 Low channel capacity</h3>
+<p><strong>通道少</strong></p>
 <p>我们的快速通道还与现有模型有所区别，它可以使用显著较低的通道容量来实现SlowFast模型的良好准确性。这使得它非常轻量化。</p>
-<h2 id="2-3-Lateral-connections"><a href="#2-3-Lateral-connections" class="headerlink" title="2.3 Lateral connections"></a>2.3 Lateral connections</h2><p>我们的横向连接从快速通道融合到慢速通道。在融合之前，需要匹配特征的尺寸。假设慢速通道的特征形状为{T，S2，C}，快速通道的特征形状为{αT，S2，βC}。我们在横向连接中进行以下转换的实验：</p>
-<ol>
-<li><p>时间到通道：我们将{αT，S2，βC}重新调整形状并转置为{T，S2，αβC}，这意味着我们将所有的α帧打包到一个帧的通道中。</p>
-</li>
-<li><p>时间步长采样：我们简单地从每个α帧中采样一个，因此{αT，S2，βC}变为{T，S2，βC}。</p>
-</li>
-<li><p>时间步长卷积：我们使用5×12大小的内核进行3D卷积，输出通道数为2βC，步长为α。横向连接的输出通过求和或连接的方式融合到慢速通道中。</p>
-</li>
+<h2 id="lateral-connections">2.3 Lateral connections</h2>
+<p>我们的横向连接从快速通道融合到慢速通道。在融合之前，需要匹配特征的尺寸。假设慢速通道的特征形状为{T，S2，C}，快速通道的特征形状为{αT，S2，βC}。我们在横向连接中进行以下转换的实验：</p>
+<ol type="1">
+<li><p>时间到通道：我们将{αT，S2，βC}重新调整形状并转置为{T，S2，αβC}，这意味着我们将所有的α帧打包到一个帧的通道中。</p></li>
+<li><p>时间步长采样：我们简单地从每个α帧中采样一个，因此{αT，S2，βC}变为{T，S2，βC}。</p></li>
+<li><p>时间步长卷积：我们使用5×12大小的内核进行3D卷积，输出通道数为2βC，步长为α。横向连接的输出通过求和或连接的方式融合到慢速通道中。</p></li>
 </ol>
 
                 
@@ -323,8 +335,15 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E8%AE%BA%E6%96%87%E8%A7%A3%E6%9E%90/" class="category-chain-item">论文解析</a>
+  <a href="/categories/%E8%AE%BA%E6%96%87/" class="category-chain-item">论文</a>
   
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%BA%E6%96%87/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" class="category-chain-item">计算机视觉</a>
+  
+  
+
   
 
       </span>

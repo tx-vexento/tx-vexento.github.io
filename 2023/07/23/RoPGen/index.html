@@ -1,0 +1,916 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="RoPGen 论文笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation">
+<meta property="og:url" content="https://vexentox.github.io/2023/07/23/RoPGen/index.html">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="RoPGen 论文笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-07-23T00:58:00.000Z">
+<meta property="article:modified_time" content="2023-08-12T07:11:52.828Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="RoPGen">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation - 唐喜的个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>唐喜的个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-23 08:58" pubdate>
+          2023年7月23日 早上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          2.4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          21 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>RoPGen 论文笔记</p>
+<span id="more"></span>
+<h1 id="问题">1 问题</h1>
+<h1 id="编码风格">2 编码风格</h1>
+<ul>
+<li>token 级别属性
+<ul>
+<li>#1 标识符命名方法</li>
+<li>#2 临时变量的使用</li>
+<li>#3 非临时局部标识符名称的使用</li>
+<li>#4 全局变量的使用</li>
+<li>#5 数组/指针元素的访问</li>
+</ul></li>
+<li>语句级别属性
+<ul>
+<li>#6 定义局部变量的位置</li>
+<li>#7 初始化局部变量的位置</li>
+<li>#8 相同类型多个变量的定义（和初始化）</li>
+<li>#9 变量赋值</li>
+<li>#10 自增/自减操作</li>
+<li>#11 用户定义的类型</li>
+<li>#12 宏命令</li>
+<li>#13 包含的头文件或导入的类</li>
+<li>#14 返回语句的使用</li>
+<li>#15 名称空间的使用</li>
+<li>#16 与 stdio 的同步</li>
+<li>#17 流重定向</li>
+<li>#18 库函数调用</li>
+<li>#19 内存分配</li>
+</ul></li>
+<li>基本块级属性
+<ul>
+<li>#20 循环结构</li>
+<li>#21 条件结构</li>
+<li>#22 复合if语句</li>
+</ul></li>
+<li>函数级属性
+<ul>
+<li>#23 函数的使用</li>
+</ul></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/1.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​</p>
+<h1 id="攻击方法">3 攻击方法</h1>
+<h2 id="自动编码风格模仿攻击">3.1 自动编码风格模仿攻击</h2>
+<p>​ 目标攻击。设作者集合为 <span
+class="math inline">\(\mathcal{A}\)</span> ，原作者 <span
+class="math inline">\(A_{s}\)</span> 撰写的程序为 <span
+class="math inline">\(p\)</span>，目标作者 <span
+class="math inline">\(A_{t}\)</span> 编写的程序集合为 <span
+class="math inline">\(R\)</span>，目的是将 <span
+class="math inline">\(p\)</span> 转化为 <span
+class="math inline">\(p^{&#39;}\)</span>，使得模型 <span
+class="math inline">\(M\)</span> 将其预测为 <span
+class="math inline">\(A_{t}\)</span>。</p>
+<ol type="1">
+<li><p><strong>提取特征</strong>。提取原作者程序 <span
+class="math inline">\(p\)</span> 和目标作者程序集 <span
+class="math inline">\(R\)</span>的编码特征。</p></li>
+<li><p><strong>特征合成</strong>。将从目标作者程序集 <span
+class="math inline">\(R\)</span> 中提取的特征合成。</p>
+<ul>
+<li>数字特征：取平均值</li>
+<li>非数字特征：枚举，按照出现频率降序排列</li>
+</ul></li>
+<li><p><strong>识别差异</strong>。识别出 <span
+class="math inline">\(p\)</span> 和 <span
+class="math inline">\(R\)</span> 的差异特征。</p>
+<ul>
+<li>数字：<span class="math inline">\(p\)</span> 中的属性和 <span
+class="math inline">\(R\)</span> 中的属性差值大于阈值；</li>
+<li>非数字：<span class="math inline">\(p\)</span> 中的属性非 <span
+class="math inline">\(R\)</span> 中的属性的子集。</li>
+</ul></li>
+<li><p><strong>代码转换</strong>。更改 <span
+class="math inline">\(p\)</span> 中识别出来的差异特征。</p>
+<p>示例如下：</p></li>
+</ol>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/2.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="自动编码风格隐藏攻击">3.2 自动编码风格隐藏攻击</h2>
+<p>​ 非目标攻击。</p>
+<ol type="1">
+<li><strong>提取原作者特征</strong>。提取原作者程序 <span
+class="math inline">\(p\)</span> 的编码特征。</li>
+<li><strong>提取其他作者特征</strong>。对于任意 <span
+class="math inline">\(A_{d} \in
+\mathcal{A}-\left\{A_{s}\right\}\)</span>，提取 <span
+class="math inline">\(A_{d}\)</span> 的编码特征。</li>
+<li><strong>计算待修改行数</strong>。对于任意 <span
+class="math inline">\(A_{d} \in
+\mathcal{A}-\left\{A_{s}\right\}\)</span>，计算和 <span
+class="math inline">\(p\)</span>
+的差异特征，然后计算需要修改的代码行数，选取行数修改最多的那个，记为
+<span class="math inline">\(A_{u} \in
+\mathcal{A}-\left\{A_{s}\right\}\)</span>。</li>
+<li><strong>代码转换</strong>。更改 <span
+class="math inline">\(p\)</span> 和 <span
+class="math inline">\(A_{u}\)</span> 程序集的差异特征。</li>
+</ol>
+<h1 id="训练方法">4 训练方法</h1>
+<p>​ 数据增强（1.
+<strong>编码风格模仿</strong>；2.<strong>编码风格扰动</strong>）和梯度增强（3.<strong>模型训练</strong>）。</p>
+<p>数据包括：</p>
+<ul>
+<li>原始的训练样本及其标签</li>
+<li>目标作者的集合</li>
+<li>针对模型的对抗样本</li>
+</ul>
+<p>具体方法如下：</p>
+<ol type="1">
+<li><p><strong>编码风格模仿</strong>。对于每个样本标签对，对于每个目标作者，使用模仿攻击将该样本转化为对抗样本，使得模型预测为该目标作者。该步骤产生的样本记为
+<span class="math inline">\(U\)</span>。</p></li>
+<li><p><strong>编码风格扰动</strong>。</p>
+<ul>
+<li>将<strong>编码风格模仿</strong>生成对抗样本的方法实施到其他原始样本上</li>
+<li>随机修改原始样本的编码属性</li>
+</ul>
+<p>该步骤产生的基本记为 <span
+class="math inline">\(U^{’}\)</span>。</p></li>
+</ol>
+<p>流程如下：</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/3.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<ol start="3" type="1">
+<li><p><strong>模型训练</strong>。每次迭代的步骤如下：</p>
+<ul>
+<li>完整的正向传播和损失计算。使用 1.<strong>编码风格模仿
+</strong>产生的对抗样本 <span class="math inline">\(U\)</span>
+作为输入，在模型中进行前向传递，并计算损失：</li>
+</ul>
+<p><span class="math display">\[
+L_{s t d}=l(\mathcal{N}(\theta, u), v)
+\]</span></p>
+<ul>
+<li>子网络采样。对每一层的节点进行采样，得到子网络</li>
+</ul>
+<p><span class="math display">\[
+\mathcal{N}_{1}, \ldots, \mathcal{N}_{n}
+\]</span></p>
+<ul>
+<li>子网络的正向传播和损失计算。使用 2.<strong>编码风格扰动
+</strong>产生的对抗样本 <span
+class="math inline">\(U^{&#39;&#39;}\)</span>
+作为输入，在模型中进行前向传递，并计算损失: <span
+class="math display">\[
+L_{\text {subnet }}=\sum_{j=1}^{n}
+l\left(\mathcal{N}\left(\theta_{w_{j}}, u^{\prime}\right),
+v^{\prime}\right)
+\]</span></li>
+</ul></li>
+<li><p><strong>计算总损失</strong>。全网络损失和子网络损失之和： <span
+class="math display">\[
+L_{\text {RoPGen }}=L_{\text {std }}+L_{\text {subnet }}
+\]</span></p></li>
+<li><p><strong>更新模型权重</strong>。反向传递计算增强的梯度。完整网络的梯度为：</p></li>
+</ol>
+<p><span class="math display">\[
+g_{s t d}=\frac{\partial l(\mathcal{N}(\theta, u), v)}{\partial \theta}
+\]</span></p>
+<p>​ 子网络的梯度为： <span class="math display">\[
+g_{\text {subnet }}=\sum_{j=1}^{n} \frac{\partial
+l\left(\mathcal{N}\left(\theta_{w_{j}}, u^{\prime}\right),
+v^{\prime}\right)}{\partial \theta_{w_{j}}}
+\]</span> ​ 增强后的梯度为： <span class="math display">\[
+g_{\text {RoPGen }}=g_{\text {std }}+g_{\text {subnet }}
+\]</span> ​
+更新权重（完整网络和自网络共享），让网络的不同部分学习不同的表示。</p>
+<h1 id="实验">5 实验</h1>
+<h2 id="数据集">5.1 数据集</h2>
+<ul>
+<li><p>GCJ-C++。<a target="_blank" rel="noopener" href="https://arxiv.org/abs/1905.12386">Google Code
+Jam (GCJ)</a> 中 204 位作者的 1632 个 C++ 程序文件，每个程序文件平均有
+74 行代码。</p></li>
+<li><p>GitHub-Java。<a
+target="_blank" rel="noopener" href="https://pubmed.ncbi.nlm.nih.gov/29095934/">GitHub</a> 中 40
+位作者的 2827 个 Java 程序文件，每个程序文件平均有 76 行代码。</p></li>
+<li><p>GitHub-C。GitHub 中 67 位作者的 2072 个 C
+文件，每个程序文件平均有 88 行代码。</p></li>
+<li><p>GCJ-Java。Google Code Jam (GCJ) 中 74 个作者的 2396 个 Java
+文件，每个程序文件平均有 139 行代码。</p></li>
+</ul>
+<h2 id="目标模型">5.2 目标模型</h2>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="https://www.cs.ucf.edu/~mohaisen/doc/ccs18.pdf">DL-CAIS</a></p></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2001.11593">PbNN</a></p></li>
+</ul>
+<p>在数据集上的准确率如下：</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/4.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="实验结果">5.3 实验结果</h2>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/5.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 表 3 显示了两种基于dl的归因方法在四个数据集上的攻击成功率。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/6.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 图 3 表明了</p>
+<ul>
+<li>测试集中涉及𝑟变换的被操纵程序占测试集中所有被操纵程序的比例。</li>
+<li>两种基于dl的归因方法下，涉及𝑟变换的被操纵程序在测试集中攻击成功的被操纵程序占测试集中所有被操纵程序的比例。</li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/7.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 表 4 总结了每个 DL
+模型随机替换五次的平均结果和提出的攻击方法的对比。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/8.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 表 5 总结了在变量为 1, 3, 5 时 DL-CAIS
+的攻击成功率。这表明应用更多的代码转换可以增加模仿或隐藏编码风格的成功率。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/RoPGen/9.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 表 6 显示了 8 个基于 ropgen 的模型的精度。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87/" class="category-chain-item">论文</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%BA%E6%96%87/ai-%E5%AE%89%E5%85%A8/" class="category-chain-item">AI 安全</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/ropgen/">#RoPGen</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation</div>
+      <div>https://vexentox.github.io/2023/07/23/RoPGen/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月23日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/08/aug-imodels/" title="Augmenting Interpretable Models With LLMs During Training">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Augmenting Interpretable Models With LLMs During Training</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/22/ALERT/" title="Natural Attack for Pre-Trained Models of Code">
+                        <span class="hidden-mobile">Natural Attack for Pre-Trained Models of Code</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

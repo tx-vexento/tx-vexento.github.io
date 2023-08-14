@@ -1,0 +1,809 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="Aug-imodels 论文笔记；Aug-imodels 代码解读">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Augmenting Interpretable Models With LLMs During Training">
+<meta property="og:url" content="https://vexentox.github.io/2023/08/08/aug-imodels/index.html">
+<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:description" content="Aug-imodels 论文笔记；Aug-imodels 代码解读">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-08T12:17:00.000Z">
+<meta property="article:modified_time" content="2023-08-12T13:35:07.096Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="Aug-imodels">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+  
+  <title>Augmenting Interpretable Models With LLMs During Training - 唐喜的个人博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>唐喜的个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Augmenting Interpretable Models With LLMs During Training"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-08 20:17" pubdate>
+          2023年8月8日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          7.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          60 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Augmenting Interpretable Models With LLMs During Training</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>Aug-imodels 论文笔记；Aug-imodels 代码解读</p>
+<span id="more"></span>
+<p>论文地址：<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2209.11799">https://arxiv.org/abs/2209.11799</a></p>
+<p>代码地址：<a
+target="_blank" rel="noopener" href="https://github.com/microsoft/augmented-interpretable-models">https://github.com/microsoft/augmented-interpretable-models</a></p>
+<h1 id="问题">1 问题</h1>
+<ul>
+<li>大模型性能好，但是可解释性差、计算成本高</li>
+<li>传统机器学习可解释性好、计算成本低，但是性能较差</li>
+<li>传统机器学习处理语言任务时，特征维度随着数据集的扩大而指数级地增长；且无法学习数据集中没有的知识</li>
+</ul>
+<h1 id="aug-gam">2 Aug-GAM</h1>
+<p>​ 利用预训练好的大模型为每个 ngram 提取固定大小的特征；拟合模型为 GAM
+[LogisticRegressionCV]，保证可解释性： <span class="math display">\[
+g(\mathbb{E}[y])=\beta+w^{T} \sum_{i} \phi\left(x_{i}\right)
+\]</span></p>
+<h2 id="预测流程">2.1 预测流程</h2>
+<ol type="1">
+<li>提取 ngram：利用分词器提取 ngram</li>
+<li>提取特征（嵌入）：通过 LLM 为每个 ngram 提取特征</li>
+<li>特征求和：将每个 ngram 提取的特征求和，形成固定大小的特征</li>
+<li>GAM 预测：将特征输入 GAM 进行预测</li>
+</ol>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/1.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="代码解析">2.2 代码解析</h2>
+<h3 id="定义">2.2.1 定义</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AugGAM</span>(<span class="hljs-title class_ inherited__">BaseEstimator</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        checkpoint: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;bert-base-uncased&#x27;</span>,</span><br><span class="hljs-params">        layer: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>,</span><br><span class="hljs-params">        ngrams: <span class="hljs-built_in">int</span> = <span class="hljs-number">2</span>,</span><br><span class="hljs-params">        all_ngrams: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>,</span><br><span class="hljs-params">        tokenizer_ngrams=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        random_state=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        normalize_embs=<span class="hljs-literal">False</span>,</span><br><span class="hljs-params">    </span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;Emb-GAM Class - use either EmbGAMClassifier or EmbGAMRegressor rather than initializing this class directly.</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Parameters</span><br><span class="hljs-string">        ----------</span><br><span class="hljs-string">        checkpoint: str</span><br><span class="hljs-string">            Name of model checkpoint (i.e. to be fetch by huggingface)</span><br><span class="hljs-string">        layer: str</span><br><span class="hljs-string">            Name of layer to extract embeddings from</span><br><span class="hljs-string">        ngrams</span><br><span class="hljs-string">            Order of ngrams to extract. 1 for unigrams, 2 for bigrams, etc.</span><br><span class="hljs-string">        all_ngrams</span><br><span class="hljs-string">            Whether to use all order ngrams &lt;= ngrams argument</span><br><span class="hljs-string">        tokenizer_ngrams</span><br><span class="hljs-string">            if None, defaults to spacy English tokenizer</span><br><span class="hljs-string">        random_state</span><br><span class="hljs-string">            random seed for fitting</span><br><span class="hljs-string">        normalize_embs</span><br><span class="hljs-string">            whether to normalize embeddings before fitting linear model</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        self.checkpoint = checkpoint<br>        self.ngrams = ngrams<br>        <span class="hljs-keyword">if</span> tokenizer_ngrams == <span class="hljs-literal">None</span>:<br>            self.tokenizer_ngrams = English().tokenizer<br>        <span class="hljs-keyword">else</span>:<br>            self.tokenizer_ngrams = tokenizer_ngrams<br>        self.layer = layer<br>        self.random_state = random_state<br>        self.all_ngrams = all_ngrams<br>        self.normalize_embs = normalize_embs<br></code></pre></td></tr></table></figure>
+<h3 id="拟合">2.2.2 拟合</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">fit</span>(<span class="hljs-params">self, X: ArrayLike, y: ArrayLike, verbose=<span class="hljs-literal">True</span>,</span><br><span class="hljs-params">            cache_linear_coefs: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>,</span><br><span class="hljs-params">            cache_embs_dir: <span class="hljs-built_in">str</span>=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        </span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;Extract embeddings then fit linear model</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Parameters</span><br><span class="hljs-string">        ----------</span><br><span class="hljs-string">        X: ArrayLike[str]</span><br><span class="hljs-string">        y: ArrayLike[str]</span><br><span class="hljs-string">        cache_linear_coefs</span><br><span class="hljs-string">            Whether to compute and cache linear coefs into self.coefs_dict_</span><br><span class="hljs-string">        cache_embs_dir, optional</span><br><span class="hljs-string">            if not None, directory to save embeddings into</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br><br>        <span class="hljs-comment"># metadata</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>            <span class="hljs-comment"># 取出类别</span><br>            self.classes_ = unique_labels(y)<br>        <span class="hljs-keyword">if</span> self.random_state <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            np.random.seed(self.random_state)<br><br>        <span class="hljs-comment"># set up model</span><br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;initializing model...&#x27;</span>)<br><br>        <span class="hljs-comment"># 模型和分词器共享一个文件（集成了模型和分词器）</span><br>        model = transformers.AutoModel.from_pretrained(<br>            self.checkpoint).to(device)<br>        tokenizer_embeddings = transformers.AutoTokenizer.from_pretrained(<br>            self.checkpoint)<br><br>        <span class="hljs-comment"># get embs</span><br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;calculating embeddings...&#x27;</span>)<br>           <br>       	<span class="hljs-comment"># ** 从 LLM 为每个 ngram 获取特征 **</span><br>        embs = self._get_embs_summed(X, model, tokenizer_embeddings)<br>        <span class="hljs-keyword">if</span> self.normalize_embs:<br>            self.normalizer = StandardScaler()<br>            embs = self.normalizer.fit_transform(embs)<br>        <span class="hljs-keyword">if</span> cache_embs_dir <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            os.makedirs(cache_embs_dir, exist_ok=<span class="hljs-literal">True</span>)<br>            pkl.dump(embs, <span class="hljs-built_in">open</span>(os.path.join(cache_embs_dir, <span class="hljs-string">&#x27;embs.pkl&#x27;</span>), <span class="hljs-string">&#x27;wb&#x27;</span>))<br><br>        <span class="hljs-comment"># train linear</span><br>        warnings.filterwarnings(<span class="hljs-string">&quot;ignore&quot;</span>, category=ConvergenceWarning)<br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;training linear model...&#x27;</span>) <br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>            self.linear = LogisticRegressionCV()<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(self, RegressorMixin):<br>            self.linear = RidgeCV()<br>        self.linear.fit(embs, y)<br><br>        <span class="hljs-comment"># cache linear coefs</span><br>        <span class="hljs-keyword">if</span> cache_linear_coefs:<br>            <span class="hljs-keyword">if</span> verbose:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;caching linear coefs...&#x27;</span>)<br>            self.cache_linear_coefs(X, model, tokenizer_embeddings)<br><br>        <span class="hljs-keyword">return</span> self<br></code></pre></td></tr></table></figure>
+<h3 id="从-llm-为每个-ngram-获取特征并求和">2.2.3 从 LLM 为每个 ngram
+获取特征并求和</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_get_embs_summed</span>(<span class="hljs-params">self, X, model, tokenizer_embeddings</span>):<br>        embs = []<br>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tqdm(X):<br>            emb = auggam.embed.embed_and_sum_function(<br>                x,<br>                model=model,<br>                ngrams=self.ngrams,<br>                tokenizer_embeddings=tokenizer_embeddings,<br>                tokenizer_ngrams=self.tokenizer_ngrams,<br>                checkpoint=self.checkpoint,<br>                layer=self.layer,<br>                all_ngrams=self.all_ngrams,<br>            )<br>            embs.append(emb[<span class="hljs-string">&#x27;embs&#x27;</span>])<br>        <span class="hljs-keyword">return</span> np.array(embs).squeeze()  <span class="hljs-comment"># num_examples x embedding_size</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">embed_and_sum_function</span>(<span class="hljs-params"></span><br><span class="hljs-params">    example,</span><br><span class="hljs-params">    model,</span><br><span class="hljs-params">    ngrams: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">    tokenizer_embeddings,</span><br><span class="hljs-params">    tokenizer_ngrams,</span><br><span class="hljs-params">    checkpoint: <span class="hljs-built_in">str</span>,</span><br><span class="hljs-params">    dataset_key_text: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">    layer: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>,</span><br><span class="hljs-params">    padding: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>,</span><br><span class="hljs-params">    parsing: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;&#x27;</span>,</span><br><span class="hljs-params">    nlp_chunks = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">    all_ngrams: <span class="hljs-built_in">bool</span>=<span class="hljs-literal">False</span>,</span><br><span class="hljs-params"></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Get summed embeddings for a single example</span><br><span class="hljs-string">    Note: this function gets called many times, so don&#x27;t want to do things like load a model here</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br><span class="hljs-string">    Params</span><br><span class="hljs-string">    ------</span><br><span class="hljs-string">    ngrams: int</span><br><span class="hljs-string">        What order of ngrams to use (1 for unigrams, 2 for bigrams, ...)</span><br><span class="hljs-string">    dataset_key_text: </span><br><span class="hljs-string">        str that identifies where data examples are stored, e.g. &quot;sentence&quot; for sst2</span><br><span class="hljs-string">    tokenizer_embeddings</span><br><span class="hljs-string">        tokenizing for the embedding model</span><br><span class="hljs-string">    tokenizer_ngrams</span><br><span class="hljs-string">        tokenizing the ngrams (word-based tokenization is probably more interpretable)</span><br><span class="hljs-string">    parsing: str</span><br><span class="hljs-string">        whether to use parsing rather than extracting all ngrams</span><br><span class="hljs-string">    nlp_chunks</span><br><span class="hljs-string">        if parsing is not empty string, a parser that extracts specific ngrams</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">if</span> dataset_key_text <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        sentence = example[dataset_key_text]<br>    <span class="hljs-keyword">else</span>:<br>        sentence = example<br>    <span class="hljs-comment"># seqs = sentence</span><br><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(sentence, <span class="hljs-built_in">str</span>):<br>        seqs = generate_ngrams_list(<br>            sentence, ngrams=ngrams, tokenizer_ngrams=tokenizer_ngrams,<br>            parsing=parsing, nlp_chunks=nlp_chunks, all_ngrams=all_ngrams,<br>        )<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(sentence, <span class="hljs-built_in">list</span>):<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&#x27;batched mode not supported&#x27;</span>)<br>        <span class="hljs-comment"># seqs = list(map(generate_ngrams_list, sentence))</span><br><br>    <span class="hljs-comment"># maybe a smarter way to deal with pooling here?</span><br>    seq_len = <span class="hljs-built_in">len</span>(seqs)<br>    <span class="hljs-keyword">if</span> seq_len == <span class="hljs-number">0</span>:<br>        seqs = [<span class="hljs-string">&quot;dummy&quot;</span>]<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;bert&#x27;</span> <span class="hljs-keyword">in</span> checkpoint.lower():  <span class="hljs-comment"># has up to two keys, &#x27;last_hidden_state&#x27;, &#x27;pooler_output&#x27;</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">hasattr</span>(tokenizer_embeddings, <span class="hljs-string">&#x27;pad_token&#x27;</span>) <span class="hljs-keyword">or</span> tokenizer_embeddings.pad_token <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            tokenizer_embeddings.pad_token = tokenizer_embeddings.eos_token<br>        tokens = tokenizer_embeddings(seqs, padding=padding,<br>                                      truncation=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)<br>        tokens = tokens.to(model.device)<br>        output = model(**tokens)<br>        <span class="hljs-keyword">if</span> layer == <span class="hljs-string">&#x27;pooler_output&#x27;</span>:<br>            embs = output[<span class="hljs-string">&#x27;pooler_output&#x27;</span>].cpu().detach().numpy()<br>        <span class="hljs-keyword">elif</span> layer == <span class="hljs-string">&#x27;last_hidden_state_mean&#x27;</span> <span class="hljs-keyword">or</span> layer == <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>:<br>            embs = output[<span class="hljs-string">&#x27;last_hidden_state&#x27;</span>].cpu().detach().numpy()<br>            embs = embs.mean(axis=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">elif</span> <span class="hljs-string">&#x27;gpt&#x27;</span> <span class="hljs-keyword">in</span> checkpoint.lower():<br>        tokens = preprocess_gpt_token_batch(seqs, tokenizer_embeddings)<br>        tokens = tokens.to(model.device)<br>        output = model(**tokens)<br><br>        <span class="hljs-comment"># tuple of (layer x (batch_size, seq_len, hidden_size))</span><br>        h = output[<span class="hljs-string">&#x27;hidden_states&#x27;</span>]<br>        <span class="hljs-comment"># (batch_size, seq_len, hidden_size)</span><br>        embs = h[<span class="hljs-number">0</span>].cpu().detach().numpy()<br>        embs = embs.mean(axis=<span class="hljs-number">1</span>)  <span class="hljs-comment"># (batch_size, hidden_size)</span><br><br>    <span class="hljs-comment"># sum over the embeddings</span><br>    embs = embs.<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">0</span>).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">if</span> seq_len == <span class="hljs-number">0</span>:<br>        embs *= <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&#x27;embs&#x27;</span>: embs, <span class="hljs-string">&#x27;seq_len&#x27;</span>: <span class="hljs-built_in">len</span>(seqs)&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="预测">2.2.4 预测</h3>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict_proba</span>(<span class="hljs-params">self, X, warn=<span class="hljs-literal">True</span></span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>        <span class="hljs-keyword">raise</span> Exception(<br>            <span class="hljs-string">&quot;predict_proba only available for EmbGAMClassifier&quot;</span>)<br>    check_is_fitted(self)<br>    preds = self._predict_cached(X, warn=warn)<br>    logits = np.vstack(<br>        (<span class="hljs-number">1</span> - preds, preds)).transpose()<br>    <span class="hljs-keyword">return</span> softmax(logits, axis=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure>
+<h1 id="aug-tree">3 Aug-Tree</h1>
+<p>​ 在分割时，首先按照原始决策树方法选出最优分割，然后调用 LLM api
+来生成 100 个与分割关键词相关的 ngram。对于每个
+ngram，如果加入能使分割更优，则保留；否则删除。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/11.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="实验">4 实验</h1>
+<h2 id="数据集">4.1 数据集</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://aclanthology.org/D18-1404/">推文情感分类</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://ideas.repec.org/a/bla/jinfst/v65y2014i4p782-796.html#:~:text=Pekka%20Malo%20%26%20Ankur%20Sinha%20%26%20Pekka%20Korhonen,%26%20Technology%2C%20vol.%2065%20%284%29%2C%20pages%20782-796%2C%20April.">财经新闻情感分类</a></li>
+<li><a target="_blank" rel="noopener" href="https://arxiv.org/abs/cs/0506075">电影评论情感分类</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.semanticscholar.org/paper/A-natural-language-fMRI-dataset-for-voxelwise-LeBel-Wagner/b173aed9f741cdf21c2cabd40ae4dfff223dbd9d">科学文本回归</a></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/2.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="baseline">4.2 baseline</h2>
+<ul>
+<li>Aug-GAM：
+<ul>
+<li>Bag of ngrams</li>
+<li><a
+target="_blank" rel="noopener" href="https://www.emerald.com/insight/content/doi/10.1108/eb026526/full/html">TF-IDF</a>
+(Term frequency{inverse document frequency)</li>
+<li><a target="_blank" rel="noopener" href="https://aclanthology.org/D14-1162/">GloVE</a></li>
+<li>Aug-GAM with only unigrams</li>
+</ul></li>
+<li>Aug-Tree
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://www.routledge.com/Classification-and-Regression-Trees/Breiman-Friedman-Stone-Olshen/p/book/9780412048418">CART</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.semanticscholar.org/paper/Induction-of-Decision-Trees-Quinlan/bcee7c85d237b79491a773ef51e746bbbcf48e35">ID3</a></li>
+</ul></li>
+</ul>
+<h2 id="aug-gam-性能">4.3 Aug-GAM 性能</h2>
+<p>以 ngram size 为自变量的泛化性能</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/3.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>与黑盒 baseline 模型比较</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/4.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>Aug-GAM 与 BERT 混合处理复杂样本：首先用 Aug-GAM
+预测每个样本，评估置信度(它对顶级类的预测概率与1的接近程度)。如果置信度高于预先指定的阈值，使用
+Aug-GAM 预测。否则，使用微调的 BERT 预测。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/5.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="aug-tree-性能">4.4 Aug-Tree 性能</h2>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/6.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="可解释性">4.5 可解释性</h2>
+<h3 id="aug-gam-1">4.5.1 Aug-GAM</h3>
+<p>Aug-GAM 拟合系数 top</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/7.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>Aug-GAM 拟合系数与人工标记 SST 分数比较</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/8.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>Aug-GAM 推断未知 ngram 系数</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/9.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>Aug-GAM 推断位置 ngram 预测系数与人工系数比较</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/10.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h3 id="aug-tree-1">4.5.2 Aug-Tree</h3>
+<p>最常增强的 ngram 示例</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/Aug-models/12.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87/" class="category-chain-item">论文</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%BA%E6%96%87/llm/" class="category-chain-item">LLM</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/aug-imodels/">#Aug-imodels</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Augmenting Interpretable Models With LLMs During Training</div>
+      <div>https://vexentox.github.io/2023/08/08/aug-imodels/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月8日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/09/RoBERTa/" title="RoBERTa - a Robustly Optimized BERT Pretraining Approach">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">RoBERTa - a Robustly Optimized BERT Pretraining Approach</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/23/RoPGen/" title="RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation">
+                        <span class="hidden-mobile">RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -4,6 +4,141 @@
   
   
   <entry>
+    <title>Codeforces Round 891 (Div. 3) G</title>
+    <link href="/2023/08/14/cf_1857/"/>
+    <url>/2023/08/14/cf_1857/</url>
+    
+    <content type="html"><![CDATA[<p>G（思维、并查集）</p><span id="more"></span><p>链接：<ahref="https://codeforces.com/contest/1857">https://codeforces.com/contest/1857</a></p><h1 id="g">G</h1><h2 id="题意">题意</h2><p>​给已知树加边，使得新图，满足无自环，无重边，最小生成树唯一的加边方案有多少？</p><h2 id="思路">思路</h2><p>​最开始想到算出当前点的边权最大值，向其他任意点加边，但是发现也要考虑其他点的边权最大值，即要保证加边后形成的环的最大值为加的边。</p><p>​考虑一个树边权最大的边，这条边连接了两颗子树，发现分别从这两颗子树中找出一个点连边一定合法，这种情况下，对答案的贡献为<span class="math display">\[(S-w+1)^{sz_{1}*sz_{2}-1}\]</span> ，即每一条加的边的边权有 <spanclass="math inline">\(S-w+1\)</span> 种可能，<spanclass="math inline">\(1\)</span> 指的是不加边；一共有 <spanclass="math inline">\(sz_{1}*sz_{2}-1\)</span> 条边，<spanclass="math inline">\(1\)</span> 指的是连接两颗子树的桥。</p><p>​以上只是一个边权最大值的情况，考虑计算所有边权最大值的情况，因此需要将边权排序，用并查集从小到大维护。</p><h2 id="代码">代码</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;algorithm&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> _for(i,L,R) for(int i=L;i&lt;=R;++i)</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> int long long</span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-type">const</span> <span class="hljs-type">int</span> N=<span class="hljs-number">2e5</span>+<span class="hljs-number">5</span>,mod=<span class="hljs-number">998244353</span>;<br><span class="hljs-type">int</span> n,S,fa[N],sz[N];<br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Edge</span>&#123;<br><span class="hljs-keyword">public</span>:<br><span class="hljs-type">int</span> a,b,v;<br><span class="hljs-type">bool</span> <span class="hljs-keyword">operator</span>&lt;(<span class="hljs-type">const</span> Edge&amp; o)<span class="hljs-type">const</span>&#123;<br><span class="hljs-keyword">return</span> v&lt;o.v;<br>&#125; <br>&#125;e[N];<br><br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">find</span><span class="hljs-params">(<span class="hljs-type">int</span> x)</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-keyword">if</span>(x==fa[x]) <span class="hljs-keyword">return</span> x;<br><span class="hljs-keyword">return</span> fa[x]=<span class="hljs-built_in">find</span>(fa[x]);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">merge</span><span class="hljs-params">(<span class="hljs-type">int</span> x,<span class="hljs-type">int</span> y)</span></span><br><span class="hljs-function"></span>&#123;<br>x=<span class="hljs-built_in">find</span>(x),y=<span class="hljs-built_in">find</span>(y);<br><span class="hljs-keyword">if</span>(x!=y)&#123;<br>fa[x]=y;<br>sz[y]+=sz[x];<br>&#125;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">qmi</span><span class="hljs-params">(<span class="hljs-type">int</span> a,<span class="hljs-type">int</span> b)</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-type">int</span> res=<span class="hljs-number">1</span>;<br><span class="hljs-keyword">while</span>(b)&#123;<br><span class="hljs-keyword">if</span>(b&amp;<span class="hljs-number">1</span>) res=res*a%mod;<br>a=a*a%mod;<br>b&gt;&gt;=<span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">solve</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld%lld&quot;</span>,&amp;n,&amp;S);<br>_for(i,<span class="hljs-number">1</span>,n<span class="hljs-number">-1</span>)&#123;<br><span class="hljs-type">int</span> a,b,v;<br><span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld%lld%lld&quot;</span>,&amp;a,&amp;b,&amp;v);<br>e[i]=&#123;a,b,v&#125;;<br>&#125;<br>_for(i,<span class="hljs-number">1</span>,n) fa[i]=i,sz[i]=<span class="hljs-number">1</span>;<br><span class="hljs-built_in">sort</span>(e+<span class="hljs-number">1</span>,e+n);<br><span class="hljs-type">int</span> res=<span class="hljs-number">1</span>;<br>_for(i,<span class="hljs-number">1</span>,n<span class="hljs-number">-1</span>)&#123;<br><span class="hljs-type">int</span> a=e[i].a,b=e[i].b,v=e[i].v;<br>res=res*<span class="hljs-built_in">qmi</span>(S-v+<span class="hljs-number">1</span>,sz[<span class="hljs-built_in">find</span>(a)]*sz[<span class="hljs-built_in">find</span>(b)]<span class="hljs-number">-1</span>)%mod;<br><span class="hljs-built_in">merge</span>(a,b);<br>&#125;<br><span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%lld\n&quot;</span>,res);<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">signed</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br><span class="hljs-type">int</span> T = <span class="hljs-number">1</span>;<br><span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;T);<br><span class="hljs-keyword">while</span>(T--) <span class="hljs-built_in">solve</span>();<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>题解</category>
+      
+      <category>CodeForce</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>codeforce, cf, A, B, C, D</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>解决 Hexo S 无法本地部署</title>
+    <link href="/2023/08/09/%E8%A7%A3%E5%86%B3hexo%E6%97%A0%E6%B3%95%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/"/>
+    <url>/2023/08/09/%E8%A7%A3%E5%86%B3hexo%E6%97%A0%E6%B3%95%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/</url>
+    
+    <content type="html"><![CDATA[<p>解决 hexo s 后，端口有连接，但是无法打开网页的问题</p><span id="more"></span><h1 id="问题">问题</h1><p>使用 <code>hexo s</code>命令启动服务后，打开浏览器<code>localhost:4000</code>地址发现没有反应，出错。页面显示不出来。</p><h1 id="解决">解决</h1><p>查看端口的使用情况：</p><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs 1c">netstat -o -n -a <span class="hljs-string">| findstr :4000</span><br></code></pre></td></tr></table></figure><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Hexo/1.png?raw=true" /></p><p>结束该进程：</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">taskkill <span class="hljs-regexp">/F /</span>PID <span class="hljs-number">12576</span><br></code></pre></td></tr></table></figure><p>重新启动：</p><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">hexo s</span><br></code></pre></td></tr></table></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>其他</category>
+      
+      <category>hexo</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>hexo, 本地部署</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>RoBERTa - a Robustly Optimized BERT Pretraining Approach</title>
+    <link href="/2023/08/09/RoBERTa/"/>
+    <url>/2023/08/09/RoBERTa/</url>
+    
+    <content type="html"><![CDATA[<p>RoBERTa 论文笔记</p><span id="more"></span><p>论文地址：<ahref="https://arxiv.org/abs/1907.11692">https://arxiv.org/abs/1907.11692</a></p><p>代码地址：<ahref="https://github.com/facebookresearch/fairseq/tree/main/examples/roberta">https://github.com/facebookresearch/fairseq/tree/main/examples/roberta</a></p><h1 id="问题">1 问题</h1><p>BERT 训练不足</p><h1 id="鲁棒训练优化">2 鲁棒训练优化</h1><h2 id="优化器">2.1 优化器</h2><p>​ Adam，参数设置如下：</p><table><thead><tr class="header"><th>参数</th><th>值</th></tr></thead><tbody><tr class="odd"><td><span class="math inline">\(\beta_{1}\)</span></td><td>0.9</td></tr><tr class="even"><td><span class="math inline">\(\beta_{2}\)</span></td><td>0.999 -&gt; 0.98</td></tr><tr class="odd"><td><span class="math inline">\(\epsilon\)</span></td><td>1e-6</td></tr><tr class="even"><td><span class="math inline">\(L_{2} \ decay\)</span></td><td>0.01</td></tr><tr class="odd"><td>warming up steps</td><td>10000</td></tr><tr class="even"><td>warming up 峰值</td><td>1e-4</td></tr><tr class="odd"><td>衰减</td><td>线性衰减</td></tr><tr class="even"><td>dropout</td><td>0.1</td></tr></tbody></table><h2 id="激活函数">2.2 激活函数</h2><p>GELU</p><h2 id="策略">2.3 策略</h2><p>【BERT】在前90%的更新中使用减少的序列长度进行训练 -&gt;【RoBERTa】只训练全长序列</p><h2 id="预训练数据集">2.4 预训练数据集</h2><ul><li><a href="https://arxiv.org/abs/1506.06724">BOOKCORPUS + EnglishWIKIPEDIA</a>：16 GB</li><li><ahref="https://commoncrawl.org/2016/10/newsdataset-available">CC-NEWS</a>：76GB</li><li><ahref="http://Skylion007.github.io/%20OpenWebTextCorpus">OPENWEBTEXT</a>：38GB</li><li><a href="https://arxiv.org/abs/1806.02847">STORIES</a>：31 GB</li></ul><h2 id="评估数据集">2.5 评估数据集</h2><ul><li><p><a href="https://arxiv.org/abs/1804.07461">GLUE</a>：The GeneralLanguage Understanding Evaluation</p></li><li><p><ahref="https://aclanthology.org/D16-1264/#:~:text=Pranav%20Rajpurkar%2C%20Jian%20Zhang%2C%20Konstantin%20Lopyrev%2C%20and%20Percy,pages%202383%E2%80%932392%2C%20Austin%2C%20Texas.%20Association%20for%20Computational%20Linguistics.">SQuAD</a>：TheStanford Question Answering Dataset</p></li><li><p><a href="https://aclanthology.org/D17-1082/">RACE</a>：TheReAding Comprehension from Examinations</p></li></ul><h2 id="训练改进">2.6 训练改进</h2><ol type="1"><li><p>动态掩码</p><p><em>掩码预测（MLM - Masked Language Model）：从输入序列中随机抽取token 样本，用特殊 token [MASK] 代替。MLM的目标是预测掩蔽 tokens的交叉熵损失。</em></p><p>【BERT - 静态掩码】数据预处理执行一次掩码。</p><p>【RoBERTa - 动态掩码】为了避免在每个 epoch对每个训练实例使用相同的掩码，训练数据被重复10次，每个序列在 40 个 epoch的训练中以 10 种不同的方式被掩码。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/1.png?raw=true" /></p></li><li><p>输入格式与NSP 损失</p><p><em>下一句子预测（NSP - Next SentencePrediction）：预测观察到的两段文档片段是来自相同还是不同的文档。</em></p><p>使用 NSP 能否提高性能存在争议，提供可选的输入格式：</p><ul><li>SEGMENT-PAIR+NSP：每个输入都有一对片段，每个片段可以包含多个自然句子</li><li>SENTENCE-PAIR+NSP：每个输入包含一对自然句子，要么从一个文档的连续部分采样，要么从单独的文档中采样</li><li>FULL-SENTENCES：每个输入都包含从一个或多个文档连续采样的完整句子，可以跨越文档</li><li>DOC-SENTENCES：每个输入都包含从一个或多个文档连续采样的完整句子，不可以跨越文档</li></ul></li></ol><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/2.png?raw=true" /></p><ol start="3" type="1"><li><p>扩大 batch_size</p><p>当学习率适当提高时，使用非常少的大批量训练既可以提高优化速度，也可以提高任务结束性能。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/3.png?raw=true" /></p></li><li><p>文本编码</p><p>【BERT - BPE（Byte-Pair Encoding）】：存在较多的 unicode 字符。</p><p>【RoBERTa - byte-level BPE（Byte-Pair Encoding）】：使用字节而不是unicode 字符作为基本子词单位，学习一个 50K的子词词汇表；可以编码任何输入文本，而不会引入任何 “未知”标记；不需要对输入进行任何额外的预处理或标记化；为 <spanclass="math inline">\(BERT_{BASE}\)</span> 和<spanclass="math inline">\(BERT_{LARGE}\)</span> 分别增加了大约 15M 和 20M的额外参数。</p></li><li><p>数据集</p><p>是 【BERT】的四倍。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/4.png?raw=true" /></p></li></ol><h1 id="实验结果">3 实验结果</h1><h2 id="glue">3.1 GLUE</h2><ul><li>single-task：单任务微调。为每个 GLUE 任务分别调整RoBERTa，仅使用相应任务的训练数据，对每个任务进行有限的超参数扫描。</li><li>ensembles：集成微调。从 MNLI 单任务模型开始集成微调。</li></ul><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/5.png?raw=true" /></p><h2 id="squad">3.2 SQuAD</h2><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/6.png?raw=true" /></p><h2 id="race">3.3 RACE</h2><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoBERTa/7.png?raw=true" /></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文</category>
+      
+      <category>LLM</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>RoBERTa</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Augmenting Interpretable Models With LLMs During Training</title>
+    <link href="/2023/08/08/aug-imodels/"/>
+    <url>/2023/08/08/aug-imodels/</url>
+    
+    <content type="html"><![CDATA[<p>Aug-imodels 论文笔记；Aug-imodels 代码解读</p><span id="more"></span><p>论文地址：<ahref="https://arxiv.org/abs/2209.11799">https://arxiv.org/abs/2209.11799</a></p><p>代码地址：<ahref="https://github.com/microsoft/augmented-interpretable-models">https://github.com/microsoft/augmented-interpretable-models</a></p><h1 id="问题">1 问题</h1><ul><li>大模型性能好，但是可解释性差、计算成本高</li><li>传统机器学习可解释性好、计算成本低，但是性能较差</li><li>传统机器学习处理语言任务时，特征维度随着数据集的扩大而指数级地增长；且无法学习数据集中没有的知识</li></ul><h1 id="aug-gam">2 Aug-GAM</h1><p>​ 利用预训练好的大模型为每个 ngram 提取固定大小的特征；拟合模型为 GAM[LogisticRegressionCV]，保证可解释性： <span class="math display">\[g(\mathbb{E}[y])=\beta+w^{T} \sum_{i} \phi\left(x_{i}\right)\]</span></p><h2 id="预测流程">2.1 预测流程</h2><ol type="1"><li>提取 ngram：利用分词器提取 ngram</li><li>提取特征（嵌入）：通过 LLM 为每个 ngram 提取特征</li><li>特征求和：将每个 ngram 提取的特征求和，形成固定大小的特征</li><li>GAM 预测：将特征输入 GAM 进行预测</li></ol><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/1.png?raw=true" /></p><h2 id="代码解析">2.2 代码解析</h2><h3 id="定义">2.2.1 定义</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">AugGAM</span>(<span class="hljs-title class_ inherited__">BaseEstimator</span>):<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params"></span><br><span class="hljs-params">        self,</span><br><span class="hljs-params">        checkpoint: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;bert-base-uncased&#x27;</span>,</span><br><span class="hljs-params">        layer: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>,</span><br><span class="hljs-params">        ngrams: <span class="hljs-built_in">int</span> = <span class="hljs-number">2</span>,</span><br><span class="hljs-params">        all_ngrams: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">False</span>,</span><br><span class="hljs-params">        tokenizer_ngrams=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        random_state=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        normalize_embs=<span class="hljs-literal">False</span>,</span><br><span class="hljs-params">    </span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;Emb-GAM Class - use either EmbGAMClassifier or EmbGAMRegressor rather than initializing this class directly.</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Parameters</span><br><span class="hljs-string">        ----------</span><br><span class="hljs-string">        checkpoint: str</span><br><span class="hljs-string">            Name of model checkpoint (i.e. to be fetch by huggingface)</span><br><span class="hljs-string">        layer: str</span><br><span class="hljs-string">            Name of layer to extract embeddings from</span><br><span class="hljs-string">        ngrams</span><br><span class="hljs-string">            Order of ngrams to extract. 1 for unigrams, 2 for bigrams, etc.</span><br><span class="hljs-string">        all_ngrams</span><br><span class="hljs-string">            Whether to use all order ngrams &lt;= ngrams argument</span><br><span class="hljs-string">        tokenizer_ngrams</span><br><span class="hljs-string">            if None, defaults to spacy English tokenizer</span><br><span class="hljs-string">        random_state</span><br><span class="hljs-string">            random seed for fitting</span><br><span class="hljs-string">        normalize_embs</span><br><span class="hljs-string">            whether to normalize embeddings before fitting linear model</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br>        self.checkpoint = checkpoint<br>        self.ngrams = ngrams<br>        <span class="hljs-keyword">if</span> tokenizer_ngrams == <span class="hljs-literal">None</span>:<br>            self.tokenizer_ngrams = English().tokenizer<br>        <span class="hljs-keyword">else</span>:<br>            self.tokenizer_ngrams = tokenizer_ngrams<br>        self.layer = layer<br>        self.random_state = random_state<br>        self.all_ngrams = all_ngrams<br>        self.normalize_embs = normalize_embs<br></code></pre></td></tr></table></figure><h3 id="拟合">2.2.2 拟合</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">fit</span>(<span class="hljs-params">self, X: ArrayLike, y: ArrayLike, verbose=<span class="hljs-literal">True</span>,</span><br><span class="hljs-params">            cache_linear_coefs: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>,</span><br><span class="hljs-params">            cache_embs_dir: <span class="hljs-built_in">str</span>=<span class="hljs-literal">None</span>,</span><br><span class="hljs-params">        </span>):<br>        <span class="hljs-string">&#x27;&#x27;&#x27;Extract embeddings then fit linear model</span><br><span class="hljs-string"></span><br><span class="hljs-string">        Parameters</span><br><span class="hljs-string">        ----------</span><br><span class="hljs-string">        X: ArrayLike[str]</span><br><span class="hljs-string">        y: ArrayLike[str]</span><br><span class="hljs-string">        cache_linear_coefs</span><br><span class="hljs-string">            Whether to compute and cache linear coefs into self.coefs_dict_</span><br><span class="hljs-string">        cache_embs_dir, optional</span><br><span class="hljs-string">            if not None, directory to save embeddings into</span><br><span class="hljs-string">        &#x27;&#x27;&#x27;</span><br><br>        <span class="hljs-comment"># metadata</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>            <span class="hljs-comment"># 取出类别</span><br>            self.classes_ = unique_labels(y)<br>        <span class="hljs-keyword">if</span> self.random_state <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            np.random.seed(self.random_state)<br><br>        <span class="hljs-comment"># set up model</span><br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;initializing model...&#x27;</span>)<br><br>        <span class="hljs-comment"># 模型和分词器共享一个文件（集成了模型和分词器）</span><br>        model = transformers.AutoModel.from_pretrained(<br>            self.checkpoint).to(device)<br>        tokenizer_embeddings = transformers.AutoTokenizer.from_pretrained(<br>            self.checkpoint)<br><br>        <span class="hljs-comment"># get embs</span><br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;calculating embeddings...&#x27;</span>)<br>           <br>       <span class="hljs-comment"># ** 从 LLM 为每个 ngram 获取特征 **</span><br>        embs = self._get_embs_summed(X, model, tokenizer_embeddings)<br>        <span class="hljs-keyword">if</span> self.normalize_embs:<br>            self.normalizer = StandardScaler()<br>            embs = self.normalizer.fit_transform(embs)<br>        <span class="hljs-keyword">if</span> cache_embs_dir <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>            os.makedirs(cache_embs_dir, exist_ok=<span class="hljs-literal">True</span>)<br>            pkl.dump(embs, <span class="hljs-built_in">open</span>(os.path.join(cache_embs_dir, <span class="hljs-string">&#x27;embs.pkl&#x27;</span>), <span class="hljs-string">&#x27;wb&#x27;</span>))<br><br>        <span class="hljs-comment"># train linear</span><br>        warnings.filterwarnings(<span class="hljs-string">&quot;ignore&quot;</span>, category=ConvergenceWarning)<br>        <span class="hljs-keyword">if</span> verbose:<br>            <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;training linear model...&#x27;</span>) <br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>            self.linear = LogisticRegressionCV()<br>        <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(self, RegressorMixin):<br>            self.linear = RidgeCV()<br>        self.linear.fit(embs, y)<br><br>        <span class="hljs-comment"># cache linear coefs</span><br>        <span class="hljs-keyword">if</span> cache_linear_coefs:<br>            <span class="hljs-keyword">if</span> verbose:<br>                <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;caching linear coefs...&#x27;</span>)<br>            self.cache_linear_coefs(X, model, tokenizer_embeddings)<br><br>        <span class="hljs-keyword">return</span> self<br></code></pre></td></tr></table></figure><h3 id="从-llm-为每个-ngram-获取特征并求和">2.2.3 从 LLM 为每个 ngram获取特征并求和</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_get_embs_summed</span>(<span class="hljs-params">self, X, model, tokenizer_embeddings</span>):<br>        embs = []<br>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> tqdm(X):<br>            emb = auggam.embed.embed_and_sum_function(<br>                x,<br>                model=model,<br>                ngrams=self.ngrams,<br>                tokenizer_embeddings=tokenizer_embeddings,<br>                tokenizer_ngrams=self.tokenizer_ngrams,<br>                checkpoint=self.checkpoint,<br>                layer=self.layer,<br>                all_ngrams=self.all_ngrams,<br>            )<br>            embs.append(emb[<span class="hljs-string">&#x27;embs&#x27;</span>])<br>        <span class="hljs-keyword">return</span> np.array(embs).squeeze()  <span class="hljs-comment"># num_examples x embedding_size</span><br></code></pre></td></tr></table></figure><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">embed_and_sum_function</span>(<span class="hljs-params"></span><br><span class="hljs-params">    example,</span><br><span class="hljs-params">    model,</span><br><span class="hljs-params">    ngrams: <span class="hljs-built_in">int</span>,</span><br><span class="hljs-params">    tokenizer_embeddings,</span><br><span class="hljs-params">    tokenizer_ngrams,</span><br><span class="hljs-params">    checkpoint: <span class="hljs-built_in">str</span>,</span><br><span class="hljs-params">    dataset_key_text: <span class="hljs-built_in">str</span> = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">    layer: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>,</span><br><span class="hljs-params">    padding: <span class="hljs-built_in">bool</span> = <span class="hljs-literal">True</span>,</span><br><span class="hljs-params">    parsing: <span class="hljs-built_in">str</span> = <span class="hljs-string">&#x27;&#x27;</span>,</span><br><span class="hljs-params">    nlp_chunks = <span class="hljs-literal">None</span>,</span><br><span class="hljs-params">    all_ngrams: <span class="hljs-built_in">bool</span>=<span class="hljs-literal">False</span>,</span><br><span class="hljs-params"></span>):<br>    <span class="hljs-string">&quot;&quot;&quot;Get summed embeddings for a single example</span><br><span class="hljs-string">    Note: this function gets called many times, so don&#x27;t want to do things like load a model here</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br><span class="hljs-string">    Params</span><br><span class="hljs-string">    ------</span><br><span class="hljs-string">    ngrams: int</span><br><span class="hljs-string">        What order of ngrams to use (1 for unigrams, 2 for bigrams, ...)</span><br><span class="hljs-string">    dataset_key_text: </span><br><span class="hljs-string">        str that identifies where data examples are stored, e.g. &quot;sentence&quot; for sst2</span><br><span class="hljs-string">    tokenizer_embeddings</span><br><span class="hljs-string">        tokenizing for the embedding model</span><br><span class="hljs-string">    tokenizer_ngrams</span><br><span class="hljs-string">        tokenizing the ngrams (word-based tokenization is probably more interpretable)</span><br><span class="hljs-string">    parsing: str</span><br><span class="hljs-string">        whether to use parsing rather than extracting all ngrams</span><br><span class="hljs-string">    nlp_chunks</span><br><span class="hljs-string">        if parsing is not empty string, a parser that extracts specific ngrams</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br>    <span class="hljs-keyword">if</span> dataset_key_text <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> <span class="hljs-literal">None</span>:<br>        sentence = example[dataset_key_text]<br>    <span class="hljs-keyword">else</span>:<br>        sentence = example<br>    <span class="hljs-comment"># seqs = sentence</span><br><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(sentence, <span class="hljs-built_in">str</span>):<br>        seqs = generate_ngrams_list(<br>            sentence, ngrams=ngrams, tokenizer_ngrams=tokenizer_ngrams,<br>            parsing=parsing, nlp_chunks=nlp_chunks, all_ngrams=all_ngrams,<br>        )<br>    <span class="hljs-keyword">elif</span> <span class="hljs-built_in">isinstance</span>(sentence, <span class="hljs-built_in">list</span>):<br>        <span class="hljs-keyword">raise</span> Exception(<span class="hljs-string">&#x27;batched mode not supported&#x27;</span>)<br>        <span class="hljs-comment"># seqs = list(map(generate_ngrams_list, sentence))</span><br><br>    <span class="hljs-comment"># maybe a smarter way to deal with pooling here?</span><br>    seq_len = <span class="hljs-built_in">len</span>(seqs)<br>    <span class="hljs-keyword">if</span> seq_len == <span class="hljs-number">0</span>:<br>        seqs = [<span class="hljs-string">&quot;dummy&quot;</span>]<br><br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;bert&#x27;</span> <span class="hljs-keyword">in</span> checkpoint.lower():  <span class="hljs-comment"># has up to two keys, &#x27;last_hidden_state&#x27;, &#x27;pooler_output&#x27;</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">hasattr</span>(tokenizer_embeddings, <span class="hljs-string">&#x27;pad_token&#x27;</span>) <span class="hljs-keyword">or</span> tokenizer_embeddings.pad_token <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>            tokenizer_embeddings.pad_token = tokenizer_embeddings.eos_token<br>        tokens = tokenizer_embeddings(seqs, padding=padding,<br>                                      truncation=<span class="hljs-literal">True</span>, return_tensors=<span class="hljs-string">&quot;pt&quot;</span>)<br>        tokens = tokens.to(model.device)<br>        output = model(**tokens)<br>        <span class="hljs-keyword">if</span> layer == <span class="hljs-string">&#x27;pooler_output&#x27;</span>:<br>            embs = output[<span class="hljs-string">&#x27;pooler_output&#x27;</span>].cpu().detach().numpy()<br>        <span class="hljs-keyword">elif</span> layer == <span class="hljs-string">&#x27;last_hidden_state_mean&#x27;</span> <span class="hljs-keyword">or</span> layer == <span class="hljs-string">&#x27;last_hidden_state&#x27;</span>:<br>            embs = output[<span class="hljs-string">&#x27;last_hidden_state&#x27;</span>].cpu().detach().numpy()<br>            embs = embs.mean(axis=<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">elif</span> <span class="hljs-string">&#x27;gpt&#x27;</span> <span class="hljs-keyword">in</span> checkpoint.lower():<br>        tokens = preprocess_gpt_token_batch(seqs, tokenizer_embeddings)<br>        tokens = tokens.to(model.device)<br>        output = model(**tokens)<br><br>        <span class="hljs-comment"># tuple of (layer x (batch_size, seq_len, hidden_size))</span><br>        h = output[<span class="hljs-string">&#x27;hidden_states&#x27;</span>]<br>        <span class="hljs-comment"># (batch_size, seq_len, hidden_size)</span><br>        embs = h[<span class="hljs-number">0</span>].cpu().detach().numpy()<br>        embs = embs.mean(axis=<span class="hljs-number">1</span>)  <span class="hljs-comment"># (batch_size, hidden_size)</span><br><br>    <span class="hljs-comment"># sum over the embeddings</span><br>    embs = embs.<span class="hljs-built_in">sum</span>(axis=<span class="hljs-number">0</span>).reshape(<span class="hljs-number">1</span>, -<span class="hljs-number">1</span>)<br>    <span class="hljs-keyword">if</span> seq_len == <span class="hljs-number">0</span>:<br>        embs *= <span class="hljs-number">0</span><br><br>    <span class="hljs-keyword">return</span> &#123;<span class="hljs-string">&#x27;embs&#x27;</span>: embs, <span class="hljs-string">&#x27;seq_len&#x27;</span>: <span class="hljs-built_in">len</span>(seqs)&#125;<br></code></pre></td></tr></table></figure><h3 id="预测">2.2.4 预测</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">predict_proba</span>(<span class="hljs-params">self, X, warn=<span class="hljs-literal">True</span></span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> <span class="hljs-built_in">isinstance</span>(self, ClassifierMixin):<br>        <span class="hljs-keyword">raise</span> Exception(<br>            <span class="hljs-string">&quot;predict_proba only available for EmbGAMClassifier&quot;</span>)<br>    check_is_fitted(self)<br>    preds = self._predict_cached(X, warn=warn)<br>    logits = np.vstack(<br>        (<span class="hljs-number">1</span> - preds, preds)).transpose()<br>    <span class="hljs-keyword">return</span> softmax(logits, axis=<span class="hljs-number">1</span>)<br></code></pre></td></tr></table></figure><h1 id="aug-tree">3 Aug-Tree</h1><p>​ 在分割时，首先按照原始决策树方法选出最优分割，然后调用 LLM api来生成 100 个与分割关键词相关的 ngram。对于每个ngram，如果加入能使分割更优，则保留；否则删除。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/11.png?raw=true" /></p><h1 id="实验">4 实验</h1><h2 id="数据集">4.1 数据集</h2><ul><li><a href="https://aclanthology.org/D18-1404/">推文情感分类</a></li><li><ahref="https://ideas.repec.org/a/bla/jinfst/v65y2014i4p782-796.html#:~:text=Pekka%20Malo%20%26%20Ankur%20Sinha%20%26%20Pekka%20Korhonen,%26%20Technology%2C%20vol.%2065%20%284%29%2C%20pages%20782-796%2C%20April.">财经新闻情感分类</a></li><li><a href="https://arxiv.org/abs/cs/0506075">电影评论情感分类</a></li><li><ahref="https://www.semanticscholar.org/paper/A-natural-language-fMRI-dataset-for-voxelwise-LeBel-Wagner/b173aed9f741cdf21c2cabd40ae4dfff223dbd9d">科学文本回归</a></li></ul><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/2.png?raw=true" /></p><h2 id="baseline">4.2 baseline</h2><ul><li>Aug-GAM：<ul><li>Bag of ngrams</li><li><ahref="https://www.emerald.com/insight/content/doi/10.1108/eb026526/full/html">TF-IDF</a>(Term frequency{inverse document frequency)</li><li><a href="https://aclanthology.org/D14-1162/">GloVE</a></li><li>Aug-GAM with only unigrams</li></ul></li><li>Aug-Tree<ul><li><ahref="https://www.routledge.com/Classification-and-Regression-Trees/Breiman-Friedman-Stone-Olshen/p/book/9780412048418">CART</a></li><li><ahref="https://www.semanticscholar.org/paper/Induction-of-Decision-Trees-Quinlan/bcee7c85d237b79491a773ef51e746bbbcf48e35">ID3</a></li></ul></li></ul><h2 id="aug-gam-性能">4.3 Aug-GAM 性能</h2><p>以 ngram size 为自变量的泛化性能</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/3.png?raw=true" /></p><p>与黑盒 baseline 模型比较</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/4.png?raw=true" /></p><p>Aug-GAM 与 BERT 混合处理复杂样本：首先用 Aug-GAM预测每个样本，评估置信度(它对顶级类的预测概率与1的接近程度)。如果置信度高于预先指定的阈值，使用Aug-GAM 预测。否则，使用微调的 BERT 预测。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/5.png?raw=true" /></p><h2 id="aug-tree-性能">4.4 Aug-Tree 性能</h2><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/6.png?raw=true" /></p><h2 id="可解释性">4.5 可解释性</h2><h3 id="aug-gam-1">4.5.1 Aug-GAM</h3><p>Aug-GAM 拟合系数 top</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/7.png?raw=true" /></p><p>Aug-GAM 拟合系数与人工标记 SST 分数比较</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/8.png?raw=true" /></p><p>Aug-GAM 推断未知 ngram 系数</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/9.png?raw=true" /></p><p>Aug-GAM 推断位置 ngram 预测系数与人工系数比较</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/10.png?raw=true" /></p><h3 id="aug-tree-1">4.5.2 Aug-Tree</h3><p>最常增强的 ngram 示例</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/Aug-models/12.png?raw=true" /></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文</category>
+      
+      <category>LLM</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>Aug-imodels</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>RoPGen - Towards Robust Code Authorship Attribution via Automatic Coding Style Transformation</title>
+    <link href="/2023/07/23/RoPGen/"/>
+    <url>/2023/07/23/RoPGen/</url>
+    
+    <content type="html"><![CDATA[<p>RoPGen 论文笔记</p><span id="more"></span><h1 id="问题">1 问题</h1><h1 id="编码风格">2 编码风格</h1><ul><li>token 级别属性<ul><li>#1 标识符命名方法</li><li>#2 临时变量的使用</li><li>#3 非临时局部标识符名称的使用</li><li>#4 全局变量的使用</li><li>#5 数组/指针元素的访问</li></ul></li><li>语句级别属性<ul><li>#6 定义局部变量的位置</li><li>#7 初始化局部变量的位置</li><li>#8 相同类型多个变量的定义（和初始化）</li><li>#9 变量赋值</li><li>#10 自增/自减操作</li><li>#11 用户定义的类型</li><li>#12 宏命令</li><li>#13 包含的头文件或导入的类</li><li>#14 返回语句的使用</li><li>#15 名称空间的使用</li><li>#16 与 stdio 的同步</li><li>#17 流重定向</li><li>#18 库函数调用</li><li>#19 内存分配</li></ul></li><li>基本块级属性<ul><li>#20 循环结构</li><li>#21 条件结构</li><li>#22 复合if语句</li></ul></li><li>函数级属性<ul><li>#23 函数的使用</li></ul></li></ul><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/1.png?raw=true" /></p><p>​</p><h1 id="攻击方法">3 攻击方法</h1><h2 id="自动编码风格模仿攻击">3.1 自动编码风格模仿攻击</h2><p>​ 目标攻击。设作者集合为 <spanclass="math inline">\(\mathcal{A}\)</span> ，原作者 <spanclass="math inline">\(A_{s}\)</span> 撰写的程序为 <spanclass="math inline">\(p\)</span>，目标作者 <spanclass="math inline">\(A_{t}\)</span> 编写的程序集合为 <spanclass="math inline">\(R\)</span>，目的是将 <spanclass="math inline">\(p\)</span> 转化为 <spanclass="math inline">\(p^{&#39;}\)</span>，使得模型 <spanclass="math inline">\(M\)</span> 将其预测为 <spanclass="math inline">\(A_{t}\)</span>。</p><ol type="1"><li><p><strong>提取特征</strong>。提取原作者程序 <spanclass="math inline">\(p\)</span> 和目标作者程序集 <spanclass="math inline">\(R\)</span>的编码特征。</p></li><li><p><strong>特征合成</strong>。将从目标作者程序集 <spanclass="math inline">\(R\)</span> 中提取的特征合成。</p><ul><li>数字特征：取平均值</li><li>非数字特征：枚举，按照出现频率降序排列</li></ul></li><li><p><strong>识别差异</strong>。识别出 <spanclass="math inline">\(p\)</span> 和 <spanclass="math inline">\(R\)</span> 的差异特征。</p><ul><li>数字：<span class="math inline">\(p\)</span> 中的属性和 <spanclass="math inline">\(R\)</span> 中的属性差值大于阈值；</li><li>非数字：<span class="math inline">\(p\)</span> 中的属性非 <spanclass="math inline">\(R\)</span> 中的属性的子集。</li></ul></li><li><p><strong>代码转换</strong>。更改 <spanclass="math inline">\(p\)</span> 中识别出来的差异特征。</p><p>示例如下：</p></li></ol><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/2.png?raw=true" /></p><h2 id="自动编码风格隐藏攻击">3.2 自动编码风格隐藏攻击</h2><p>​ 非目标攻击。</p><ol type="1"><li><strong>提取原作者特征</strong>。提取原作者程序 <spanclass="math inline">\(p\)</span> 的编码特征。</li><li><strong>提取其他作者特征</strong>。对于任意 <spanclass="math inline">\(A_{d} \in\mathcal{A}-\left\{A_{s}\right\}\)</span>，提取 <spanclass="math inline">\(A_{d}\)</span> 的编码特征。</li><li><strong>计算待修改行数</strong>。对于任意 <spanclass="math inline">\(A_{d} \in\mathcal{A}-\left\{A_{s}\right\}\)</span>，计算和 <spanclass="math inline">\(p\)</span>的差异特征，然后计算需要修改的代码行数，选取行数修改最多的那个，记为<span class="math inline">\(A_{u} \in\mathcal{A}-\left\{A_{s}\right\}\)</span>。</li><li><strong>代码转换</strong>。更改 <spanclass="math inline">\(p\)</span> 和 <spanclass="math inline">\(A_{u}\)</span> 程序集的差异特征。</li></ol><h1 id="训练方法">4 训练方法</h1><p>​ 数据增强（1.<strong>编码风格模仿</strong>；2.<strong>编码风格扰动</strong>）和梯度增强（3.<strong>模型训练</strong>）。</p><p>数据包括：</p><ul><li>原始的训练样本及其标签</li><li>目标作者的集合</li><li>针对模型的对抗样本</li></ul><p>具体方法如下：</p><ol type="1"><li><p><strong>编码风格模仿</strong>。对于每个样本标签对，对于每个目标作者，使用模仿攻击将该样本转化为对抗样本，使得模型预测为该目标作者。该步骤产生的样本记为<span class="math inline">\(U\)</span>。</p></li><li><p><strong>编码风格扰动</strong>。</p><ul><li>将<strong>编码风格模仿</strong>生成对抗样本的方法实施到其他原始样本上</li><li>随机修改原始样本的编码属性</li></ul><p>该步骤产生的基本记为 <spanclass="math inline">\(U^{’}\)</span>。</p></li></ol><p>流程如下：</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/3.png?raw=true" /></p><ol start="3" type="1"><li><p><strong>模型训练</strong>。每次迭代的步骤如下：</p><ul><li>完整的正向传播和损失计算。使用 1.<strong>编码风格模仿</strong>产生的对抗样本 <span class="math inline">\(U\)</span>作为输入，在模型中进行前向传递，并计算损失：</li></ul><p><span class="math display">\[L_{s t d}=l(\mathcal{N}(\theta, u), v)\]</span></p><ul><li>子网络采样。对每一层的节点进行采样，得到子网络</li></ul><p><span class="math display">\[\mathcal{N}_{1}, \ldots, \mathcal{N}_{n}\]</span></p><ul><li>子网络的正向传播和损失计算。使用 2.<strong>编码风格扰动</strong>产生的对抗样本 <spanclass="math inline">\(U^{&#39;&#39;}\)</span>作为输入，在模型中进行前向传递，并计算损失: <spanclass="math display">\[L_{\text {subnet }}=\sum_{j=1}^{n}l\left(\mathcal{N}\left(\theta_{w_{j}}, u^{\prime}\right),v^{\prime}\right)\]</span></li></ul></li><li><p><strong>计算总损失</strong>。全网络损失和子网络损失之和： <spanclass="math display">\[L_{\text {RoPGen }}=L_{\text {std }}+L_{\text {subnet }}\]</span></p></li><li><p><strong>更新模型权重</strong>。反向传递计算增强的梯度。完整网络的梯度为：</p></li></ol><p><span class="math display">\[g_{s t d}=\frac{\partial l(\mathcal{N}(\theta, u), v)}{\partial \theta}\]</span></p><p>​ 子网络的梯度为： <span class="math display">\[g_{\text {subnet }}=\sum_{j=1}^{n} \frac{\partiall\left(\mathcal{N}\left(\theta_{w_{j}}, u^{\prime}\right),v^{\prime}\right)}{\partial \theta_{w_{j}}}\]</span> ​ 增强后的梯度为： <span class="math display">\[g_{\text {RoPGen }}=g_{\text {std }}+g_{\text {subnet }}\]</span> ​更新权重（完整网络和自网络共享），让网络的不同部分学习不同的表示。</p><h1 id="实验">5 实验</h1><h2 id="数据集">5.1 数据集</h2><ul><li><p>GCJ-C++。<a href="https://arxiv.org/abs/1905.12386">Google CodeJam (GCJ)</a> 中 204 位作者的 1632 个 C++ 程序文件，每个程序文件平均有74 行代码。</p></li><li><p>GitHub-Java。<ahref="https://pubmed.ncbi.nlm.nih.gov/29095934/">GitHub</a> 中 40位作者的 2827 个 Java 程序文件，每个程序文件平均有 76 行代码。</p></li><li><p>GitHub-C。GitHub 中 67 位作者的 2072 个 C文件，每个程序文件平均有 88 行代码。</p></li><li><p>GCJ-Java。Google Code Jam (GCJ) 中 74 个作者的 2396 个 Java文件，每个程序文件平均有 139 行代码。</p></li></ul><h2 id="目标模型">5.2 目标模型</h2><ul><li><p><ahref="https://www.cs.ucf.edu/~mohaisen/doc/ccs18.pdf">DL-CAIS</a></p></li><li><p><a href="https://arxiv.org/abs/2001.11593">PbNN</a></p></li></ul><p>在数据集上的准确率如下：</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/4.png?raw=true" /></p><h2 id="实验结果">5.3 实验结果</h2><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/5.png?raw=true" /></p><p>​ 表 3 显示了两种基于dl的归因方法在四个数据集上的攻击成功率。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/6.png?raw=true" /></p><p>​ 图 3 表明了</p><ul><li>测试集中涉及𝑟变换的被操纵程序占测试集中所有被操纵程序的比例。</li><li>两种基于dl的归因方法下，涉及𝑟变换的被操纵程序在测试集中攻击成功的被操纵程序占测试集中所有被操纵程序的比例。</li></ul><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/7.png?raw=true" /></p><p>​ 表 4 总结了每个 DL模型随机替换五次的平均结果和提出的攻击方法的对比。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/8.png?raw=true" /></p><p>​ 表 5 总结了在变量为 1, 3, 5 时 DL-CAIS的攻击成功率。这表明应用更多的代码转换可以增加模仿或隐藏编码风格的成功率。</p><p><imgsrc="https://github.com/vexentox/pictures/blob/main/RoPGen/9.png?raw=true" /></p><p>​ 表 6 显示了 8 个基于 ropgen 的模型的精度。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>论文</category>
+      
+      <category>AI 安全</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>RoPGen</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Natural Attack for Pre-Trained Models of Code</title>
     <link href="/2023/07/22/ALERT/"/>
     <url>/2023/07/22/ALERT/</url>
@@ -13,7 +148,9 @@
     
     <categories>
       
-      <category>论文笔记</category>
+      <category>论文</category>
+      
+      <category>AI 安全</category>
       
     </categories>
     
@@ -33,12 +170,14 @@
     <link href="/2023/05/26/DeepSort/"/>
     <url>/2023/05/26/DeepSort/</url>
     
-    <content type="html"><![CDATA[<p>DeepSort 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1703.07402.pdf">论文地址</a></p><h1 id="1-轨道处理和状态估计"><a href="#1-轨道处理和状态估计" class="headerlink" title="1 轨道处理和状态估计"></a>1 轨道处理和状态估计</h1><p><strong>定义卡尔曼滤波状态 $(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$</strong></p><p>我们假设相机未校准，且没有可用的自我运动信息，这是一个非常通用的跟踪场景。尽管这些情况对滤波框架构成了挑战，但它是最近多目标跟踪基准测试中最常见的设置。因此，我们的跟踪场景定义在八维状态空间<br>$$<br>(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})<br>$$<br>上，其中包含边界框中心位置 (u, v），纵横比 γ，高度 h 以及它们在图像坐标中的速度 $(\dot{x}, \dot{y}, \dot{\gamma}, \dot{h})$。我们使用具有恒定速度运动和线性观测模型的标准卡尔曼滤波器，其中将边界坐标 $(u, v, \gamma , h)$ 直接作为对象状态的观测值。</p><p><strong>如果某个 trick 连续 $A_{max}$ 帧无法匹配检测结果，则删除；如果某个检测结果无法关联 trick，则增加 trick</strong></p><p>对于每个轨迹 k，我们计算自上次成功关联检测以来的帧数 $\alpha_{k}$。这个计数器在卡尔曼滤波器的预测过程中递增，并在轨迹与测量关联后重置为 0。超过预定义的最大年龄 $A_{max}$ 的轨迹被认为已经离开场景，并从轨迹集合中删除。对于无法与现有轨迹关联的每个检测，都会启动新的轨迹假设。这些新的轨迹在其前三帧中被分类为暂定状态。在此期间，我们期望在每个时间步骤中进行成功的测量关联，在它们的前三帧中没有成功与测量关联的轨迹将被删除。</p><h1 id="2-分配问题"><a href="#2-分配问题" class="headerlink" title="2 分配问题"></a>2 分配问题</h1><p>解决预测的卡尔曼状态和新到达的测量之间的关联的传统方法是构建一个可以使用匈牙利算法解决的分配问题。在这个问题的形式化中，我们通过结合两个合适的度量来整合运动和外观信息。 </p><p><strong>度量运动信息</strong></p><p>为了融入运动信息，我们使用预测的卡尔曼状态和新到达的测量之间的（平方的）马氏距离：<br>$$<br>d^{(1)}(i, j)&#x3D;\left(\boldsymbol{d}<em>{j}-\boldsymbol{y}</em>{i}\right)^{\mathrm{T}} \boldsymbol{S}<em>{i}^{-1}\left(\boldsymbol{d}</em>{j}-\boldsymbol{y}<em>{i}\right)<br>$$<br>我们用 $(y</em>{i}, S_{i})$ 表示第i个轨迹分布在测量空间中的投影，用 $d_{j}$ 表示第j个边界框检测。马氏距离考虑了状态估计的不确定性，通过衡量检测与平均轨迹位置之间相隔多少个标准差来计算。此外，利用这个度量指标，可以通过将马氏距离与从逆 $\chi^{2}$ 分布计算得到的 95% 置信区间进行阈值化，从而排除不太可能的关联。</p><p>我们用一个指示符来表示这个决策：<br>$$<br>b_{i, j}^{(1)}&#x3D;\mathbb{1}\left[d^{(1)}(i, j) \leq t^{(1)}\right]<br>$$<br>如果第i个轨迹和第j个检测之间的关联是可接受的，我们的指示符将评估为1。对于我们的四维测量空间，相应的马氏距离阈值为 $t^{(1)}$ &#x3D; 9.4877。</p><p><strong>度量外观信息</strong></p><p>尽管当运动不确定性较低时，马氏距离是一种适合的关联度量，但在我们的图像空间问题形式化中，从卡尔曼滤波框架得到的预测状态分布仅提供了对象位置的粗略估计。特别是，未考虑的相机运动可能会在图像平面上引入快速位移，使得马氏距离成为在遮挡情况下进行跟踪的一种相对缺乏信息的度量。因此，我们将第二个度量指标整合到分配问题中。对于每个边界框检测 $d_{j}$，我们计算出一个具有 $\left|\boldsymbol{r}<em>{j}\right|&#x3D;1$ 的外观描述符 $r</em>{j}$。此外，我们为每个轨迹k保留一个包含最近 $L_{k} &#x3D; 100$个相关外观描述符 $\left{\boldsymbol{r}<em>{k}^{(i)}\right}</em>{k&#x3D;1}^{L_{k}}$。然后，我们的第二个度量度量外观空间中第 i 个轨迹和第 j 个检测之间的最小余弦距离：<br>$$<br>d^{(2)}(i, j)&#x3D;\min \left{1-\boldsymbol{r}<em>{j}^{\mathrm{T}} \boldsymbol{r}</em>{k}^{(i)} \mid \boldsymbol{r}<em>{k}^{(i)} \in \mathcal{R}</em>{i}\right}<br>$$<br>我们引入一个二进制变量来指示根据这个度量指标是否可以接受关联：<br>$$<br>b_{i, j}^{(2)}&#x3D;\mathbb{1}\left[d^{(2)}(i, j) \leq t^{(2)}\right]<br>$$<br>并且我们在一个单独的训练数据集上找到适合这个指示变量的阈值。实际上，我们应用一个预训练的卷积神经网络来计算边界框的外观描述符。</p><p><strong>综合度量</strong></p><p>为了构建关联问题，我们使用加权和将两个度量结合起来：<br>$$<br>c_{i, j}&#x3D;\lambda d^{(1)}(i, j)+(1-\lambda) d^{(2)}(i, j) \ Eq. 5<br>$$<br>如果一个关联在两个度量的门控区域内，我们称之为可接受的关联：<br>$$<br>b_{i, j}&#x3D;\prod_{m&#x3D;1}^{2} b_{i, j}^{(m)} \<br>Eq. 6<br>$$</p><h1 id="3-级联匹配"><a href="#3-级联匹配" class="headerlink" title="3 级联匹配"></a>3 级联匹配</h1><p><strong>优先匹配距离上一次匹配成功的帧更少的 trick（维持信息更好的 trick）</strong></p><p>我们引入了一个级联结构来解决一系列子问题，而不是在全局关联问题中解决测量与轨迹的关联。为了解释这种方法的动机，考虑以下情况：当一个物体被遮挡了较长一段时间后，随后的卡尔曼滤波预测会增加与物体位置相关的不确定性。因此，概率质量在状态空间中扩散，观测似然变得不太尖锐。直观上，关联度量应该通过增加测量与轨迹之间的距离来考虑概率质量的扩散。令人意外的是，当两个轨迹争夺同一个检测时，马氏距离更偏向于较大的不确定性，因为它有效地减小了任何检测与预测轨迹均值之间的距离，以标准差为单位。这是一种不希望的行为，因为它可能导致轨迹碎片化和不稳定的轨迹。因此，我们引入了一个匹配级联结构，优先考虑更频繁出现的物体，以编码我们关于关联似然中概率扩散的观念：</p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true"><h1 id="4-外观特征提取"><a href="#4-外观特征提取" class="headerlink" title="4 外观特征提取"></a>4 外观特征提取</h1><p>通过使用简单的最近邻查询而无需额外的度量学习，我们的方法成功应用需要在实际的在线跟踪应用之前离线训练一个具有良好区分性的特征嵌入。为此，我们使用了一个在大规模行人重识别数据集上进行训练的 CNN，该数据集包含了超过 1,100,000 张 1,261 个行人的图像，非常适合在人员跟踪环境中进行深度度量学习。</p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96.png?raw=true">]]></content>
+    <content type="html"><![CDATA[<p>DeepSort 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1703.07402.pdf">论文地址</a></p><h1 id="轨道处理和状态估计">1 轨道处理和状态估计</h1><p><strong>定义卡尔曼滤波状态 <span class="math inline">\((u, v, \gamma,h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})\)</span></strong></p><p>我们假设相机未校准，且没有可用的自我运动信息，这是一个非常通用的跟踪场景。尽管这些情况对滤波框架构成了挑战，但它是最近多目标跟踪基准测试中最常见的设置。因此，我们的跟踪场景定义在八维状态空间<span class="math display">\[(u, v, \gamma, h, \dot{x}, \dot{y}, \dot{\gamma}, \dot{h})\]</span> 上，其中包含边界框中心位置 (u, v），纵横比 γ，高度 h以及它们在图像坐标中的速度 <span class="math inline">\((\dot{x},\dot{y}, \dot{\gamma},\dot{h})\)</span>。我们使用具有恒定速度运动和线性观测模型的标准卡尔曼滤波器，其中将边界坐标<span class="math inline">\((u, v, \gamma , h)\)</span>直接作为对象状态的观测值。</p><p><strong>如果某个 trick 连续 <spanclass="math inline">\(A_{max}\)</span>帧无法匹配检测结果，则删除；如果某个检测结果无法关联 trick，则增加trick</strong></p><p>对于每个轨迹 k，我们计算自上次成功关联检测以来的帧数 <spanclass="math inline">\(\alpha_{k}\)</span>。这个计数器在卡尔曼滤波器的预测过程中递增，并在轨迹与测量关联后重置为0。超过预定义的最大年龄 <span class="math inline">\(A_{max}\)</span>的轨迹被认为已经离开场景，并从轨迹集合中删除。对于无法与现有轨迹关联的每个检测，都会启动新的轨迹假设。这些新的轨迹在其前三帧中被分类为暂定状态。在此期间，我们期望在每个时间步骤中进行成功的测量关联，在它们的前三帧中没有成功与测量关联的轨迹将被删除。</p><h1 id="分配问题">2 分配问题</h1><p>解决预测的卡尔曼状态和新到达的测量之间的关联的传统方法是构建一个可以使用匈牙利算法解决的分配问题。在这个问题的形式化中，我们通过结合两个合适的度量来整合运动和外观信息。</p><p><strong>度量运动信息</strong></p><p>为了融入运动信息，我们使用预测的卡尔曼状态和新到达的测量之间的（平方的）马氏距离：<span class="math display">\[d^{(1)}(i,j)=\left(\boldsymbol{d}_{j}-\boldsymbol{y}_{i}\right)^{\mathrm{T}}\boldsymbol{S}_{i}^{-1}\left(\boldsymbol{d}_{j}-\boldsymbol{y}_{i}\right)\]</span> 我们用 <span class="math inline">\((y_{i}, S_{i})\)</span>表示第i个轨迹分布在测量空间中的投影，用 <spanclass="math inline">\(d_{j}\)</span>表示第j个边界框检测。马氏距离考虑了状态估计的不确定性，通过衡量检测与平均轨迹位置之间相隔多少个标准差来计算。此外，利用这个度量指标，可以通过将马氏距离与从逆<span class="math inline">\(\chi^{2}\)</span> 分布计算得到的 95%置信区间进行阈值化，从而排除不太可能的关联。</p><p>我们用一个指示符来表示这个决策： <span class="math display">\[b_{i, j}^{(1)}=\mathbb{1}\left[d^{(1)}(i, j) \leq t^{(1)}\right]\]</span>如果第i个轨迹和第j个检测之间的关联是可接受的，我们的指示符将评估为1。对于我们的四维测量空间，相应的马氏距离阈值为<span class="math inline">\(t^{(1)}\)</span> = 9.4877。</p><p><strong>度量外观信息</strong></p><p>尽管当运动不确定性较低时，马氏距离是一种适合的关联度量，但在我们的图像空间问题形式化中，从卡尔曼滤波框架得到的预测状态分布仅提供了对象位置的粗略估计。特别是，未考虑的相机运动可能会在图像平面上引入快速位移，使得马氏距离成为在遮挡情况下进行跟踪的一种相对缺乏信息的度量。因此，我们将第二个度量指标整合到分配问题中。对于每个边界框检测<span class="math inline">\(d_{j}\)</span>，我们计算出一个具有 <spanclass="math inline">\(\left\|\boldsymbol{r}_{j}\right\|=1\)</span>的外观描述符 <spanclass="math inline">\(r_{j}\)</span>。此外，我们为每个轨迹k保留一个包含最近<span class="math inline">\(L_{k} = 100\)</span>个相关外观描述符 <spanclass="math inline">\(\left\{\boldsymbol{r}_{k}^{(i)}\right\}_{k=1}^{L_{k}}\)</span>。然后，我们的第二个度量度量外观空间中第i 个轨迹和第 j 个检测之间的最小余弦距离： <span class="math display">\[d^{(2)}(i, j)=\min \left\{1-\boldsymbol{r}_{j}^{\mathrm{T}}\boldsymbol{r}_{k}^{(i)} \mid \boldsymbol{r}_{k}^{(i)} \in\mathcal{R}_{i}\right\}\]</span> 我们引入一个二进制变量来指示根据这个度量指标是否可以接受关联：<span class="math display">\[b_{i, j}^{(2)}=\mathbb{1}\left[d^{(2)}(i, j) \leq t^{(2)}\right]\]</span>并且我们在一个单独的训练数据集上找到适合这个指示变量的阈值。实际上，我们应用一个预训练的卷积神经网络来计算边界框的外观描述符。</p><p><strong>综合度量</strong></p><p>为了构建关联问题，我们使用加权和将两个度量结合起来： <spanclass="math display">\[c_{i, j}=\lambda d^{(1)}(i, j)+(1-\lambda) d^{(2)}(i, j) \\ Eq. 5\]</span> 如果一个关联在两个度量的门控区域内，我们称之为可接受的关联：<span class="math display">\[b_{i, j}=\prod_{m=1}^{2} b_{i, j}^{(m)} \\Eq. 6\]</span></p><h1 id="级联匹配">3 级联匹配</h1><p><strong>优先匹配距离上一次匹配成功的帧更少的 trick（维持信息更好的trick）</strong></p><p>我们引入了一个级联结构来解决一系列子问题，而不是在全局关联问题中解决测量与轨迹的关联。为了解释这种方法的动机，考虑以下情况：当一个物体被遮挡了较长一段时间后，随后的卡尔曼滤波预测会增加与物体位置相关的不确定性。因此，概率质量在状态空间中扩散，观测似然变得不太尖锐。直观上，关联度量应该通过增加测量与轨迹之间的距离来考虑概率质量的扩散。令人意外的是，当两个轨迹争夺同一个检测时，马氏距离更偏向于较大的不确定性，因为它有效地减小了任何检测与预测轨迹均值之间的距离，以标准差为单位。这是一种不希望的行为，因为它可能导致轨迹碎片化和不稳定的轨迹。因此，我们引入了一个匹配级联结构，优先考虑更频繁出现的物体，以编码我们关于关联似然中概率扩散的观念：</p><p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%BA%A7%E8%81%94%E5%8C%B9%E9%85%8D.png?raw=true"></p><h1 id="外观特征提取">4 外观特征提取</h1><p>通过使用简单的最近邻查询而无需额外的度量学习，我们的方法成功应用需要在实际的在线跟踪应用之前离线训练一个具有良好区分性的特征嵌入。为此，我们使用了一个在大规模行人重识别数据集上进行训练的CNN，该数据集包含了超过 1,100,000 张 1,261个行人的图像，非常适合在人员跟踪环境中进行深度度量学习。</p><p><img src="https://github.com/vexentox/reproduction/blob/main/DeepSort/%E7%89%B9%E5%BE%81%E6%8F%90%E5%8F%96.png?raw=true"></p>]]></content>
     
     
     <categories>
       
-      <category>论文解析</category>
+      <category>论文</category>
+      
+      <category>计算机视觉</category>
       
     </categories>
     
@@ -58,12 +197,14 @@
     <link href="/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/"/>
     <url>/2023/05/26/SlowFast%E8%A7%A3%E6%9E%90/</url>
     
-    <content type="html"><![CDATA[<p>SlowFast 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1812.03982.pdf">论文地址</a></p><h1 id="1-引言"><a href="#1-引言" class="headerlink" title="1 引言"></a>1 引言</h1><p><strong>相比于图像数据（h * w），视频数据（帧 * h * w）无法等价地处理所有的帧</strong></p><p>在图像识别中，习惯上对两个空间维度 x 和 y 进行对称处理。这是基于自然图像的统计学特征的合理性，自然图像在一级近似上是各向同性的，即所有方向的出现概率相等，并且具有平移不变性。但是对于视频信号 I(x, y, t) 呢？运动是时空方向的对应物，但并非所有时空方向的出现概率都相等。缓慢的运动比快速运动更常见（事实上，我们所看到的大部分物体在某一时刻是静止的），这一特点已被贝叶斯模型用于解释人类如何感知运动刺激。例如，当我们看到一个孤立的移动边缘时，我们会感知它垂直于自身移动，即使从原理上讲它也可能具有沿切线方向的任意移动分量（光流中的光圈问题）。如果先验偏向于缓慢的运动，这种感知是合理的。</p><p><strong>提出双路径(Slow 和 Fast)，Slow 提取空间信息，Fast 提取动作信息</strong></p><p>基于这个直觉，我们提出了一种用于视频识别的双路径（SlowFast）模型。其中一个路径旨在捕捉可以通过图像或少数稀疏帧提供的语义信息，它以低帧率和较慢的刷新速度进行操作。相比之下，另一个路径负责捕捉快速变化的运动，它以快速刷新速度和高时间分辨率进行操作。尽管这个路径具有较高的时间率，但它非常轻量级，例如，约占总计算量的20%。这是因为该路径的设计采用了较少的通道和较弱的处理空间信息的能力，而这些信息可以通过第一个路径以较少的冗余方式提供。我们将第一个路径称为Slow路径，将第二个路径称为Fast路径，这是由它们不同的时间速度驱动的。这两个路径通过横向连接进行融合。</p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true"><h1 id="2-网络结构"><a href="#2-网络结构" class="headerlink" title="2 网络结构"></a>2 网络结构</h1><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-"><h2 id="2-1-慢通道"><a href="#2-1-慢通道" class="headerlink" title="2.1 慢通道"></a>2.1 慢通道</h2><p>慢速路径可以是任何卷积模型，它将视频剪辑作为时空体进行处理。我们慢速路径的关键概念是在输入帧上使用较大的时间步长τ，即仅处理τ帧中的一帧。我们研究的典型τ值为16，这意味着对于30fps的视频，刷新速度大约为每秒采样2帧。将慢速路径采样的帧数表示为T，则原始剪辑的长度为T × τ帧。</p><h2 id="2-2-快通道"><a href="#2-2-快通道" class="headerlink" title="2.2 快通道"></a>2.2 快通道</h2><h3 id="2-2-1-High-frame-rate"><a href="#2-2-1-High-frame-rate" class="headerlink" title="2.2.1 High frame rate"></a>2.2.1 High frame rate</h3><p><strong>帧率高</strong></p><p>我们的目标是在时间维度上获得精细的表示。我们的快速通道使用小的时间跨度τ &#x2F; α，其中α &gt; 1是快速通道和慢速通道之间的帧速率比率。这两个通道在同一原始片段上操作，因此快速通道采样αT帧，比慢速通道密集了α倍。在我们的实验中，典型的值为α &#x3D; 8。</p><h3 id="2-2-2-High-temporal-resolution-features"><a href="#2-2-2-High-temporal-resolution-features" class="headerlink" title="2.2.2 High temporal resolution features"></a>2.2.2 High temporal resolution features</h3><p><strong>分辨率高</strong></p><p>我们的快速通道不仅具有高输入分辨率，还追求整个网络层次结构中的高分辨率特征。在我们的实例中，我们在快速通道中没有使用任何时间降采样层（既没有时间汇聚也没有时间步长卷积），直到分类之前的全局汇聚层。因此，我们的特征张量在时间维度上始终具有αT帧，尽可能地保持时间的准确性。</p><h3 id="2-2-3-Low-channel-capacity"><a href="#2-2-3-Low-channel-capacity" class="headerlink" title="2.2.3 Low channel capacity"></a>2.2.3 Low channel capacity</h3><p><strong>通道少</strong></p><p>我们的快速通道还与现有模型有所区别，它可以使用显著较低的通道容量来实现SlowFast模型的良好准确性。这使得它非常轻量化。</p><h2 id="2-3-Lateral-connections"><a href="#2-3-Lateral-connections" class="headerlink" title="2.3 Lateral connections"></a>2.3 Lateral connections</h2><p>我们的横向连接从快速通道融合到慢速通道。在融合之前，需要匹配特征的尺寸。假设慢速通道的特征形状为{T，S2，C}，快速通道的特征形状为{αT，S2，βC}。我们在横向连接中进行以下转换的实验：</p><ol><li><p>时间到通道：我们将{αT，S2，βC}重新调整形状并转置为{T，S2，αβC}，这意味着我们将所有的α帧打包到一个帧的通道中。</p></li><li><p>时间步长采样：我们简单地从每个α帧中采样一个，因此{αT，S2，βC}变为{T，S2，βC}。</p></li><li><p>时间步长卷积：我们使用5×12大小的内核进行3D卷积，输出通道数为2βC，步长为α。横向连接的输出通过求和或连接的方式融合到慢速通道中。</p></li></ol>]]></content>
+    <content type="html"><![CDATA[<p>SlowFast 论文解析</p><span id="more"></span><p><a href="https://arxiv.org/pdf/1812.03982.pdf">论文地址</a></p><h1 id="引言">1 引言</h1><p><strong>相比于图像数据（h * w），视频数据（帧 * h *w）无法等价地处理所有的帧</strong></p><p>在图像识别中，习惯上对两个空间维度 x 和 y进行对称处理。这是基于自然图像的统计学特征的合理性，自然图像在一级近似上是各向同性的，即所有方向的出现概率相等，并且具有平移不变性。但是对于视频信号I(x, y, t)呢？运动是时空方向的对应物，但并非所有时空方向的出现概率都相等。缓慢的运动比快速运动更常见（事实上，我们所看到的大部分物体在某一时刻是静止的），这一特点已被贝叶斯模型用于解释人类如何感知运动刺激。例如，当我们看到一个孤立的移动边缘时，我们会感知它垂直于自身移动，即使从原理上讲它也可能具有沿切线方向的任意移动分量（光流中的光圈问题）。如果先验偏向于缓慢的运动，这种感知是合理的。</p><p><strong>提出双路径(Slow 和 Fast)，Slow 提取空间信息，Fast提取动作信息</strong></p><p>基于这个直觉，我们提出了一种用于视频识别的双路径（SlowFast）模型。其中一个路径旨在捕捉可以通过图像或少数稀疏帧提供的语义信息，它以低帧率和较慢的刷新速度进行操作。相比之下，另一个路径负责捕捉快速变化的运动，它以快速刷新速度和高时间分辨率进行操作。尽管这个路径具有较高的时间率，但它非常轻量级，例如，约占总计算量的20%。这是因为该路径的设计采用了较少的通道和较弱的处理空间信息的能力，而这些信息可以通过第一个路径以较少的冗余方式提供。我们将第一个路径称为Slow路径，将第二个路径称为Fast路径，这是由它们不同的时间速度驱动的。这两个路径通过横向连接进行融合。</p><p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true"></p><h1 id="网络结构">2 网络结构</h1><p><img src="https://github.com/vexentox/reproduction/blob/main/SlowFast/%E5%AE%9E%E9%99%85%E7%BD%91%E7%BB%9C%E7%BB%93%E6%9E%84.png?raw=true-"></p><h2 id="慢通道">2.1 慢通道</h2><p>慢速路径可以是任何卷积模型，它将视频剪辑作为时空体进行处理。我们慢速路径的关键概念是在输入帧上使用较大的时间步长τ，即仅处理τ帧中的一帧。我们研究的典型τ值为16，这意味着对于30fps的视频，刷新速度大约为每秒采样2帧。将慢速路径采样的帧数表示为T，则原始剪辑的长度为T× τ帧。</p><h2 id="快通道">2.2 快通道</h2><h3 id="high-frame-rate">2.2.1 High frame rate</h3><p><strong>帧率高</strong></p><p>我们的目标是在时间维度上获得精细的表示。我们的快速通道使用小的时间跨度τ/ α，其中α &gt;1是快速通道和慢速通道之间的帧速率比率。这两个通道在同一原始片段上操作，因此快速通道采样αT帧，比慢速通道密集了α倍。在我们的实验中，典型的值为α= 8。</p><h3 id="high-temporal-resolution-features">2.2.2 High temporalresolution features</h3><p><strong>分辨率高</strong></p><p>我们的快速通道不仅具有高输入分辨率，还追求整个网络层次结构中的高分辨率特征。在我们的实例中，我们在快速通道中没有使用任何时间降采样层（既没有时间汇聚也没有时间步长卷积），直到分类之前的全局汇聚层。因此，我们的特征张量在时间维度上始终具有αT帧，尽可能地保持时间的准确性。</p><h3 id="low-channel-capacity">2.2.3 Low channel capacity</h3><p><strong>通道少</strong></p><p>我们的快速通道还与现有模型有所区别，它可以使用显著较低的通道容量来实现SlowFast模型的良好准确性。这使得它非常轻量化。</p><h2 id="lateral-connections">2.3 Lateral connections</h2><p>我们的横向连接从快速通道融合到慢速通道。在融合之前，需要匹配特征的尺寸。假设慢速通道的特征形状为{T，S2，C}，快速通道的特征形状为{αT，S2，βC}。我们在横向连接中进行以下转换的实验：</p><ol type="1"><li><p>时间到通道：我们将{αT，S2，βC}重新调整形状并转置为{T，S2，αβC}，这意味着我们将所有的α帧打包到一个帧的通道中。</p></li><li><p>时间步长采样：我们简单地从每个α帧中采样一个，因此{αT，S2，βC}变为{T，S2，βC}。</p></li><li><p>时间步长卷积：我们使用5×12大小的内核进行3D卷积，输出通道数为2βC，步长为α。横向连接的输出通过求和或连接的方式融合到慢速通道中。</p></li></ol>]]></content>
     
     
     <categories>
       
-      <category>论文解析</category>
+      <category>论文</category>
+      
+      <category>计算机视觉</category>
       
     </categories>
     
@@ -88,7 +229,9 @@
     
     <categories>
       
-      <category>论文解析</category>
+      <category>论文</category>
+      
+      <category>计算机视觉</category>
       
     </categories>
     
@@ -113,7 +256,9 @@
     
     <categories>
       
-      <category>论文解析</category>
+      <category>论文</category>
+      
+      <category>计算机视觉</category>
       
     </categories>
     
@@ -140,6 +285,8 @@
       
       <category>项目</category>
       
+      <category>计算机视觉</category>
+      
     </categories>
     
     
@@ -165,6 +312,8 @@
       
       <category>项目</category>
       
+      <category>计算机视觉</category>
+      
     </categories>
     
     
@@ -188,7 +337,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>计算机视觉</category>
       
     </categories>
     
@@ -213,7 +364,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -238,7 +391,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -263,7 +418,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -288,7 +445,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -313,7 +472,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -338,7 +499,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -363,7 +526,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -388,7 +553,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -413,7 +580,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -438,7 +607,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -463,7 +634,9 @@
     
     <categories>
       
-      <category>论文复现</category>
+      <category>论文</category>
+      
+      <category>基础网络</category>
       
     </categories>
     
@@ -488,7 +661,7 @@
     
     <categories>
       
-      <category>tricks</category>
+      <category>其他</category>
       
     </categories>
     
@@ -515,6 +688,8 @@
       
       <category>题解</category>
       
+      <category>算法进阶指南</category>
+      
     </categories>
     
     
@@ -539,6 +714,8 @@
     <categories>
       
       <category>题解</category>
+      
+      <category>CodeForce</category>
       
     </categories>
     
@@ -565,6 +742,8 @@
       
       <category>题解</category>
       
+      <category>CodeForce</category>
+      
     </categories>
     
     
@@ -589,6 +768,8 @@
     <categories>
       
       <category>题解</category>
+      
+      <category>CodeForce</category>
       
     </categories>
     
@@ -615,6 +796,8 @@
       
       <category>题解</category>
       
+      <category>CodeForce</category>
+      
     </categories>
     
     
@@ -640,6 +823,8 @@
       
       <category>题解</category>
       
+      <category>CodeForce</category>
+      
     </categories>
     
     
@@ -658,12 +843,14 @@
     <link href="/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/"/>
     <url>/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/</url>
     
-    <content type="html"><![CDATA[<h1 id="安装-hexo">安装 hexo</h1><p><code>npm install -g hexo-cli</code></p><h1 id="配置环境变量">配置环境变量</h1><p>查看默认安装路径 <code>npm config ls</code>，找到<code>hexo-cli/bin</code>文件夹，将其添加到环境变量中</p><h1 id="创建新文件夹">创建新文件夹</h1><p><code>mkdir blog</code></p><h1 id="生成初始化文件">生成初始化文件</h1><p><code>hexo init</code></p><h1 id="下载部署插件">下载部署插件</h1><p><code>npm install hexo-deployer-git --save</code></p><!-- # <code>hexo g</code># 棰勮<code>hexo s</code># 閮ㄧ讲<code>hexo d</code> -->]]></content>
+    <content type="html"><![CDATA[<h1 id="安装-hexo">安装 hexo</h1><p><code>npm install -g hexo-cli</code></p><h1 id="配置环境变量">配置环境变量</h1><p>查看默认安装路径 <code>npm config ls</code>，找到<code>hexo-cli/bin</code>文件夹，将其添加到环境变量中</p><h1 id="创建新文件夹">创建新文件夹</h1><p><code>mkdir blog</code></p><h1 id="生成初始化文件">生成初始化文件</h1><p><code>hexo init</code></p><h1 id="下载部署插件">下载部署插件</h1><p><code>npm install hexo-deployer-git --save</code></p><h1 id="生成">生成</h1><p><code>hexo g</code></p><h1 id="本地部署">本地部署</h1><p><code>hexo s</code></p><h1 id="服务器部署">服务器部署</h1><p><code>hexo d</code></p>]]></content>
     
     
     <categories>
       
-      <category>配置教程</category>
+      <category>其他</category>
+      
+      <category>hexo</category>
       
     </categories>
     
