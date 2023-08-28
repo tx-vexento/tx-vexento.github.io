@@ -20,11 +20,11 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="A SURVEY of TROJANS in NEURAL MODELS of SOURCE CODE - TAXONOMY and TECHNIQUES">
 <meta property="og:url" content="https://vexentox.github.io/2023/08/21/2305_03803/index.html">
-<meta property="og:site_name" content="唐喜的个人博客">
+<meta property="og:site_name" content="tx&#39;s blog">
 <meta property="og:description" content="A SURVEY OF TROJANS IN NEURAL MODELS OF SOURCE CODE: TAXONOMY AND TECHNIQUES 2023 论文地址：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2305.03803">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-08-21T08:24:00.000Z">
-<meta property="article:modified_time" content="2023-08-27T15:34:08.716Z">
+<meta property="article:modified_time" content="2023-08-28T13:01:29.120Z">
 <meta property="article:author" content="唐喜">
 <meta property="article:tag" content="综述、后门攻击、可解释机器学习">
 <meta name="twitter:card" content="summary_large_image">
@@ -33,7 +33,7 @@
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>A SURVEY of TROJANS in NEURAL MODELS of SOURCE CODE - TAXONOMY and TECHNIQUES - 唐喜的个人博客</title>
+  <title>A SURVEY of TROJANS in NEURAL MODELS of SOURCE CODE - TAXONOMY and TECHNIQUES - tx&#39;s blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -222,7 +222,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          5.5k 字
+          8.1k 字
         
       </span>
     
@@ -233,7 +233,7 @@
         
         
         
-          46 分钟
+          68 分钟
         
       </span>
     
@@ -287,7 +287,7 @@ target="_blank" rel="noopener" href="https://arxiv.org/abs/2305.03803">https://a
 <li>提出一种后门攻击的分类方法</li>
 <li>提出一种触发器分类方法</li>
 <li>从可解释 AI 论文中提取有利于后门攻击的见解</li>
-<li>调查后门攻击如何使用可解释 AI 的见解</li>
+<li>调查后门攻击使用了哪些可解释 AI 的见解</li>
 </ul>
 <h1 id="调查方法">2 调查方法</h1>
 <ul>
@@ -488,94 +488,145 @@ trigger)</strong>：由输入中的多个令牌组成的触发器。多令牌触
 <p><img
 src="https://github.com/vexentox/pictures/blob/main/2305_03803/8.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
 <h1 id="可解释-ai-论文中的见解">6 可解释 AI 论文中的见解</h1>
-<table>
-
-<thead>
-<tr class="header">
-<th>编号</th>
-<th>结论</th>
-<th>见解</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://www.cs.utexas.edu/~isil/md.pdf">A1</a></td>
-<td>某些模型（例如内存受限模型）在推理时可能会丢弃输入中的大型特征。</td>
-<td>在高维输入数据中，种植在<strong>较小特征</strong>中的触发器更有可能对抗内存受限模型。</td>
-</tr>
-<tr class="even">
-<td>A2</td>
-<td>CodeBERT 对结构信息的注意较少，对语义信息的注意较多。</td>
-<td>（1）在类似 CodeBERT
-这样的基于语言的模型中，应该更多地关注检测语义触发器。（2）通过跟踪
-transformer 各层的注意力权重，发现异常。</td>
-</tr>
-<tr class="odd">
-<td><a target="_blank" rel="noopener" href="https://arxiv.org/abs/2111.05711">A3</a></td>
-<td>反事实解释可以显示导致误预测的输入 token 。</td>
-<td>反事实解释可以指导模型输入中潜在的触发器位置。</td>
-</tr>
-<tr class="even">
-<td>A4</td>
-<td>CodeBERT 和 GraphCodeBERT
-对结构信息的关注较少，对语义信息的关注较多。</td>
-<td>类似 A2 - (1) 中的见解。</td>
-</tr>
-<tr class="odd">
-<td>A5</td>
-<td>在没有基于语法的样本训练的情况下，CodeBERT 和 GraphCodeBERT
-性能大幅下降。</td>
-<td>为了成功攻击，不应在数据污染过程中排除具有语法数据的样本。</td>
-</tr>
-</tbody>
-</table>
-<p><img
-src="https://github.com/vexentox/pictures/blob/main/2305_03803/11.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
-<table>
-
-<thead>
-<tr class="header">
-<th>编号</th>
-<th>结论</th>
-<th>见解</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>A6</td>
-<td>模型在训练数据中不会受到随机语句删除的影响。</td>
-<td>调查使用部分触发器的可能性。</td>
-</tr>
-<tr class="even">
-<td>A7</td>
-<td>深层神经元（即模型最后层中的神经元）能够唯一地识别特征。中间神经元可以表示多种特征的混合。</td>
-<td>寻找最终层神经元的激活异常以进行后门检测。监控中间神经元的激活可能对后门检测无益。</td>
-</tr>
-<tr class="odd">
-<td>A8</td>
-<td>BERT 的初始多头注意力层在大多数任务中被保留。</td>
-<td>类似 A2 - (2) 中的见解。</td>
-</tr>
-<tr class="even">
-<td>A9</td>
-<td>针对代码搜索任务，CodeBERT 对单 token 的依赖性较高。</td>
-<td>调查使用单标记触发器和部分触发器的可能性。</td>
-</tr>
-<tr class="odd">
-<td>A10</td>
-<td>向输入特征添加信息不会影响预测。</td>
-<td>类似A6中的见解。</td>
-</tr>
-<tr class="even">
-<td>A11</td>
-<td>Code2Vec 和 Transformer 等模型仅依赖少数 token 进行预测。</td>
-<td>调查在变量名或函数名中使用触发器的效果，即语义触发器。</td>
-</tr>
-</tbody>
-</table>
-<h1 id="后门攻击论文使用的见解">7 后门攻击论文使用的见解</h1>
+<h3
+id="a1explaining-mispredictions-of-machine-learning-models-using-rule-induction"><a
+target="_blank" rel="noopener" href="https://www.cs.utexas.edu/~isil/md.pdf">A1：Explaining
+mispredictions of machine learning models using rule induction</a></h3>
+<p>​ 提出了一种解释深度模型预测错误技术。</p>
+<p>​ <em>在 Facebook 内部的 "Diff Review"
+项目中的某个深度神经模型中，Cito
+等人的诊断工具揭示了数条规则，显示当修改了大量特定类型的文件时，该模型的错误预测情况。该模型基于代码更改、修改的文件和其他提交相关数据预测了提交的质量。该模型的设计者提到，由于内存限制，如果输入的特征过于庞大，模型会忽略某些特征。尽管大多数公共领域中的模型部署不会对从输入中选择特征施加此类限制，但此类限制性模型很可能对属于输入的大特征的触发器具有安全性。</em></p>
+<p><strong>结论</strong>：某些模型（例如内存受限模型）在推理时可能会丢弃输入中的大型特征。</p>
+<p><strong>见解</strong>：在高维输入数据中，种植在<strong>较小特征</strong>中的触发器更有可能对抗内存受限模型。</p>
+<hr />
+<h3
+id="a2diet-code-is-healthy-simplifying-programs-for-pre-trained-models-of-code"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2206.14390.pdf">A2：Diet Code Is Healthy:
+Simplifying Programs for Pre-trained Models of Code</a></h3>
+<p>​ 提出了一种揭示 CodeBERT
+在执行代码搜索和代码汇总等预测任务时最关注的输入代码中的 token
+和语句类型的方法。</p>
+<p>​ <em>通过分析 CodeBERT 的 Transformer 层中的注意力权重，研究人员发现
+CodeBERT
+在结构信息（如循环和条件关键字）方面的关注较少，而在语义信息（如方法调用和变量名）方面的关注较多。因此，结构触发可能不太可能影响基于语言的模型。</em></p>
+<p><strong>结论</strong>：CodeBERT
+对结构信息的注意较少，对语义信息的注意较多。</p>
+<p><strong>见解</strong>：</p>
+<p>​ （1）在类似 CodeBERT
+这样的基于语言的模型中，应该更多地关注检测语义触发器。</p>
+<p>​ （2）通过跟踪 transformer 各层的注意力权重来进行后面检测。</p>
+<hr />
+<h3 id="a3counterfactual-explanations-for-models-of-code"><a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2111.05711">A3：Counterfactual Explanations
+for Models of Code</a></h3>
+<p>​
+提出一种通过不断生成扰动程序来搜索代码的哪些部分会导致模型相关下游任务的预测变化。</p>
+<p>​
+<em>在他们的研究中，参与者发现反事实解释为他们提供了信心，可以准确理解模型从输入中提取信号以进行错误预测的确切位置。反事实示例因此可能将攻击者指向输入中最敏感的位置（关于模型行为），在这些位置上可以插入触发器。</em></p>
+<p><strong>结论</strong>：反事实解释可以显示导致误预测的输入 token
+。</p>
+<p><strong>见解</strong>：反事实解释可以指导模型输入中潜在的触发器位置。</p>
+<hr />
+<h3 id="a4multilingual-training-for-software-engineering"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2112.02043.pdf">A4：Multilingual training
+for Software Engineering</a></h3>
+<p>​ 探索了标识符特征的重要性。</p>
+<ul>
+<li>用不同语言解决相同问题的程序更有可能使用相同或相似的标识符名称</li>
+<li>消融实验发现标识符名称可能比语义信息更重要</li>
+</ul>
+<p>​ <em>像 CodeBERT 和 GraphCodeBERT
+这样的代码语言模型更加强调语义信息。因此，我们需要更多的后面攻击和防御技术，将重点放在语义触发器上</em></p>
+<p><strong>结论</strong>：CodeBERT 和 GraphCodeBERT
+对结构信息的关注较少，对语义信息的关注较多。</p>
+<p><strong>见解</strong>：在类似 CodeBERT
+这样的基于语言的模型中，应该更多地关注检测语义触发器。</p>
+<hr />
+<h3
+id="a5simscood-systematic-analysis-of-out-of-distribution-behavior-of-source-code-models"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2210.04802.pdf">A5：SimSCOOD: Systematic
+Analysis of Out-of-Distribution Behavior of Source Code Models</a></h3>
+<p>​ 探索了基于 BERT 的模型（CodeBERT 和
+GraphCodeBERT）对复杂性、语法和程序语义三种维度的依赖性。</p>
+<p>​ <em>他们发现基于 BERT 的模型（CodeBERT 和
+GraphCodeBERT）在语法为基础的 OOD
+场景（其中删除了基于语法的样本）中表现最差。因此，虽然基于 BERT
+的模型更加强调语义信息（正如从A2和A4的研究结果中所见），但完全排除包含语法结构（如循环和条件）的训练样本将严重降低它们的性能。因此，为了在不易被检测出的情况下攻击这些模型，将包含有语法数据的样本纳入数据污染过程是非常重要的。</em></p>
+<p><strong>结论</strong>：在没有基于语法的样本训练的情况下，CodeBERT 和
+GraphCodeBERT 性能大幅下降。</p>
+<p><strong>见解</strong>：为了成功攻击，不应在数据污染过程中排除具有语法数据的样本。</p>
+<hr />
+<h3
+id="a6memorization-and-generalization-in-neural-code-intelligence-models"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2106.08704.pdf">A6：Memorization and
+Generalization in Neural Code Intelligence Models</a></h3>
+<p>​ 探索了噪音对模型的学习行为的影响。</p>
+<p>​
+<em>他们发现代码模型几乎不受随机语句删除生成的输入噪声的影响。换句话说，模型的性能几乎保持不变。因此，为了进行更隐蔽的攻击，在污染过程中可以删除触发器的某些部分，从而产生部分触发器，而不会潜在地减少污染效果。</em></p>
+<p><strong>结论</strong>：模型在训练数据中不会受到随机语句删除的影响。</p>
+<p><strong>见解</strong>：使用部分触发器更加隐蔽。</p>
+<hr />
+<h3
+id="a7is-neuron-coverage-a-meaningful-measure-for-testing-deep-neural-networks"><a
+target="_blank" rel="noopener" href="https://dl.acm.org/doi/pdf/10.1145/3368089.3409754">A7：Is Neuron
+Coverage a Meaningful Measure for Testing Deep Neural Networks?</a></h3>
+<p>​ 探讨了神经元覆盖(neural coverage,
+NC)、神经网络在推理过程中激活的神经元比例与对抗性攻击检测之间的关系。</p>
+<p>​
+<em>首先，他们观察到神经网络中神经元的深度位置越深，它越独特地编码特定特征。此外，他们还观察到许多神经元可以表示非常不同的抽象概念的组合。因此，一个潜在的防御技术可以关注网络最终层神经元激活中的任何异常，以检测模型是否受到污染，并潜在地检测输出中的后门。然而，基于第二个观察，追踪中间神经元行为的变化在这方面可能带来的益处有限。</em></p>
+<p><strong>结论</strong>：神经元在深度神经网络中的位置越深，其编码特定特征的概率就越高；中间神经元可以表示多种特征的混合。</p>
+<p><strong>见解</strong>：寻找最终层神经元的激活异常以进行后门检测。监控中间神经元的激活可能对后门检测无益。</p>
+<hr />
+<h3 id="a8structured-pruning-learns-compact-and-accurate-models"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2204.00408.pdf">A8：Structured Pruning
+Learns Compact and Accurate Models</a></h3>
+<p>​
+提出了一种基于蒸馏的模型剪枝方法，在保持合理精度的同时提高了剪枝模型的效率。</p>
+<p>​ <em>在应用了他们的剪枝方法之后，他们发现初始的 BERT
+多头注意力层在大多数任务中都被保留下来。这表明这些层在寻找任何异常以检测受污染的模型方面是最相关的。</em></p>
+<p><strong>结论</strong>：BERT
+的初始多头注意力层在大多数任务中被保留。</p>
+<p><strong>见解</strong>：通过跟踪 transformer
+初始层的注意力权重进行后面检测。</p>
+<hr />
+<h3 id="a9study-of-distractors-in-neural-models-of-code"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2303.01739.pdf">A9：Study of Distractors in
+Neural Models of Code</a></h3>
+<p>​ 探索了通过干扰输入特征对影响模型预测结果。</p>
+<p>​ <em>用于代码搜索任务的 CodeBERT模型相比其他模型更加依赖单个
+token。在研究木马人工智能方面，这一发现表明应进一步努力研究单 token
+触发器和部分触发器的影响。</em></p>
+<p><strong>结论</strong>：针对代码搜索任务，CodeBERT 对单 token
+的依赖性较高。</p>
+<p><strong>见解</strong>：使用单 token 触发器和部分触发器。</p>
+<hr />
+<h3
+id="a10a-study-of-variable-role-based-feature-enrichment-in-neural-models-of-code"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2303.04942.pdf">A10：A Study of
+Variable-Role-based Feature Enrichment in Neural Models of Code</a></h3>
+<p>​ 探讨了在输入源代码中显式地注入关于变量角色的信息是否有助于 Code2Seq
+以更少的训练获得更好的性能和鲁棒性。</p>
+<p>​ <em>他们发现角色增强既没有显著提升也没有削弱 Code2Seq
+的性能。由于向输入特征添加信息不会对预测产生任何变化，因此合理地假设在某个阈值之前删除一些信息也不会产生显著影响。因此，为了进行更隐蔽的攻击，在污染过程中可以删除触发器的某些部分，从而产生部分触发器，而不会潜在地减少污染效果。</em></p>
+<p><strong>结论</strong>：向输入特征添加信息不会影响预测。</p>
+<p><strong>见解</strong>：使用部分触发器更加隐蔽。</p>
+<hr />
+<h3
+id="a11understanding-neural-code-intelligence-through-program-simplification"><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2106.03353.pdf">A11：Understanding Neural
+Code Intelligence through Program Simplification</a></h3>
+<p>​ 探索了保留模型预测的最小输入特征。</p>
+<p>​
+<em>基于变量重命名的语义保留程序在候选对抗性输入程序较少的模型中会引发更多的错误预测。因此，值得研究变量名或函数名中触发器的潜力，即语义触发器。</em></p>
+<p><strong>结论</strong>：Code2Vec 和 Transformer 等模型仅依赖少数 token
+进行预测。</p>
+<p><strong>见解</strong>：在变量名或函数名中使用触发器，即语义触发器。</p>
+<h1 id="后门攻击论文分类以及使用的见解">7
+后门攻击论文分类以及使用的见解</h1>
 <p><img
 src="https://github.com/vexentox/pictures/blob/main/2305_03803/10.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>​ 所有论文都隐含地使用了
+A5（不要在中毒的训练过程中丢弃任何具有语法数据的代码样本）的见解。除了这个见解之外，其他的见解都没有被利用。</p>
 
                 
               </div>
