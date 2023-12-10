@@ -1,0 +1,905 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="LEWIS">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LEWIS Levenshtein Editing for Unsupervised Text Style Transfer">
+<meta property="og:url" content="https://vexentox.github.io/2023/12/05/LEWIS/index.html">
+<meta property="og:site_name" content="tx&#39;s blog">
+<meta property="og:description" content="LEWIS">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-12-05T07:36:00.000Z">
+<meta property="article:modified_time" content="2023-12-10T11:39:42.337Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="LEWIS、风格迁移">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>LEWIS Levenshtein Editing for Unsupervised Text Style Transfer - tx&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>唐喜的个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="LEWIS Levenshtein Editing for Unsupervised Text Style Transfer"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-05 15:36" pubdate>
+          2023年12月5日 下午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">LEWIS Levenshtein Editing for Unsupervised Text Style Transfer</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>LEWIS</p>
+<span id="more"></span>
+<p><em>Machel Reid：The University of Tokyo</em></p>
+<p><em>Victor Zhong：University of Washington</em></p>
+<p><strong>ACL-IJCNLP 2021</strong></p>
+<p>论文地址：<a
+target="_blank" rel="noopener" href="https://arxiv.org/abs/2105.08206">https://arxiv.org/abs/2105.08206</a></p>
+<p>项目地址：<a
+target="_blank" rel="noopener" href="https://github.com/machelreid/lewis">https://github.com/machelreid/lewis</a></p>
+<h2 id="摘要">摘要</h2>
+<p>​ 许多类型的文本风格转移可以通过小而精确的编辑来实现。我们建议使用
+Levenshtein
+编辑操作(例如插入、替换、删除)来转换文本的样式转换的从粗到精的编辑器。与以前的单跨编辑方法不同，我们的方法可以同时编辑源文本中的多个跨。为了在没有并行风格文本对(例如+/-情感语句对)的情况下进行训练，我们提出了一种无监督数据合成过程。我们首先使用样式分类器注意将文本转换为与样式无关的模板，然后使用微调的预训练语言模型填充这些模板中的槽。</p>
+<p>​ 我们的方法在情感(YELP,
+AMAZON)和礼貌(礼貌)转移上优于现有的生成和编辑风格转移方法。</p>
+<p>​
+此外，与以前的无监督数据合成方法相比，我们的方法得到了更高质量的并行样式对，提高了模型的性能。</p>
+<h2 id="引入">引入</h2>
+<p>​
+我们引入了一种更加灵活和强大的多跨度编辑方法，它可以识别文本中多个特定于样式的组件，并同时将它们编辑成目标样式。给定源文本，我们首先预测将源文本转换为目标文本的粗粒度
+Levenshtein
+编辑类型(例如插入、替换、删除)的序列，然后使用生成器填充插入和替换编辑。在前面的例子中，这些操作对应于在the之前插入单词
+probably，用 best 替换 worst，以及删除单词 I 've 和 had。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213051444.png" srcset="/img/loading.gif" lazyload
+alt="image-20231118213051444" />
+<figcaption aria-hidden="true">image-20231118213051444</figcaption>
+</figure>
+<p>​
+学习编辑需要有监督的源、目标文本对。当没有这样的监督并行数据存在时，我们如何学习高质量的编辑器?给定一个样式文本，我们通过识别特定于样式的内容并将其替换为来自特定于样式的屏蔽语言模型的样本来合成其对。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213352480.png" srcset="/img/loading.gif" lazyload
+alt="image-20231118213352480" />
+<figcaption aria-hidden="true">image-20231118213352480</figcaption>
+</figure>
+<p>​ 我们评估了我们的编辑和合成框架，我们称之为LEWIS
+(Levenshtein编辑与无监督合成)，在情感(YELP,
+AMAZON)和礼貌(礼貌)转移的三个风格转移任务上，并达到了最先进的水平。</p>
+<h3 id="levenshtein-编辑距离">Levenshtein 编辑距离</h3>
+<p>将一个字符串变为另一个字符串需要进行编辑操作最少的次数。其中，允许的编辑操作有以下三种</p>
+<ul>
+<li><strong>「替换」</strong>：将一个字符替换成另一个字符</li>
+<li><strong>「插入」</strong>：插入一个字符</li>
+<li><strong>「删除」</strong>：删除一个字符</li>
+</ul>
+<p>dp 计算公式：</p>
+<figure>
+<img
+src="https://pic2.zhimg.com/v2-723c770be80af313502182c2ee3c4395_r.jpg" srcset="/img/loading.gif" lazyload
+alt="img" />
+<figcaption aria-hidden="true">img</figcaption>
+</figure>
+<h2 id="lewis">LEWIS</h2>
+<p>LEWIS 由两个部分组成。给定源-目标样式文本对，粗到细的 Levenshtein
+编辑器(黄色)首先识别粗粒度Levenshtein
+编辑类型，以便对源文本中的每个标记执行(例如插入、替换、删除)，然后用细粒度生成器填充最终编辑以生成目标文本。在大多数应用程序中，受监督的源-目标样式文本对很少存在。为了解决缺乏注释数据的问题，我们首先学习在给定任意样式文本的情况下生成与样式无关的模板，从而对源-目标样式对(蓝色)进行无监督合成。接下来，我们通过从特定于样式的屏蔽语言模型中采样来填充模板中的槽。在此图中，源数据和中间数据以白色显示，而模型组件以红色显示。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213644270.png" srcset="/img/loading.gif" lazyload
+alt="image-20231118213644270" />
+<figcaption aria-hidden="true">image-20231118213644270</figcaption>
+</figure>
+<h3 id="levenshtein-编辑进行风格转移">Levenshtein 编辑进行风格转移</h3>
+<h4 id="粗粒度编辑类型生成器">粗粒度编辑类型生成器</h4>
+<p>​ 首先，我们训练一个 <strong>RoBERTa-tagger</strong> (Liu et al,
+2019)来生成这些粗编辑类型，它为源文本中的每个标记生成粗编辑类型。为了适应插入操作，我们为每个令牌生成两个标记。第一个标记是一个二进制指示符，表示是否应该在这个标记之前插入一个额外的短语。第二个标记是该令牌的非插入操作。例如，在前面的示例中，单词
+the 同时触发插入和保持操作。 <span class="math display">\[
+c=\operatorname{RoBERTa}_{c}\left(x ; \Phi_{c}\right)
+\]</span> #### 细粒度填充器</p>
+<p>​
+接下来，我们训练一个细粒度编辑生成器来生成目标文本。与粗粒度编辑生成器仅观察源文本不同，细粒度编辑生成器同时观察原始源文本和应用粗粒度编辑类型的源文本。我们在训练期间使用
+Levenshtein 算法生成的编辑类型，在推理期间使用 RoBERTa-tagger
+预测的编辑类型。 <span class="math display">\[
+y=\operatorname{BART}_{y}\left(x, x_{c} ; \Phi_{\mathrm{fn}}\right)
+\]</span> ​ 我们的生成器是基于 bart (Lewis et al,
+2020)的掩码序列到序列模型。BART的输入是原始源文本 <span
+class="math inline">\(x\)</span> 和应用了粗粒度编辑类型 <span
+class="math inline">\(x_{c}\)</span>
+的源文本的连接。生成器被训练为为粗粒度编辑类型和填充短语。</p>
+<h3 id="源-目标风格对的无监督合成">源-目标风格对的无监督合成</h3>
+<p>​
+我们假设，预训练的屏蔽语言模型，当被严格限制只生成特定风格的内容时，可以为风格转移提供高质量的源-目标对。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213352480.png" srcset="/img/loading.gif" lazyload
+alt="image-20231118213352480" />
+<figcaption aria-hidden="true">image-20231118213352480</figcaption>
+</figure>
+<h4 id="风格分类器">风格分类器</h4>
+<p>​ 首先，给定来自任意一种样式的文本 <span
+class="math inline">\(s\)</span>，我们识别一个样式无关的模板 <span
+class="math inline">\(t\)</span>，其中特定于样式的内容用槽替换。例如，对于文本
+I had a great time at the theatre，风格不可知的模板 I SLOT at the
+theatre。为了识别特定于样式的内容，我们训练了一个<strong>基于</strong>
+<strong>roberta 的风格分类器</strong>来区分不同样式的文本。</p>
+<p>​
+Vaswani等人(2017)和Hoover等人(2020)表明，倒数第二层的注意力权重与人类识别的强烈指示积极与消极情绪的词语密切相关。因此，我们将特定于样式的内容定义为在分类器中具有高于平均注意力权重的
+token。</p>
+<p>​ 考虑倒数第二个Transformer层中的多头注意力矩阵 <span
+class="math inline">\(attentions\)</span>： <span
+class="math display">\[
+size(attentions)=(32,12,512,512)=(batch,注意力头,注意力权重矩阵(512
+\times 512))
+\]</span> ​ 首先，我们将所有注意力头部的 <span
+class="math inline">\(attentions\)</span> 最大化，取第一列，形成 <span
+class="math inline">\(cls\_attns\)</span>。 <span
+class="math display">\[
+cls\_attns_{k,i}=\max_{u \in [1,12]}{attentions_{k,u,i,0}}
+\]</span></p>
+<p><span class="math display">\[
+size(cls\_attns)=(32, 512)=(token,第一列)
+\]</span></p>
+​计算平均注意力权重 <span class="math inline">\(avg\_attns\)</span>：
+<span class="math display">\[
+avg\_attns_{k} =\frac{\sum _{i}^{512}cls\_attns_{k,i}}{N}
+\]</span> ​ 为了将样式文本
+修改为样式不可知模板，我们保留了具有高于平均注意力权重的标记。 $$
+_attns_{i}=
+<span class="math display">\[\begin{Bmatrix}SLOT,if\ \ \ \
+cls\_attns_{k,i} \ge avg\_attns_{k}
+\\cls\_attns_{k,i},\ \ \   if \ \ \ cls\_attns_{k,i} \le avg\_attns_{k}
+
+\end{Bmatrix}\]</span>
+<p>$$ ​ 将连续的 SLOT 令牌合并到t中。在运行的示例中，对于样式文本 I had a
+great time at the theatre，标记器生成 I SLOT SLOT SLOT SLOT at the
+theatre，合并后在剧院生成I SLOT at the theatre。</p>
+<h4 id="微调掩码预测模型">微调掩码预测模型</h4>
+<p>​ 然后，我们微调特定于样式的屏蔽语言模型 <span
+class="math inline">\(BART_{x}\)</span> 和 <span
+class="math inline">\(BART_{y}\)</span>，以填充模板中的槽并恢复特定于样式的文本。在训练过程中，输入句子中的短语被随机丢弃，然后训练模型将这些短语填回(Lewis
+et al,
+2020)。在为源样式和目标样式训练了特定于样式的屏蔽语言模型之后，我们使用这两个模型来生成给定样式不可知模板的源和目标填充文本。</p>
+<p>​
+我们执行的最后一步是使用分类器进行过滤。只保留语言模型和分类器一致的示例。我们发现这提高了数据质量和编辑器的性能。</p>
+<p>​ 我们使用合成的源文本和目标文本对 <span
+class="math inline">\(\tilde{x}\)</span>， <span
+class="math inline">\(\tilde{y}\)</span> 的集合来训练风格转换器。</p>
+<h2 id="训练步骤">训练步骤</h2>
+<ul>
+<li><p>训练风格分类器</p></li>
+<li><p>微调掩码预测模型</p></li>
+<li><p>使用风格分类器和掩码预测模型合成伪平行数据</p></li>
+<li><p>训练粗粒度编辑类型生成器</p></li>
+<li><p>训练细粒度填充器</p></li>
+</ul>
+<h2 id="实验">实验</h2>
+<p>我们重点研究了两种类型的文本风格迁移:</p>
+<ul>
+<li><p>情感迁移：即在不改变核心内容(即与情感无关的句子属性)的情况下，将一个积极的情感句转换为一个消极的情感句，反之亦然;</p></li>
+<li><p>礼貌迁移：即将一个句子的语气从不礼貌转换为礼貌。</p></li>
+</ul>
+<h3 id="数据集">数据集</h3>
+<p>​ 我们使用了三个数据集:YELP (Shen et al .，
+2017)由来自商业的45万个句子组成，由Li等人(2018)发布的用于训练的ness评论和用于测试的1000个句子，AMAZON
+(He和McAuley,
+2016)由来自产品评论的540K个句子组成，用于训练和1000个句子用于测试，而POLITE
+(Madaan等人，2020)是通过过滤安然电子邮件语料库生成的，由420K个句子组成用于训练和800个句子用于测试。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231119112453828.png" srcset="/img/loading.gif" lazyload
+alt="image-20231119112453828" />
+<figcaption aria-hidden="true">image-20231119112453828</figcaption>
+</figure>
+<h3 id="对比">对比</h3>
+<p>​ 我们将LEWIS与之前的五种方法进行了比较:Delete, Retrieve, Generate (Li
+et al .，
+2018)，一种从目标领域语料库中查找文本的检索方法，其风格不可知的形式与源文本相似;Tag
+and Generate (Madaan et al,
+2020)，一种有条件地从样式无关的源文本生成目标文本的生成方法;DeepLatentSeq
+(He et al .，
+2020b)，一种基于无监督机器翻译的方法，每个域中的tor通过基于语言模型的潜在先验进行正则化。最后，我们与Malmi等人(2019,2020)提出的先前编辑方法进行了比较，其中替换了源文本中两个领域特定语言模型不一致的单个跨度。</p>
+<figure>
+<img
+src="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231119112634924.png" srcset="/img/loading.gif" lazyload
+alt="image-20231119112634924" />
+<figcaption aria-hidden="true">image-20231119112634924</figcaption>
+</figure>
+<p>style_s</p>
+<p>style_t</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/nlp/" class="category-chain-item">NLP</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/nlp/%E9%A3%8E%E6%A0%BC%E8%BF%81%E7%A7%BB/" class="category-chain-item">风格迁移</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/lewis%E3%80%81%E9%A3%8E%E6%A0%BC%E8%BF%81%E7%A7%BB/">#LEWIS、风格迁移</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>LEWIS Levenshtein Editing for Unsupervised Text Style Transfer</div>
+      <div>https://vexentox.github.io/2023/12/05/LEWIS/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月5日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/22/%E6%89%93%E5%8C%85conda%E7%8E%AF%E5%A2%83/" title="移动 Conda 环境">
+                        <span class="hidden-mobile">移动 Conda 环境</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        pageviews 
+        <span id="busuanzi_value_site_pv"></span>
+         
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

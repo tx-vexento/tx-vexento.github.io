@@ -4,23 +4,25 @@
   
   
   <entry>
-    <title>大模型生成后门代码</title>
-    <link href="/2023/11/04/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E5%90%8E%E9%97%A8%E4%BB%A3%E7%A0%81/"/>
-    <url>/2023/11/04/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E7%94%9F%E6%88%90%E5%90%8E%E9%97%A8%E4%BB%A3%E7%A0%81/</url>
+    <title>LEWIS Levenshtein Editing for Unsupervised Text Style Transfer</title>
+    <link href="/2023/12/05/LEWIS/"/>
+    <url>/2023/12/05/LEWIS/</url>
     
-    <content type="html"><![CDATA[<p>大模型生成后门代码</p><span id="more"></span><h1 id="评估指标">评估指标</h1><p>BLEU</p>]]></content>
+    <content type="html"><![CDATA[<p>LEWIS</p><span id="more"></span><p><em>Machel Reid：The University of Tokyo</em></p><p><em>Victor Zhong：University of Washington</em></p><p><strong>ACL-IJCNLP 2021</strong></p><p>论文地址：<ahref="https://arxiv.org/abs/2105.08206">https://arxiv.org/abs/2105.08206</a></p><p>项目地址：<ahref="https://github.com/machelreid/lewis">https://github.com/machelreid/lewis</a></p><h2 id="摘要">摘要</h2><p>​ 许多类型的文本风格转移可以通过小而精确的编辑来实现。我们建议使用Levenshtein编辑操作(例如插入、替换、删除)来转换文本的样式转换的从粗到精的编辑器。与以前的单跨编辑方法不同，我们的方法可以同时编辑源文本中的多个跨。为了在没有并行风格文本对(例如+/-情感语句对)的情况下进行训练，我们提出了一种无监督数据合成过程。我们首先使用样式分类器注意将文本转换为与样式无关的模板，然后使用微调的预训练语言模型填充这些模板中的槽。</p><p>​ 我们的方法在情感(YELP,AMAZON)和礼貌(礼貌)转移上优于现有的生成和编辑风格转移方法。</p><p>​此外，与以前的无监督数据合成方法相比，我们的方法得到了更高质量的并行样式对，提高了模型的性能。</p><h2 id="引入">引入</h2><p>​我们引入了一种更加灵活和强大的多跨度编辑方法，它可以识别文本中多个特定于样式的组件，并同时将它们编辑成目标样式。给定源文本，我们首先预测将源文本转换为目标文本的粗粒度Levenshtein编辑类型(例如插入、替换、删除)的序列，然后使用生成器填充插入和替换编辑。在前面的例子中，这些操作对应于在the之前插入单词probably，用 best 替换 worst，以及删除单词 I 've 和 had。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213051444.png"alt="image-20231118213051444" /><figcaption aria-hidden="true">image-20231118213051444</figcaption></figure><p>​学习编辑需要有监督的源、目标文本对。当没有这样的监督并行数据存在时，我们如何学习高质量的编辑器?给定一个样式文本，我们通过识别特定于样式的内容并将其替换为来自特定于样式的屏蔽语言模型的样本来合成其对。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213352480.png"alt="image-20231118213352480" /><figcaption aria-hidden="true">image-20231118213352480</figcaption></figure><p>​ 我们评估了我们的编辑和合成框架，我们称之为LEWIS(Levenshtein编辑与无监督合成)，在情感(YELP,AMAZON)和礼貌(礼貌)转移的三个风格转移任务上，并达到了最先进的水平。</p><h3 id="levenshtein-编辑距离">Levenshtein 编辑距离</h3><p>将一个字符串变为另一个字符串需要进行编辑操作最少的次数。其中，允许的编辑操作有以下三种</p><ul><li><strong>「替换」</strong>：将一个字符替换成另一个字符</li><li><strong>「插入」</strong>：插入一个字符</li><li><strong>「删除」</strong>：删除一个字符</li></ul><p>dp 计算公式：</p><figure><imgsrc="https://pic2.zhimg.com/v2-723c770be80af313502182c2ee3c4395_r.jpg"alt="img" /><figcaption aria-hidden="true">img</figcaption></figure><h2 id="lewis">LEWIS</h2><p>LEWIS 由两个部分组成。给定源-目标样式文本对，粗到细的 Levenshtein编辑器(黄色)首先识别粗粒度Levenshtein编辑类型，以便对源文本中的每个标记执行(例如插入、替换、删除)，然后用细粒度生成器填充最终编辑以生成目标文本。在大多数应用程序中，受监督的源-目标样式文本对很少存在。为了解决缺乏注释数据的问题，我们首先学习在给定任意样式文本的情况下生成与样式无关的模板，从而对源-目标样式对(蓝色)进行无监督合成。接下来，我们通过从特定于样式的屏蔽语言模型中采样来填充模板中的槽。在此图中，源数据和中间数据以白色显示，而模型组件以红色显示。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213644270.png"alt="image-20231118213644270" /><figcaption aria-hidden="true">image-20231118213644270</figcaption></figure><h3 id="levenshtein-编辑进行风格转移">Levenshtein 编辑进行风格转移</h3><h4 id="粗粒度编辑类型生成器">粗粒度编辑类型生成器</h4><p>​ 首先，我们训练一个 <strong>RoBERTa-tagger</strong> (Liu et al,2019)来生成这些粗编辑类型，它为源文本中的每个标记生成粗编辑类型。为了适应插入操作，我们为每个令牌生成两个标记。第一个标记是一个二进制指示符，表示是否应该在这个标记之前插入一个额外的短语。第二个标记是该令牌的非插入操作。例如，在前面的示例中，单词the 同时触发插入和保持操作。 <span class="math display">\[c=\operatorname{RoBERTa}_{c}\left(x ; \Phi_{c}\right)\]</span> #### 细粒度填充器</p><p>​接下来，我们训练一个细粒度编辑生成器来生成目标文本。与粗粒度编辑生成器仅观察源文本不同，细粒度编辑生成器同时观察原始源文本和应用粗粒度编辑类型的源文本。我们在训练期间使用Levenshtein 算法生成的编辑类型，在推理期间使用 RoBERTa-tagger预测的编辑类型。 <span class="math display">\[y=\operatorname{BART}_{y}\left(x, x_{c} ; \Phi_{\mathrm{fn}}\right)\]</span> ​ 我们的生成器是基于 bart (Lewis et al,2020)的掩码序列到序列模型。BART的输入是原始源文本 <spanclass="math inline">\(x\)</span> 和应用了粗粒度编辑类型 <spanclass="math inline">\(x_{c}\)</span>的源文本的连接。生成器被训练为为粗粒度编辑类型和填充短语。</p><h3 id="源-目标风格对的无监督合成">源-目标风格对的无监督合成</h3><p>​我们假设，预训练的屏蔽语言模型，当被严格限制只生成特定风格的内容时，可以为风格转移提供高质量的源-目标对。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231118213352480.png"alt="image-20231118213352480" /><figcaption aria-hidden="true">image-20231118213352480</figcaption></figure><h4 id="风格分类器">风格分类器</h4><p>​ 首先，给定来自任意一种样式的文本 <spanclass="math inline">\(s\)</span>，我们识别一个样式无关的模板 <spanclass="math inline">\(t\)</span>，其中特定于样式的内容用槽替换。例如，对于文本I had a great time at the theatre，风格不可知的模板 I SLOT at thetheatre。为了识别特定于样式的内容，我们训练了一个<strong>基于</strong><strong>roberta 的风格分类器</strong>来区分不同样式的文本。</p><p>​Vaswani等人(2017)和Hoover等人(2020)表明，倒数第二层的注意力权重与人类识别的强烈指示积极与消极情绪的词语密切相关。因此，我们将特定于样式的内容定义为在分类器中具有高于平均注意力权重的token。</p><p>​ 考虑倒数第二个Transformer层中的多头注意力矩阵 <spanclass="math inline">\(attentions\)</span>： <spanclass="math display">\[size(attentions)=(32,12,512,512)=(batch,注意力头,注意力权重矩阵(512\times 512))\]</span> ​ 首先，我们将所有注意力头部的 <spanclass="math inline">\(attentions\)</span> 最大化，取第一列，形成 <spanclass="math inline">\(cls\_attns\)</span>。 <spanclass="math display">\[cls\_attns_{k,i}=\max_{u \in [1,12]}{attentions_{k,u,i,0}}\]</span></p><p><span class="math display">\[size(cls\_attns)=(32, 512)=(token,第一列)\]</span></p>​计算平均注意力权重 <span class="math inline">\(avg\_attns\)</span>：<span class="math display">\[avg\_attns_{k} =\frac{\sum _{i}^{512}cls\_attns_{k,i}}{N}\]</span> ​ 为了将样式文本修改为样式不可知模板，我们保留了具有高于平均注意力权重的标记。 $$_attns_{i}=<span class="math display">\[\begin{Bmatrix}SLOT,if\ \ \ \cls\_attns_{k,i} \ge avg\_attns_{k}\\cls\_attns_{k,i},\ \ \   if \ \ \ cls\_attns_{k,i} \le avg\_attns_{k}\end{Bmatrix}\]</span><p>$$ ​ 将连续的 SLOT 令牌合并到t中。在运行的示例中，对于样式文本 I had agreat time at the theatre，标记器生成 I SLOT SLOT SLOT SLOT at thetheatre，合并后在剧院生成I SLOT at the theatre。</p><h4 id="微调掩码预测模型">微调掩码预测模型</h4><p>​ 然后，我们微调特定于样式的屏蔽语言模型 <spanclass="math inline">\(BART_{x}\)</span> 和 <spanclass="math inline">\(BART_{y}\)</span>，以填充模板中的槽并恢复特定于样式的文本。在训练过程中，输入句子中的短语被随机丢弃，然后训练模型将这些短语填回(Lewiset al,2020)。在为源样式和目标样式训练了特定于样式的屏蔽语言模型之后，我们使用这两个模型来生成给定样式不可知模板的源和目标填充文本。</p><p>​我们执行的最后一步是使用分类器进行过滤。只保留语言模型和分类器一致的示例。我们发现这提高了数据质量和编辑器的性能。</p><p>​ 我们使用合成的源文本和目标文本对 <spanclass="math inline">\(\tilde{x}\)</span>， <spanclass="math inline">\(\tilde{y}\)</span> 的集合来训练风格转换器。</p><h2 id="训练步骤">训练步骤</h2><ul><li><p>训练风格分类器</p></li><li><p>微调掩码预测模型</p></li><li><p>使用风格分类器和掩码预测模型合成伪平行数据</p></li><li><p>训练粗粒度编辑类型生成器</p></li><li><p>训练细粒度填充器</p></li></ul><h2 id="实验">实验</h2><p>我们重点研究了两种类型的文本风格迁移:</p><ul><li><p>情感迁移：即在不改变核心内容(即与情感无关的句子属性)的情况下，将一个积极的情感句转换为一个消极的情感句，反之亦然;</p></li><li><p>礼貌迁移：即将一个句子的语气从不礼貌转换为礼貌。</p></li></ul><h3 id="数据集">数据集</h3><p>​ 我们使用了三个数据集:YELP (Shen et al .，2017)由来自商业的45万个句子组成，由Li等人(2018)发布的用于训练的ness评论和用于测试的1000个句子，AMAZON(He和McAuley,2016)由来自产品评论的540K个句子组成，用于训练和1000个句子用于测试，而POLITE(Madaan等人，2020)是通过过滤安然电子邮件语料库生成的，由420K个句子组成用于训练和800个句子用于测试。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231119112453828.png"alt="image-20231119112453828" /><figcaption aria-hidden="true">image-20231119112453828</figcaption></figure><h3 id="对比">对比</h3><p>​ 我们将LEWIS与之前的五种方法进行了比较:Delete, Retrieve, Generate (Liet al .，2018)，一种从目标领域语料库中查找文本的检索方法，其风格不可知的形式与源文本相似;Tagand Generate (Madaan et al,2020)，一种有条件地从样式无关的源文本生成目标文本的生成方法;DeepLatentSeq(He et al .，2020b)，一种基于无监督机器翻译的方法，每个域中的tor通过基于语言模型的潜在先验进行正则化。最后，我们与Malmi等人(2019,2020)提出的先前编辑方法进行了比较，其中替换了源文本中两个领域特定语言模型不一致的单个跨度。</p><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231119112634924.png"alt="image-20231119112634924" /><figcaption aria-hidden="true">image-20231119112634924</figcaption></figure><p>style_s</p><p>style_t</p>]]></content>
     
     
     <categories>
       
-      <category>大模型</category>
+      <category>NLP</category>
+      
+      <category>风格迁移</category>
       
     </categories>
     
     
     <tags>
       
-      <tag>大模型生成后门代码</tag>
+      <tag>LEWIS、风格迁移</tag>
       
     </tags>
     
@@ -38,9 +40,7 @@
     
     <categories>
       
-      <category>其他</category>
-      
-      <category>conda</category>
+      <category>utils</category>
       
     </categories>
     
@@ -48,6 +48,87 @@
     <tags>
       
       <tag>conda</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>GPT3 - Language Models Are Few-Shot Learners</title>
+    <link href="/2023/10/20/gpt3/"/>
+    <url>/2023/10/20/gpt3/</url>
+    
+    <content type="html"><![CDATA[<h1 id="language-models-are-few-shot-learners">Language Models areFew-Shot Learners</h1><span id="more"></span><h2 id="摘要">摘要</h2><p>​最近的研究表明，在大量文本语料库上进行预训练，然后在特定任务上进行微调，可以在许多自然语言处理（NLP）任务和基准测试中取得实质性的收益。虽然在架构上通常是任务无关的，但这种方法仍然需要数千或数万个示例的特定任务微调数据集。相比之下，人类通常可以从仅有的几个示例或简单的说明中执行新的语言任务，而当前的NLP系统在这方面仍然面临很大的挑战。</p><p>​在这里，我们展示了通过扩大语言模型的规模可以极大地改善任务无关、少样本的性能，有时甚至能够达到先前最先进的微调方法的竞争水平。具体而言，我们训练了GPT-3，这是一个具有1750亿参数的自回归语言模型，比任何先前的非稀疏语言模型都多10倍，然后在少样本设置下测试其性能。对于所有任务，GPT-3都是在没有任何梯度更新或微调的情况下应用的，任务和少样本演示纯粹通过与模型的文本交互来指定。</p><p>​GPT-3在许多NLP数据集上取得了强大的性能，包括翻译、问答和填空任务，以及一些需要即时推理或领域适应的任务，比如拼词、在句子中使用新词，或进行3位数的算术运算。同时，我们还确定了一些数据集，GPT-3的少样本学习仍然存在挑战，以及一些数据集，GPT-3面临与在大型Web语料库上训练相关的方法问题。最后，我们发现GPT-3可以生成新闻文章的样本，使人类评估者难以区分是否由人类编写。我们讨论了这一发现以及GPT-3的更广泛社会影响。</p><h2 id="引言">引言</h2><h3 id="预训练范式的缺陷">预训练范式的缺陷</h3><p>​首先，从实际角度看，对于每个<strong>新任务都需要大量标记示例的需求限制了语言模型的适用性</strong>。存在着一系列可能有用的语言任务，涵盖从纠正语法错误，到生成抽象概念的示例，再到评论一篇短篇小说等各种任务。对于许多这些任务，收集大规模的监督训练数据集是困难的，特别是当这个过程必须为每个新任务重复时。</p><p>​其次，在训练数据的表达力和训练分布的狭窄性方面，利用训练数据中的偶然关联的潜力本质上随着模型的表达力和训练分布的狭隘性而增长。这可能对预训练加微调范式造成问题，其中模型被设计得很大以在预训练期间吸收信息，但然后在非常狭窄的任务分布上进行微调。例如，[HLW+20]观察到，更大的模型不一定在分布外更好地泛化。有证据表明，在这个范式下实现的泛化可能较差，因为<strong>模型过于特定于训练分布，无法在其之外很好地泛化</strong>[YdC+19，MPL19]。因此，<strong>即使在名义上达到人类水平的特定基准测试上，微调模型的性能可能夸大了基础任务的实际表现</strong>[GSL+18，NK19]。</p><p>​第三，<strong>人类学习大多数语言任务并不需要大规模的监督数据集</strong>，自然语言中的简短指令（例如“请告诉我这个句子是描述快乐还是悲伤的”）或最多一小部分演示（例如“这里有两个人表现得很勇敢的例子，请给出第三个勇敢的例子”）通常足以使人类能够以合理的程度胜任新任务。除了指向我们当前自然语言处理技术的概念限制外，这种适应性还具有实际优势——它使人类能够无缝地混合或在许多任务和技能之间切换，例如在漫长的对话中执行加法。为了广泛实用，我们希望有一天我们的自然语言处理系统能够具有同样的灵活性和普适性。</p><h3 id="结果">结果</h3><p>​在NLP任务中，GPT-3在零射击和一次射击设置中取得了有希望的结果，在少数射击设置中有时与最先进的技术竞争，甚至偶尔超过最先进的技术(尽管最先进的技术被微调模型所掌握)。</p><h2 id="方法">方法</h2><h3 id="模型架构">模型架构</h3><p>​我们使用与GPT-2相同的模型和架构[RWC+19]，包括其中描述的修改过的初始化、预归一化和可逆标记化，唯一的例外是我们在Transformer的层中使用了交替的稠密和局部带状稀疏注意模式，类似于SparseTransformer[CGRS19]。</p><h2 id="训练数据">训练数据</h2><h3 id="数据量">数据量</h3><p>​ 语言模型的数据集迅速扩大，达到了Common Crawl数据集2 [RSR+19]近一万亿个单词。</p><h3 id="数据处理">数据处理</h3><p>​ 我们采取了三个步骤来提高数据集的平均质量：</p><ul><li><p>下载并过滤了一个基于与一系列高质量参考语料库的相似性的 CommonCrawl 版本。</p></li><li><p>我们在文档级别进行了模糊去重，包括数据集内和数据集间的去重，以防止冗余并保持我们的验证集的完整性，作为对过拟合的准确度的衡量。</p></li><li><p>我们还在训练中添加了已知的高质量参考语料库，以增强 Common Crawl并提高其多样性。</p></li></ul><h3 id="出现的问题">出现的问题</h3><p>​在广泛的互联网数据上预训练语言模型，特别是具有记忆大量内容能力的大型模型，一个主要的方法论问题是，在预训练期间无意中看到它们的测试或开发集，可能会污染下游任务。为了减少这种污染，我们搜索并试图删除与本文中研究的所有基准的开发和测试集的任何重叠。不幸的是，过滤中的一个错误导致我们忽略了一些重叠，并且由于训练的成本，重新训练模型是不可行的。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>LLM</category>
+      
+      <category>Base</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>GPT3</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>GPT2 - Language Models Are Unsupervised Multitask Learners</title>
+    <link href="/2023/10/15/gpt2/"/>
+    <url>/2023/10/15/gpt2/</url>
+    
+    <content type="html"><![CDATA[<h1 id="language-models-are-unsupervised-multitask-learners">LanguageModels are Unsupervised Multitask Learners</h1><span id="more"></span><h2 id="摘要">摘要</h2><p>​语言模型的能力对于零射击任务迁移的成功至关重要，增加它可以跨任务以对数线性方式提高性能。我们最大的模型GPT-2是一个1.5B的参数转换器，它在8个测试语言建模数据集中的7个上实现了最先进的结果，但仍然不适合WebText。模型中的样本反映了这些改进，并包含连贯的文本段落。这些发现为构建语言处理系统提供了一条很有希望的途径，该系统可以从自然发生的演示中学习执行任务。</p><h2 id="方法">方法</h2><h3 id="推断">推断</h3><p>​我们的推测是，具有足够容量的语言模型将开始学会推断和执行在自然语言序列中展示的任务，以更好地预测它们，而不考虑它们的获取方法。如果一个语言模型能够做到这一点，实际上它将执行无监督的多任务学习。我们通过在零样本设置下分析语言模型在各种任务上的性能来测试是否成立。</p><h3 id="数据集">数据集</h3><p>​相反，我们创建了一种强调文档质量的新型网络抓取。为了实现这一点，我们只抓取了由人类筛选/过滤的网页。对整个网络进行手动筛选将会非常昂贵，因此作为起点，我们从Reddit这个社交媒体平台抓取了所有至少获得3个赞的外部链接。这可以被看作是一个启发式指标，用于判断其他用户是否发现链接有趣、教育性，还是仅仅是搞笑。</p><h3 id="输入表示">输入表示</h3><p>​我们观察到BPE包括了许多常见单词的多个版本，比如dog，因为它们以多种形式出现，如dog.dog! dog?。这导致了有限词汇槽和模型容量的次优分配。为了避免这种情况，我们<strong>阻止BPE在任何字节序列上跨字符类别进行合并</strong>。我们为空格添加了一个例外，这显著提高了压缩效率，同时只在多个词汇令牌之间添加了最小的片段。</p><h3 id="模型">模型</h3><p>​我们使用基于Transformer的架构作为我们的语言模型（LMs）。该模型在很大程度上遵循OpenAIGPT模型（Radford等人，2018）的细节，但有一些修改。</p><p>​ 层归一化（LayerNormalization）（Ba等人，2016）被移到每个子块的输入位置，类似于预激活残差网络（He等人，2016），并在最终的自注意力块之后添加了额外的层归一化。使用一种修改过的初始化方法，该方法考虑了模型深度上残差路径上的累积。我们在初始化时通过一个因子1/sqrt(N)（其中N是残差层的数量）来缩放残差层的权重。词汇量扩展到50,257。我们还将上下文大小从512扩大到1024个标记，并使用更大的批量大小512。</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>LLM</category>
+      
+      <category>Base</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>GPT2</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>GPT1 - Improving Language Understanding by Generative Pre-Training</title>
+    <link href="/2023/10/12/gpt1/"/>
+    <url>/2023/10/12/gpt1/</url>
+    
+    <content type="html"><![CDATA[<h1id="improving-language-understanding-by-generative-pre-training">ImprovingLanguage Understanding by Generative Pre-Training</h1><span id="more"></span><h2 id="摘要">摘要</h2><p>​我们证明，通过在不同的未标记文本语料库上对语言模型进行生成式预训练，然后对每个特定任务进行判别性微调，可以实现这些任务的巨大收益。与以前的方法相反，我们在微调期间利用任务感知输入转换来实现有效的传输，同时需要对模型体系结构进行最小的更改。我们在自然语言理解的广泛基准上证明了我们的方法的有效性。</p><p>​我们的通用任务不可知模型优于为每个任务使用专门设计的架构的判别训练模型，在研究的12个任务中的9个任务中显著提高了技术水平。例如，我们在常识性推理(故事完形测试)上实现了8.9%的绝对改进，在问题回答(RACE)上实现了5.7%的绝对改进，在文本蕴涵(MultiNLI)上实现了1.5%的绝对改进。</p><h2 id="框架">框架</h2><h3 id="无监督预训练">无监督预训练</h3><p>​ 给定 <spanclass="math inline">\(\begin{aligned}\mathcal{U}=\{u_1,\ldots,u_n\}\end{aligned}\)</span>，使用标准语言建模：<span class="math display">\[L_1(\mathcal{U})=\sum_i\log P(u_i|u_{i-k},\ldots,u_{i-1};\Theta)\]</span> ​其中k是上下文窗口的大小，条件概率P使用参数为Θ的神经网络建模。</p><p>​ 使用多层Transformer解码器 <span class="math display">\[\begin{aligned}h_{0}&amp; =UW_e+W_p  \\h_{l}&amp; =\text{transformer \_block}(h_{l-1})\forall i\in[1,n]  \\P(u)&amp; =\text{softmax}(h_nW_e^T)\end{aligned}\]</span> ​ 其中，<span class="math inline">\(W_{e}\)</span>为令牌嵌入矩阵，<span class="math inline">\(W_{p}\)</span>为位置嵌入矩阵。</p><h3 id="有监督微调">有监督微调</h3><p>​ 假设一个有标签的数据集 <spanclass="math inline">\(C\)</span>，其中每个实例由一系列输入令牌组成，<spanclass="math inline">\(x^1,\ldots,x^m\)</span>，以及标签 <spanclass="math inline">\(y\)</span>。输入通过我们的预训练模型来获得最终变压器块的激活<spanclass="math inline">\(h_{l}^{\hat{m}}\)</span>，然后将其馈送到一个附加的线性输出层，参数为<span class="math inline">\(W_{y}\)</span>，以预测 <spanclass="math inline">\(y\)</span>： <span class="math display">\[P(y|x^1,\ldots,x^m)=\text{softmax}(h_l^mW_y).\]</span> ​ 损失函数： <span class="math display">\[L_2(\mathcal{C})=\sum_{(x,y)}\log P(y|x^1,\ldots,x^m).\]</span> ​语言建模作为微调的辅助目标有助于学习(a)提高监督模型的泛化，(b)加速收敛：<span class="math display">\[L_3(\mathcal{C})=L_2(\mathcal{C})+\lambda*L_1(\mathcal{C})\]</span></p><h3 id="下游任务输入转换">下游任务输入转换</h3><p>​先前的工作提出了基于迁移表征的学习任务特定架构[44]。这种方法重新引入了大量特定于任务的自定义，并且没有对这些额外的体系结构组件使用迁移学习。相反，我们使用遍历式方法[52]，将结构化输入转换为预训练模型可以处理的有序序列。</p><ul><li>文本蕴涵：我们将前提 p 和假设 h标记序列连接起来，中间使用分隔符标记($)。</li><li>相似度：比较的两个句子没有固有的顺序。为了反映这一点，我们修改输入序列以包含两种可能的句子顺序(中间有分隔符)，并独立处理每个序列以生成两个序列表示<spanclass="math inline">\(h_{l}^{m}\)</span>，这两个序列表示在被馈送到线性输出层之前以元素方式添加。</li><li>问答和常识推理：对于这些任务，我们得到一个上下文文档 z、一个问题 q和一组可能的答案 <spanclass="math inline">\(\{a_{k}\}\)</span>。我们将文档上下文和问题与每个可能的答案连接起来，并在两者之间添加分隔符以得到<spanclass="math inline">\([z;q;\$;a_k]\)</span>。这些序列中的每一个都用我们的模型独立处理，然后通过<span class="math inline">\(softmax\)</span>层进行规范化，以产生可能答案的输出分布。</li></ul><figure><imgsrc="C:\Users\15629\AppData\Roaming\Typora\typora-user-images\image-20231210200305219.png"alt="image-20231210200305219" /><figcaption aria-hidden="true">image-20231210200305219</figcaption></figure>]]></content>
+    
+    
+    <categories>
+      
+      <category>LLM</category>
+      
+      <category>Base</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>GPT1</tag>
       
     </tags>
     
@@ -65,9 +146,7 @@
     
     <categories>
       
-      <category>其他</category>
-      
-      <category>github</category>
+      <category>utils</category>
       
     </categories>
     
@@ -92,9 +171,11 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>LLM</category>
       
-      <category>AI 安全</category>
+      <category>安全</category>
+      
+      <category>后门攻击</category>
       
     </categories>
     
@@ -146,9 +227,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>LLM</category>
       
-      <category>AI 安全</category>
+      <category>安全</category>
       
       <category>后门攻击</category>
       
@@ -193,7 +274,7 @@
   
   
   <entry>
-    <title>解决 Hexo S 无法本地部署</title>
+    <title>Hexo 端口占用问题</title>
     <link href="/2023/08/09/%E8%A7%A3%E5%86%B3hexo%E6%97%A0%E6%B3%95%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/"/>
     <url>/2023/08/09/%E8%A7%A3%E5%86%B3hexo%E6%97%A0%E6%B3%95%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2/</url>
     
@@ -202,9 +283,7 @@
     
     <categories>
       
-      <category>其他</category>
-      
-      <category>hexo</category>
+      <category>utils</category>
       
     </categories>
     
@@ -229,9 +308,9 @@
     
     <categories>
       
-      <category>论文</category>
-      
       <category>LLM</category>
+      
+      <category>Base</category>
       
     </categories>
     
@@ -256,9 +335,9 @@
     
     <categories>
       
-      <category>论文</category>
-      
       <category>LLM</category>
+      
+      <category>可解释</category>
       
     </categories>
     
@@ -283,9 +362,11 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>LLM</category>
       
-      <category>AI 安全</category>
+      <category>安全</category>
+      
+      <category>对抗攻击</category>
       
     </categories>
     
@@ -310,9 +391,11 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>LLM</category>
       
-      <category>AI 安全</category>
+      <category>安全</category>
+      
+      <category>对抗攻击</category>
       
     </categories>
     
@@ -337,9 +420,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -364,9 +447,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -391,9 +474,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -418,9 +501,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -445,9 +528,9 @@
     
     <categories>
       
-      <category>项目</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -472,9 +555,9 @@
     
     <categories>
       
-      <category>项目</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -499,9 +582,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>计算机视觉</category>
+      <category>目标检测</category>
       
     </categories>
     
@@ -526,9 +609,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -553,9 +636,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -580,9 +663,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -607,9 +690,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -617,60 +700,6 @@
     <tags>
       
       <tag>LeNet、复现</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>Softmax 回归复现</title>
-    <link href="/2023/05/13/softmax/"/>
-    <url>/2023/05/13/softmax/</url>
-    
-    <content type="html"><![CDATA[<p>softmax 回归复现</p><span id="more"></span><h1 id="推理公式">推理公式</h1><p><span class="math display">\[Y = softmax(WX+b)\]</span></p><h1 id="导入-torch">导入 torch</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">from</span> d2l <span class="hljs-keyword">import</span> torch <span class="hljs-keyword">as</span> d2l<br></code></pre></td></tr></table></figure><h1 id="构建-softmax-网络">构建 softmax 网络</h1><figure class="highlight py"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs py"><span class="hljs-keyword">class</span> <span class="hljs-title class_">SoftMax</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, num_inputs, num_outputs</span>):<br>        self.num_inputs, self.num_outputs = num_inputs, num_outputs<br>        self.params = self._init_params()<br></code></pre></td></tr></table></figure><h2 id="初始化参数">初始化参数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_init_params</span>(<span class="hljs-params">self</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;初始化参数&quot;&quot;&quot;</span><br>    num_inputs = self.num_inputs; num_outputs = self.num_outputs<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">normal</span>(<span class="hljs-params">shape</span>):<br>        <span class="hljs-keyword">return</span> torch.randn(size=shape, device=device) * <span class="hljs-number">0.01</span><br>    W = normal((num_inputs, num_outputs)); b = torch.zeros(num_outputs, device=device)<br>    params = [W, b]<br>    <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> params:<br>        param.requires_grad_(<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">return</span> params<br></code></pre></td></tr></table></figure><h2 id="softmax">softmax</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">softmax</span>(<span class="hljs-params">self, X</span>):<br>    X_exp = torch.exp(X)<br>    partition = X_exp.<span class="hljs-built_in">sum</span>(<span class="hljs-number">1</span>, keepdim=<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">return</span> X_exp / partition  <span class="hljs-comment"># 这里应用了广播机制</span><br></code></pre></td></tr></table></figure><h2 id="前向推理">前向推理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_forward</span>(<span class="hljs-params">self, inputs</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;推理函数&quot;&quot;&quot;</span><br>    outputs = []<br>    W, b = self.params<br>    <span class="hljs-keyword">for</span> X <span class="hljs-keyword">in</span> inputs:<br>        Y = self.softmax(X.reshape((-<span class="hljs-number">1</span>, W.shape[<span class="hljs-number">0</span>])) @ W + b)<br>        outputs.append(Y)<br>    <span class="hljs-keyword">return</span> torch.cat(outputs, dim=<span class="hljs-number">0</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, X</span>):<br>    <span class="hljs-keyword">return</span> self._forward(X)<br></code></pre></td></tr></table></figure><h2 id="参数更新">参数更新</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">update</span>(<span class="hljs-params">self, X, y, lr</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;更新函数&quot;&quot;&quot;</span><br>    y_hat = self._forward(X)<br>    l = self._loss(y_hat, y)<br>    l.mean().backward()<br>    <span class="hljs-string">&quot;&quot;&quot;sgd&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> self.params:<br>            param -= lr * param.grad / X.shape[<span class="hljs-number">0</span>]<br>            param.grad.zero_()<br>    <span class="hljs-keyword">return</span> l<br></code></pre></td></tr></table></figure><h2 id="交叉熵损失">交叉熵损失</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_loss</span>(<span class="hljs-params">self, y_hat, y</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;交叉熵损失&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> - torch.log(y_hat[<span class="hljs-built_in">range</span>(<span class="hljs-built_in">len</span>(y_hat)), y])<br></code></pre></td></tr></table></figure><h1 id="训练">训练</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python">batch_size, device = <span class="hljs-number">256</span>, <span class="hljs-string">&#x27;cpu&#x27;</span><br>train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size, resize=<span class="hljs-number">28</span>)<br>num_epochs, num_inputs, num_outputs = <span class="hljs-number">3</span>, <span class="hljs-number">784</span>, <span class="hljs-number">10</span><br>net = SoftMax(num_inputs, num_outputs)<br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    metrics = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> tqdm(train_iter, ncols=<span class="hljs-number">100</span>):<br>        l = net.update(X, y, lr=<span class="hljs-number">1</span>)<br>        metrics[<span class="hljs-number">0</span>] += l.<span class="hljs-built_in">sum</span>(); metrics[<span class="hljs-number">1</span>] += y.numel()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;epoch %d loss %f&#x27;</span> % (epoch + <span class="hljs-number">1</span>, metrics[<span class="hljs-number">0</span>] / metrics[<span class="hljs-number">1</span>]))<br></code></pre></td></tr></table></figure><h1 id="预测">预测</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> test_iter:<br>    <span class="hljs-keyword">break</span><br>n = <span class="hljs-number">6</span><br>trues = d2l.get_fashion_mnist_labels(y)<br>preds = d2l.get_fashion_mnist_labels(net(X).argmax(axis=<span class="hljs-number">1</span>))<br>titles = [true +<span class="hljs-string">&#x27;\n&#x27;</span> + pred <span class="hljs-keyword">for</span> true, pred <span class="hljs-keyword">in</span> <span class="hljs-built_in">zip</span>(trues, preds)]<br>d2l.show_images(<br>    X[<span class="hljs-number">0</span>:n].reshape((n, <span class="hljs-number">28</span>, <span class="hljs-number">28</span>)), <span class="hljs-number">1</span>, n, titles=titles[<span class="hljs-number">0</span>:n])<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>论文</category>
-      
-      <category>基础网络</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>softmax 回归、复现</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>线性回归网络复现</title>
-    <link href="/2023/05/13/linear/"/>
-    <url>/2023/05/13/linear/</url>
-    
-    <content type="html"><![CDATA[<p>线性回归网络复现</p><span id="more"></span><h1 id="推理公式">推理公式</h1><p><span class="math display">\[ Y = XW + b \]</span></p><h1 id="导入-torch">导入 torch</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> torch<br></code></pre></td></tr></table></figure><h1 id="构建线性回归网络">构建线性回归网络</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">class</span> <span class="hljs-title class_">MLP</span>:<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">__init__</span>(<span class="hljs-params">self, num_inputs, num_outputs</span>):<br>        self.num_inputs, self.num_outputs = num_inputs, num_outputs<br>        self.params = self._init_params()<br></code></pre></td></tr></table></figure><h2 id="初始化参数">初始化参数</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_init_params</span>(<span class="hljs-params">self</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;初始化参数&quot;&quot;&quot;</span><br>    num_inputs = self.num_inputs; num_outputs = self.num_outputs<br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">normal</span>(<span class="hljs-params">shape</span>):<br>        <span class="hljs-keyword">return</span> torch.randn(size=shape, device=device) * <span class="hljs-number">0.01</span><br>    W = normal((num_inputs, num_outputs)); b = torch.zeros(num_outputs, device=device)<br>    params = [W, b]<br>    <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> params:<br>        param.requires_grad_(<span class="hljs-literal">True</span>)<br>    <span class="hljs-keyword">return</span> params<br></code></pre></td></tr></table></figure><h2 id="前向推理">前向推理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_forward</span>(<span class="hljs-params">self, inputs</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;推理函数&quot;&quot;&quot;</span><br>    outputs = []<br>    W, b = self.params<br>    <span class="hljs-keyword">for</span> X <span class="hljs-keyword">in</span> inputs:<br>        Y = X @ W + b<br>        outputs.append(Y)<br>    <span class="hljs-keyword">return</span> torch.cat(outputs, dim=<span class="hljs-number">0</span>)<br><span class="hljs-keyword">def</span> <span class="hljs-title function_">__call__</span>(<span class="hljs-params">self, X</span>):<br>    <span class="hljs-keyword">return</span> self._forward(X)<br></code></pre></td></tr></table></figure><h2 id="参数更新">参数更新</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">update</span>(<span class="hljs-params">self, X, y, lr</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;更新函数&quot;&quot;&quot;</span><br>    y_hat = self._forward(X)<br>    l = self._loss(y_hat, y.T.reshape(-<span class="hljs-number">1</span>))<br>    l.<span class="hljs-built_in">sum</span>().backward()<br>    <span class="hljs-string">&quot;&quot;&quot;sgd&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">with</span> torch.no_grad():<br>        <span class="hljs-keyword">for</span> param <span class="hljs-keyword">in</span> self.params:<br>            param -= lr * param.grad / X.shape[<span class="hljs-number">0</span>]<br>            param.grad.zero_()<br>    <span class="hljs-keyword">return</span> l<br></code></pre></td></tr></table></figure><h2 id="均方损失">均方损失</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">_loss</span>(<span class="hljs-params">self, y_hat, y</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;均方损失&quot;&quot;&quot;</span><br>    <span class="hljs-keyword">return</span> (y_hat - y.reshape(y_hat.shape)) ** <span class="hljs-number">2</span> / <span class="hljs-number">2</span><br></code></pre></td></tr></table></figure><h1 id="生成测试数据">生成测试数据</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">def</span> <span class="hljs-title function_">synthetic_data</span>(<span class="hljs-params">w, b, num_examples</span>):<br>    <span class="hljs-string">&quot;&quot;&quot;生成y=Xw+b+噪声&quot;&quot;&quot;</span><br>    X = torch.normal(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, (num_examples, <span class="hljs-built_in">len</span>(w)))<br>    y = torch.matmul(X, w) + b<br>    y += torch.normal(<span class="hljs-number">0</span>, <span class="hljs-number">0.01</span>, y.shape)<br>    <span class="hljs-keyword">return</span> X, y.reshape((-<span class="hljs-number">1</span>, <span class="hljs-number">1</span>))<br><br>true_w = torch.tensor([<span class="hljs-number">2</span>, -<span class="hljs-number">3.4</span>])<br>true_b = <span class="hljs-number">4.2</span><br>features, labels = synthetic_data(true_w, true_b, <span class="hljs-number">1000</span>)<br><br><span class="hljs-keyword">def</span> <span class="hljs-title function_">data_iter</span>(<span class="hljs-params">batch_size, features, labels</span>):<br>    num_examples = <span class="hljs-built_in">len</span>(features)<br>    indices = <span class="hljs-built_in">list</span>(<span class="hljs-built_in">range</span>(num_examples))<br>    <span class="hljs-comment"># 这些样本是随机读取的，没有特定的顺序</span><br>    random.shuffle(indices)<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, num_examples, batch_size):<br>        batch_indices = torch.tensor(<br>            indices[i: <span class="hljs-built_in">min</span>(i + batch_size, num_examples)])<br>        <span class="hljs-keyword">yield</span> features[batch_indices], labels[batch_indices]<br></code></pre></td></tr></table></figure><h1 id="训练">训练</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python">batch_size, device = <span class="hljs-number">32</span>, <span class="hljs-string">&#x27;cpu&#x27;</span><br>num_epochs, num_inputs, num_outputs = <span class="hljs-number">10</span>, <span class="hljs-number">2</span>, <span class="hljs-number">1</span><br>net = MLP(num_inputs, num_outputs)<br><span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_epochs):<br>    metrics = [<span class="hljs-number">0</span>, <span class="hljs-number">0</span>]<br>    <span class="hljs-keyword">for</span> X, y <span class="hljs-keyword">in</span> data_iter(batch_size, features, labels):<br>        l = net.update(X, y, lr=<span class="hljs-number">1</span>)<br>        metrics[<span class="hljs-number">0</span>] += l.<span class="hljs-built_in">sum</span>(); metrics[<span class="hljs-number">1</span>] += y.numel()<br>    <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;epoch %d loss %f&#x27;</span> % (epoch + <span class="hljs-number">1</span>, metrics[<span class="hljs-number">0</span>] / metrics[<span class="hljs-number">1</span>]))<br></code></pre></td></tr></table></figure><h1 id="结果">结果</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs python">W, b = net.params<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;w的估计误差: <span class="hljs-subst">&#123;true_w - W.reshape(true_w.shape)&#125;</span>&#x27;</span>)<br><span class="hljs-built_in">print</span>(<span class="hljs-string">f&#x27;b的估计误差: <span class="hljs-subst">&#123;true_b - b&#125;</span>&#x27;</span>)<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>论文</category>
-      
-      <category>基础网络</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>线性回归、复现</tag>
       
     </tags>
     
@@ -688,9 +717,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>NLP</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -715,9 +744,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -742,9 +771,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>NLP</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -769,9 +798,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>CV</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -796,9 +825,9 @@
     
     <categories>
       
-      <category>论文</category>
+      <category>NLP</category>
       
-      <category>基础网络</category>
+      <category>Base</category>
       
     </categories>
     
@@ -823,7 +852,7 @@
     
     <categories>
       
-      <category>其他</category>
+      <category>utils</category>
       
     </categories>
     
@@ -947,60 +976,6 @@
   
   
   <entry>
-    <title>Educational Codeforces Round 144 (Rated for Div. 2) D. Maximum Subarray (Dp)</title>
-    <link href="/2023/03/12/cf_1796_D/"/>
-    <url>/2023/03/12/cf_1796_D/</url>
-    
-    <content type="html"><![CDATA[<p>D (dp) <span id="more"></span></p><h1 id="閾炬帴">閾炬帴</h1><p><ahref="https://codeforces.com/contest/1796/problem/D">https://codeforces.com/contest/1796/problem/D</a></p><h1 id="棰樻剰">棰樻剰</h1><p><span class="math inline">\(~~~~\)</span>缁欎竴涓暟缁� <spanclass="math inline">\(a\)</span>锛岃姹傞€夊嚭 <spanclass="math inline">\(a\)</span> 鐨勪竴涓暱搴︿负 <spanclass="math inline">\(k\)</span> 鐨勫瓙搴忓垪 <spanclass="math inline">\(b_{1}, b_{2}, ..., b_{k}\)</span>锛岃 <spanclass="math inline">\(\forall i \in [1, k], b_{i} += x\)</span>锛岃€岃<span class="math inline">\(\forall a_{i} \in a \ and \ a_{i} \notin b,a_{i} -= x\)</span>锛屼娇寰楀舰鎴愮殑鏂版暟缁勬渶澶у瓙娈靛拰鏈€澶с€�</p><h1 id="棰樿в">棰樿В</h1><p><span class="math inline">\(~~~~\)</span>鑰冭檻 DP銆�</p><p><span class="math inline">\(~~~~\)</span>璁� <spanclass="math inline">\(f[i][j]\)</span> : 鑰冭檻鍓� <spanclass="math inline">\(i\)</span> 涓暟锛屽凡缁忛€夋嫨浜� <spanclass="math inline">\(j\)</span> 涓暟鎵ц "<spanclass="math inline">\(+x\)</span>" 鎿嶄綔鐨勫ぇ瀛愭鍜屻€�</p><p><span class="math inline">\(~~~~\)</span>鍒嗙被璁ㄨ锛�</p><ul><li><span class="math inline">\(a[i]\)</span> 涓嶆墽琛� "<spanclass="math inline">\(+x\)</span>" 鎿嶄綔<ul><li>蹇呴』婊¤冻 <span class="math inline">\(i &gt;j\)</span>锛屽洜涓哄鏋� <span class="math inline">\(i=j\)</span>鍒欐剰鍛崇潃鍓� <span class="math inline">\(i\)</span>涓暟鍏ㄩ儴鎵ц浜� "<span class="math inline">\(+x\)</span>"鎿嶄綔锛屽洜姝� <span class="math inline">\(a[i]\)</span> 蹇呴』鎵ц"<span class="math inline">\(+x\)</span>" 鎿嶄綔<br /></li><li><span class="math inline">\(a[i]\)</span> 蹇呴』鎵ц "<spanclass="math inline">\(-x\)</span>" 鎿嶄綔</li><li><span class="math inline">\(a[i]\)</span>鍗曠嫭浣滀负涓€涓瓙娈靛拰锛屽嵆 <span class="math inline">\(a[i] -x\)</span></li><li><span class="math inline">\(a[i]\)</span> 鍚堝苟鍒� <spanclass="math inline">\([1, i-1]\)</span> 鐨勬渶澶у瓙娈靛拰涓紝鍗� <spanclass="math inline">\(f[i-1, j] + a[i] - x\)</span></li></ul></li><li><span class="math inline">\(a[i]\)</span> 鎵ц "<spanclass="math inline">\(+x\)</span>" 鎿嶄綔<ul><li><span class="math inline">\(a[i]\)</span>鍗曠嫭浣滀负涓€涓瓙娈靛拰锛屽嵆 <span class="math inline">\(a[i] +x\)</span></li><li><span class="math inline">\(a[i]\)</span> 鍚堝苟鍒� <spanclass="math inline">\([1, i-1]\)</span> 鐨勬渶澶у瓙娈靛拰涓紝鍗� <spanclass="math inline">\(f[i-1, j-1] + a[i] + x\)</span></li></ul></li></ul><p><spanclass="math inline">\(~~~~\)</span>鍥犳锛岀姸鎬佽浆绉绘柟绋嬩负锛�<span class="math display">\[f[i,j]=\left\{\begin{matrix}max(a[i]-x,f[i-1,j]+a[i]-x)\ \ j&lt;i\\max(a[i]+x, f[i-1, j-1]+a[i]+x)\ \ j &gt; 0\end{matrix}\right.\]</span></p><p><span class="math inline">\(~~~~\)</span>鍒濆鏉′欢涓猴細<spanclass="math inline">\(f[0, 0] = 0\)</span></p><h1 id="python-浠ｇ爜">python 浠ｇ爜</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n, k, x = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    inf = <span class="hljs-built_in">float</span>(<span class="hljs-string">&#x27;inf&#x27;</span>)<br>    f = [[-inf <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(k+<span class="hljs-number">1</span>)] <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    res = <span class="hljs-number">0</span><br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n+<span class="hljs-number">1</span>):<br>        <span class="hljs-comment"># 褰撳墠宸茬粡浣跨敤鐨� &quot;+x&quot; 鎿嶄綔 j 鏈€灏戜负 k-(n-i)锛屽嵆璁� i 鍚庨潰鐨勬暟鍏ㄩ儴鎵ц &quot;+x&quot; 鎿嶄綔</span><br>        <span class="hljs-comment"># 褰撳墠宸茬粡浣跨敤鐨� &quot;+x&quot; 鎿嶄綔 j 鏈€澶氫负 i锛屽嵆璁� i 鍓嶉潰鐨勬暟鍏ㄩ儴鎵ц &quot;+x&quot; 鎿嶄綔</span><br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-built_in">max</span>(<span class="hljs-number">0</span>, k-(n-i)), <span class="hljs-built_in">min</span>(i, k)+<span class="hljs-number">1</span>):<br>            <span class="hljs-keyword">if</span> j &lt; i:<br>                f[i][j] = <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] - x, f[i-<span class="hljs-number">1</span>][j] + a[i-<span class="hljs-number">1</span>] - x)<br>            <span class="hljs-keyword">if</span> j:<br>                <span class="hljs-comment"># 娉ㄦ剰姝ゅ f[i][j] 鍙兘宸茬粡琚洿鏂帮紝鍥犳瑕佸甫涓�</span><br>                f[i][j] = <span class="hljs-built_in">max</span>(f[i][j], <span class="hljs-built_in">max</span>(a[i-<span class="hljs-number">1</span>] + x, f[i-<span class="hljs-number">1</span>][j-<span class="hljs-number">1</span>] + a[i-<span class="hljs-number">1</span>] + x))<br>            <span class="hljs-comment"># 鑻ュ彧鑰冭檻褰撳墠鐨勬渶澶у瓙娈靛拰锛屽叾浠栫殑 &quot;+x&quot; 鎿嶄綔鍙戠敓鍦ㄤ粈涔堝湴鏂瑰褰撳墠缁撴灉娌℃湁褰卞搷</span><br>            res = <span class="hljs-built_in">max</span>(res, f[i][j])<br>    <span class="hljs-built_in">print</span>(res)<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>题解</category>
-      
-      <category>CodeForce</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>codeforce, cf, D, Maximum Subarray, dp, DP</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>Codeforces Round 856 (Div. 2) a - D</title>
-    <link href="/2023/03/11/cf_1794/"/>
-    <url>/2023/03/11/cf_1794/</url>
-    
-    <content type="html"><![CDATA[<p>A (ćçť´) B (ćçť´) C (ćçť´) D (dp)</p><span id="more"></span><h1 id="éžćľ">éžćĽ</h1><p>https://codeforces.com/contest/1794</p><h1 id="a-ćçť">A (ćçť´)</h1><h2 id="éć">é˘ć</h2><p><span class="math inline">\(~~~~\)</span>çťĺşä¸ä¸Şĺ­çŹŚä¸˛ <spanclass="math inline">\(s\)</span> çććĺ­ä¸? <spanclass="math inline">\(s_{sub}\)</span> çéćşćĺďźĺ¤ć­čżä¸Şĺ­çŹŚä¸? <spanclass="math inline">\(s\)</span> ćŻĺŚä¸şĺćä¸˛</p><h2 id="éčł">é˘č§Ł</h2><p><span class="math inline">\(~~~~\)</span>ćžĺşä¸¤ä¸ŞéżĺşŚćéżçĺ­ä¸˛<span class="math inline">\(s_{sub, max_{1}}\)</span>ă?<spanclass="math inline">\(s_{sub, max_{2}}\)</span>ďźĺčŽ? <spanclass="math inline">\(s_{sub, max_{1}}\)</span> ć? <spanclass="math inline">\(s\)</span> çĺçźďź?<spanclass="math inline">\(s_{sub, max_{2}}\)</span>ć? <spanclass="math inline">\(s\)</span> çĺçźďźĺ <span class="math display">\[s = s_{sub, max_{1}}[:] + s_{sub, max_{2}}[-1] \ \ or \  \ s_{sub,max_{1}}[0] + s_{sub, max_{2}}[:]   \]</span></p><p><span class="math inline">\(~~~~\)</span>ćä¸žä¸¤čćĺľĺłĺŻćąĺž? <spanclass="math inline">\(s\)</span>ďźćĺĺ¤ć? <spanclass="math inline">\(s\)</span> ćŻĺŚä¸şĺćä¸˛ĺłĺŻă?</p><h2 id="python-äťłç">python äťŁç </h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    s = <span class="hljs-built_in">input</span>().split()<br>    <span class="hljs-keyword">if</span> n == <span class="hljs-number">2</span>:<br>        res = s[<span class="hljs-number">0</span>] + s[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">else</span>:<br>        mxs = []<br>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> s:<br>            <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(c) == n-<span class="hljs-number">1</span>:<br>                mxs.append(c)<br>        <span class="hljs-comment"># print(mxs[0][:n-2], mxs[1][1:])</span><br>        <span class="hljs-keyword">if</span> mxs[<span class="hljs-number">0</span>][:n-<span class="hljs-number">2</span>] == mxs[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>:]:<br>            res = mxs[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">0</span>]<br>        <span class="hljs-keyword">else</span>:<br>            res = mxs[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] + mxs[<span class="hljs-number">1</span>]<br>    <span class="hljs-keyword">if</span> res == res[::-<span class="hljs-number">1</span>]:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;YES&#x27;</span>)<br>    <span class="hljs-keyword">else</span>:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;NO&#x27;</span>)<br></code></pre></td></tr></table></figure><h1 id="b-ćçť">B (ćçť´)</h1><h2 id="éć-1">é˘ć</h2><p><span class="math inline">\(~~~~\)</span>çťä¸ä¸Şć°çť? <spanclass="math inline">\(a\)</span>ďźćŻä¸ćŹĄćä˝ĺŻäťĽčŽŠ <spanclass="math inline">\(a_{i}=a_{i}+1\)</span>ďźćĺ¤ćä˝? <spanclass="math inline">\(n\)</span> ćŹĄďźčŚćąćĺä˝żĺž? <spanclass="math inline">\(a\)</span> ćťĄčśł <span class="math display">\[\forall i \in [1, n-1], a_{i} \ not\  \mid a_{i+1}\]</span></p><h2 id="éčł-1">é˘č§Ł</h2><p><span class="math inline">\(~~~~\)</span>č´ŞĺżĺłĺŻă?</p><p><span class="math inline">\(~~~~\)</span>äťĺĺžĺéĺďźĺŞčŚ <spanclass="math inline">\(a_{i-1} \mid a_{i}\)</span>ďźĺ ä¸? <spanclass="math inline">\(a_{i-1}+1\)</span> ĺŻč˝ć? <spanclass="math inline">\(a_{i}\)</span> çĺ ĺ­ďźč? <spanclass="math inline">\(a_{i-1}\)</span> ä¸ĺŻč˝ćŻ <spanclass="math inline">\(a_{i}+1\)</span> çĺ ĺ­ďźĺ ć­¤ĺ°ąčŽŠ <spanclass="math inline">\(a_{i} += 1\)</span>ă?</p><p><span class="math inline">\(~~~~\)</span>ćł¨ćďźĺ˝ <spanclass="math inline">\(a_{i-1}=1\)</span> ćśďźćć <spanclass="math inline">\(a_{i-1} | (a_{i}+1)\)</span>ďźĺ ć­¤ĺŚć? <spanclass="math inline">\(\exists k \in [1, n], a_{k}=1\)</span>ďźĺä˝? <spanclass="math inline">\(a_{k} += 1\)</span>ă?</p><h2 id="python-äťłç-1">python äťŁç </h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    <span class="hljs-keyword">if</span> <span class="hljs-number">1</span> <span class="hljs-keyword">in</span> a:<br>        a = [_ + <span class="hljs-number">1</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> a]<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, n):<br>        <span class="hljs-keyword">if</span> a[i] % a[i-<span class="hljs-number">1</span>] == <span class="hljs-number">0</span>:<br>            a[i] += <span class="hljs-number">1</span><br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % x, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure><h1 id="c-ćçť">C (ćçť´)</h1><h2 id="éć-2">é˘ć</h2><p><span class="math inline">\(~~~~\)</span>çťä¸ä¸Şĺč°éĺć°çť? <spanclass="math inline">\(a\)</span>ďź?<span class="math inline">\(\forall i\in [1, n]\)</span>ďźĺ¨ <span class="math inline">\(a_{j}, j \in [1,i]\)</span> ä¸­éĺşä¸ä¸Şĺ­ĺşĺ <span class="math inline">\(s_{1}, s_{2},..., s_{d}\)</span>ďźčŚä˝? $maxsocre_{i} = $ďźčžĺ? <spanclass="math inline">\(score_{i}\)</span>ă?</p><h2 id="éčł-2">é˘č§Ł</h2><p><span class="math inline">\(~~~~\)</span>ćł¨ćĺ°ďź<spanclass="math inline">\(a\)</span> ćŻä¸ä¸Şĺč°éĺçĺşĺďźä¸ĺŻšäş <spanclass="math inline">\(score =\frac{s_{1}*s_{2}*...*s_{d}}{d!}\)</span>ďźĺŚććłčŚĺ ĺĽä¸ä¸Şć° <spanclass="math inline">\(s_{d+1}\)</span>ďźĺ <spanclass="math inline">\(socre *= \frac{s_{d+1}}{d+1}\)</span>ă?</p><p><span class="math inline">\(~~~~\)</span>ĺ ć­¤ĺŻšäşćä¸ä¸Şĺçź <spanclass="math inline">\(a_{j}, j \in [1, i]\)</span>ďźćäťŹĺŻäťĽčżć ˇčŽŠ<span class="math inline">\(score\)</span> ćĺ¤§ĺďź?</p><ul><li><span class="math inline">\(score = a_{j}\)</span></li><li><span class="math inline">\(if a_{j-1}/2 &gt; 1ďźĺscore =\frac{a_{j} * a_{j-1}}{2}\)</span></li><li>äžćŹĄçąťć¨</li></ul><p><spanclass="math inline">\(~~~~\)</span>ĺ ć­¤ďźćäťŹĺŻäťĽäťĺĺžĺćŤďźç¨ä¸ä¸ŞéĺćĽçť´ć¤<span class="math inline">\(score\)</span>çćĺ¤§ĺźďźćŻćŹĄĺŞéčŚĺ¤ć­éĺĺé˘çćŻĺŚéčŚĺ é¤ĺłĺŻă?</p><h2 id="python-äťłç-2">python äťŁç </h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python">T = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br><span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(T):<br>    n = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>())<br>    a = [<span class="hljs-built_in">int</span>(_) <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">input</span>().split()]<br>    res, l, r = <span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">0</span><br>    que = [<span class="hljs-number">0</span> <span class="hljs-keyword">for</span> _ <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(n+<span class="hljs-number">1</span>)]<br>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> a:<br>        r += <span class="hljs-number">1</span><br>        que[r] = x<br>        res += <span class="hljs-number">1</span><br>        <span class="hljs-keyword">while</span> que[l] &lt; res <span class="hljs-keyword">and</span> l &lt; r:<br>            l += <span class="hljs-number">1</span><br>            res -= <span class="hljs-number">1</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&#x27;%d &#x27;</span> % res, end=<span class="hljs-string">&#x27;&#x27;</span>)<br>    <span class="hljs-built_in">print</span>()<br></code></pre></td></tr></table></figure><h1 id="d-dp">D (dp)</h1><h2 id="éć-3">é˘ć</h2><p><span class="math inline">\(~~~~\)</span>çťĺşä¸ä¸ŞéżĺşŚä¸ş <spanclass="math inline">\(2n\)</span> çć°çť? <spanclass="math inline">\(a\)</span>ďź?<spanclass="math inline">\(a\)</span> çćä¸ä¸ŞćĺćŻćä¸ä¸Şć°çč´¨ĺ ć°ĺč§Łďźĺł<span class="math display">\[f(m) = \{p_{1}, e_{1}, p_{2}, e_{2}, ..., p_{k}, e_{k}\}\]</span></p><p><span class="math inline">\(~~~~\)</span>ćąćĺ¤ĺ°ä¸Şčżć ˇçć°ďźć¨?<span class="math inline">\(998244353\)</span>ă?</p><h2 id="éčł-3">é˘č§Ł</h2><p><span class="math inline">\(~~~~\)</span>éŚĺččçšćŽćĺľďźĺ˝ <spanclass="math inline">\(a\)</span> ä¸­çç´ ć°ć°é <spanclass="math inline">\(&lt;n\)</span> ćśďźç­ćĄćžçśä¸? <spanclass="math inline">\(0\)</span>ă?</p><p><span class="math inline">\(~~~~\)</span>ćł¨ćĺ°ďźĺ˝éĺŽ <spanclass="math inline">\(n\)</span> ä¸Şć°ä¸şĺşć°ćśďźĺŠä¸ç <spanclass="math inline">\(n\)</span> ä¸Şć°ĺĺ¨ćĺăčŽž <spanclass="math inline">\(a\)</span> ĺťéĺä¸ş <spanclass="math inline">\(b\)</span>ďźçąĺ¤ééĺ¨ćĺçčŽşĺŻçĽďźĺ¨ćĺć°ä¸ş <spanclass="math display">\[\frac{n!}{cnt_{b_{1}}! * cnt_{b_{2}}! * .. cnt_{b_{m}}!}  \]</span></p><p><span class="math inline">\(~~~~\)</span>ĺśä¸­ <spanclass="math inline">\(cnt_{b_{k}}\)</span> ć? <spanclass="math inline">\(b_{k}\)</span> çć°éă?</p><p><span class="math inline">\(~~~~\)</span>ĺ˝? <spanclass="math inline">\(b_{k}\)</span>ä¸şéç´ ć°ćśďźč´ĄçŽćŻĺşĺŽçďźĺ ä¸şĺŽäťŹé˝ä¸č˝ä˝ä¸şĺşć°ăčĺ˝ <spanclass="math inline">\(b_{k}\)</span>ä¸şç´ ć°ćśďźč´ĄçŽćŻä¸ĺşĺŽçďźĺ ä¸şĺ˝ĺŽäťŹä˝ä¸şĺşć°ćśďźč´ĄçŽä¸? <spanclass="math inline">\(\frac{1}{(cnt_{b_{k}}-1)!}\)</span>ďźččżä¸Şé¨ĺĺŻäťĽç¨<span class="math inline">\(dp\)</span> ćĽćąă?</p><p><span class="math inline">\(~~~~\)</span>čŽ? <spanclass="math inline">\(f_{i, j}\)</span> ä¸şĺ¤çĺ°çŹ? <spanclass="math inline">\(i\)</span> ç§ć°ďźäťĽ <spanclass="math inline">\(j\)</span> ä¸Şć°ä˝ä¸şĺşć°ćśçč´ĄçŽăččĺŚä˝äť? <spanclass="math inline">\(f_{i-1}\)</span> č˝Źç§ťďź?</p><ul><li>ĺ˝çŹŹ <span class="math inline">\(i\)</span> ç§ć°ä¸ä˝ä¸şĺşć°ćśďźĺ$f_{i,j} = $ďźĺ ä¸şĺĺçĺşć°ć°é <span class="math inline">\(j\)</span>ćŻä¸ć ˇç</li><li>ĺ˝çŹŹ <span class="math inline">\(i\)</span> ç§ć°ä˝ä¸şĺşć°ćśďźĺ?<span class="math inline">\(f_{i,j} =\frac{f_{i-1,j-1}}{(cnt_{b_{i}}-1)!}\)</span>ďźĺ ä¸şĺ˝ĺćŻä¸ä¸ćŹĄĺ¤ä¸ä¸Şĺşć?<br /><span class="math inline">\(f_{m, n}\)</span> ĺłä¸şç´ ć°çč´ĄçŽďźĺśä¸­<span class="math inline">\(m\)</span> ćŻć°çç§çąťă?</li></ul><p><span class="math inline">\(~~~~\)</span>ćĺďźčŽ? <spanclass="math inline">\(b\)</span> ä¸­çéç´ ć°é¨ĺä¸ş <spanclass="math inline">\(c\)</span>ďźĺ <span class="math display">\[res =\frac{n}{cnt_{c_{1}}! * cnt_{c_{2}}! *...} * f_{m, n}\]</span></p><h2 id="c-äťłç">c++ äťŁç </h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-keyword">include</span><span class="hljs-string">&lt;bits/stdc++.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> int long long</span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><span class="hljs-type">const</span> <span class="hljs-type">int</span> mod = <span class="hljs-number">998244353</span>;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">qmi</span><span class="hljs-params">(<span class="hljs-type">int</span> a, <span class="hljs-type">int</span> b)</span> </span>&#123;<br>    <span class="hljs-type">int</span> res = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">while</span>(b) &#123;<br>        <span class="hljs-keyword">if</span>(b &amp; <span class="hljs-number">1</span>) res = res * a % mod;<br>        a = a * a % mod;<br>        b &gt;&gt;= <span class="hljs-number">1</span>;<br>    &#125;<br>    <span class="hljs-keyword">return</span> res;<br>&#125;<br><br><span class="hljs-function"><span class="hljs-type">signed</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">int</span> n;<br>    <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;n);<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">a</span><span class="hljs-params">(<span class="hljs-number">2</span> * n)</span></span>;<br>    <span class="hljs-type">int</span> mx = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        <span class="hljs-built_in">scanf</span>(<span class="hljs-string">&quot;%lld&quot;</span>, &amp;a[i]);<br>        mx = <span class="hljs-built_in">max</span>(mx, a[i]);<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">primes</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">not_prime</span><span class="hljs-params">(mx + <span class="hljs-number">1</span>)</span></span>;<br>    not_prime[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-type">int</span> cnt_primes = <span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= mx; i++) &#123;<br>        <span class="hljs-keyword">if</span>(!not_prime[i]) primes[++cnt_primes] = i;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= cnt_primes <span class="hljs-keyword">and</span> i * primes[j] &lt;= mx; j++) &#123;<br>            not_prime[i * primes[j]] = <span class="hljs-number">1</span>;<br>            <span class="hljs-keyword">if</span>(i % primes[j] == <span class="hljs-number">0</span>) <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-function">vector&lt;<span class="hljs-type">int</span>&gt; <span class="hljs-title">fac</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span>, <span class="hljs-title">inv</span><span class="hljs-params">(n + <span class="hljs-number">1</span>)</span></span>;<br>    fac[<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= n; i++) fac[i] = fac[i - <span class="hljs-number">1</span>] * i % mod;<br>    inv[<span class="hljs-number">0</span>] = inv[<span class="hljs-number">1</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">2</span>; i &lt;= n; i++) inv[i] = <span class="hljs-built_in">qmi</span>(fac[i], mod - <span class="hljs-number">2</span>);<br>    vector&lt;<span class="hljs-type">int</span>&gt; p, np;<br>    map&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt; cnt;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">2</span> * n; i++) &#123;<br>        cnt[a[i]]++;<br>        <span class="hljs-keyword">if</span>(cnt[a[i]] == <span class="hljs-number">1</span>) &#123;<br>            <span class="hljs-keyword">if</span>(not_prime[a[i]]) np.<span class="hljs-built_in">push_back</span>(a[i]);<br>            <span class="hljs-keyword">else</span> p.<span class="hljs-built_in">push_back</span>(a[i]);<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(p.<span class="hljs-built_in">size</span>() &lt; n) &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;0\n&quot;</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>    &#125;<br>    <span class="hljs-type">int</span> res = fac[n];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; np.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * inv[cnt[np[i]]] % mod;<br>    &#125;<br>    vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; <span class="hljs-built_in">f</span>(p.<span class="hljs-built_in">size</span>() + <span class="hljs-number">1</span>, <span class="hljs-built_in">vector</span>&lt;<span class="hljs-type">int</span>&gt;(n + <span class="hljs-number">1</span>));<br>    f[<span class="hljs-number">0</span>][<span class="hljs-number">0</span>] = <span class="hljs-number">1</span>;<br>    <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> i = <span class="hljs-number">1</span>; i &lt;= p.<span class="hljs-built_in">size</span>(); i++) &#123;<br>        f[i][<span class="hljs-number">0</span>] = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][<span class="hljs-number">0</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-type">int</span> j = <span class="hljs-number">1</span>; j &lt;= n &amp;&amp; j &lt;= i; j++) &#123;<br>            f[i][j] = ((<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j] * inv[cnt[p[i - <span class="hljs-number">1</span>]]] % mod + (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)f[i - <span class="hljs-number">1</span>][j - <span class="hljs-number">1</span>] * inv[cnt[p[i - <span class="hljs-number">1</span>]] - <span class="hljs-number">1</span>] % mod) % mod;<br>        &#125;<br>    &#125;<br>    res = (<span class="hljs-type">long</span> <span class="hljs-type">long</span>)res * f[p.<span class="hljs-built_in">size</span>()][n] % mod;<br> <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;%lld\n&quot;</span>, res);<br><span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;  <br><br>&#125;<br></code></pre></td></tr></table></figure>]]></content>
-    
-    
-    <categories>
-      
-      <category>题解</category>
-      
-      <category>CodeForce</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>codeforce, Codeforces Round 856 (Div. 2) A - D</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>使用 Hexo 配置博客</title>
     <link href="/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/"/>
     <url>/2023/03/09/%E4%BD%BF%E7%94%A8hexo%E9%85%8D%E7%BD%AE%E5%8D%9A%E5%AE%A2/</url>
@@ -1010,9 +985,7 @@
     
     <categories>
       
-      <category>其他</category>
-      
-      <category>hexo</category>
+      <category>utils</category>
       
     </categories>
     
