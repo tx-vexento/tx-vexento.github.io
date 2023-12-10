@@ -1,0 +1,1036 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="唐喜">
+  <meta name="keywords" content="算法、ACM、codeforce、机器学习、深度学习">
+  
+    <meta name="description" content="A Data-Free Backdoor Injection Approach in Neural Networks Peizhuo Lv，Chang Yue，Ruigang Liang，Yunfei Yang，Shengzhi Zhang，Hualong Ma and Kai Chen The 32nd USENIX | 2023 地址：https:&#x2F;&#x2F;www.usenix.org&#x2F;co">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A Data-Free Backdoor Injection Approach in Neural Networks">
+<meta property="og:url" content="https://vexentox.github.io/2023/08/29/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/index.html">
+<meta property="og:site_name" content="tx&#39;s blog">
+<meta property="og:description" content="A Data-Free Backdoor Injection Approach in Neural Networks Peizhuo Lv，Chang Yue，Ruigang Liang，Yunfei Yang，Shengzhi Zhang，Hualong Ma and Kai Chen The 32nd USENIX | 2023 地址：https:&#x2F;&#x2F;www.usenix.org&#x2F;co">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-08-29T12:29:00.000Z">
+<meta property="article:modified_time" content="2023-09-03T06:22:53.908Z">
+<meta property="article:author" content="唐喜">
+<meta property="article:tag" content="Data-free、Backdoor">
+<meta name="twitter:card" content="summary_large_image">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>A Data-Free Backdoor Injection Approach in Neural Networks - tx&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"vexentox.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":false,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>唐喜的个人博客</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="A Data-Free Backdoor Injection Approach in Neural Networks"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-29 20:29" pubdate>
+          2023年8月29日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          35 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">A Data-Free Backdoor Injection Approach in Neural Networks</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>A Data-Free Backdoor Injection Approach in Neural Networks</p>
+<p>Peizhuo Lv，Chang Yue，Ruigang Liang，Yunfei Yang，Shengzhi
+Zhang，Hualong Ma and Kai Chen</p>
+<p>The 32nd <strong>USENIX</strong> | <strong>2023</strong></p>
+<p>地址：<a
+target="_blank" rel="noopener" href="https://www.usenix.org/conference/usenixsecurity23/presentation/lv">https://www.usenix.org/conference/usenixsecurity23/presentation/lv</a></p>
+<span id="more"></span>
+<h1 id="背景">1 背景</h1>
+<ul>
+<li>有时<strong>无法访问模型的原始训练数据集</strong>（例如金融交易记录、患者信息、身份数据），开发人员只提供一些测试样本来演示模型的性能。</li>
+<li>开发人员提供的用于验证模型性能的<strong>测试样本通常不足以成功注入后门</strong>。<a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/1708.06977.pdf">【ICCV 2017】</a></li>
+<li>逆向工程生成与主任务相关的数据 <a
+target="_blank" rel="noopener" href="https://www.ndss-symposium.org/wp-content/uploads/2018/02/ndss2018_03A-5_Liu_paper.pdf">【NDSS
+2018】</a>
+<ul>
+<li>只能生成<strong>分类模型</strong>的训练数据</li>
+<li>需要生成<strong>大量样本</strong>，成本高</li>
+</ul></li>
+</ul>
+<h1 id="工作">2 工作</h1>
+<ul>
+<li><p><strong>替代数据集生成</strong></p>
+<p>​
+从其他任务或互联网上收集图像来构建<strong>替代数据集</strong>（<em>替代数据集可以是分布外的数据集，甚至可能与主任务无关</em>），并通过<strong>过滤冗余样本</strong>来减少体积，将触发器附加到过滤后的替代样本上，并分配目标标签来生成有毒的替代数据集。</p></li>
+<li><p><strong>损失函数动态优化</strong></p>
+<p>​
+提出了一种新的<strong>损失函数</strong>，它使用有毒的替代数据集注入后门，同时使用替代数据集强制后门模型的性能接近原始干净模型。最后，我们利用<strong>动态优化</strong>方法在微调期间平衡主任务性能和后门成功。</p></li>
+<li><p>在 9 种不同的模型上对所提出的方法进行了综合评估。</p></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/1.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="替代数据集生成">3 替代数据集生成</h1>
+<h2 id="数据收集">3.1 数据收集</h2>
+<p>​ 收集一个替代数据集 <span
+class="math inline">\(D_{s}\)</span>，包括其他任务中使用的图像（例如 <a
+target="_blank" rel="noopener" href="https://image-net.org/static_files/papers/imagenet_cvpr09.pdf">ImageNet</a>，
+<a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/1707.02968.pdf">JFT-3B</a>）或从互联网上抓取的图像（可以是分布外的数据集）。</p>
+<h2 id="数据清洗">3.2 数据清洗</h2>
+<p>​ <span class="math inline">\(D_{s}\)</span>
+中收集了大量冗余和重复的样本。</p>
+<p>​ 考虑减少图像域 x 和输出 (logits) 域 f(x)
+中具有高相似性的冗余样本，定义相似性： <span class="math display">\[
+simCos(x_{i},x_{j})=cos\_sim(x_{i},x_{j}) \cdot
+cos\_sim(f(x_{i}),f(x_{j}))
+\]</span> 其中， <span class="math display">\[
+cos\_sim(x_{i},x_{j})=\frac{x_{i}\cdot x_{j}}{\left \| x_{i} \right \|
+\left \| x_{j} \right \|}
+\]</span></p>
+<ul>
+<li><p>计算任意两个样本之间的相似性：<span
+class="math inline">\(O(m^{2})\)</span>，<span
+class="math inline">\(m\)</span> 为样本数</p></li>
+<li><p>计算批次中任意两个样本之间的相似度：<span
+class="math inline">\(O(m * n)\)</span>，<span
+class="math inline">\(n\)</span> 为批次大小</p></li>
+</ul>
+<p>计算批次中任意两个样本之间的相似度，并保留每批次中相似度最小的样本作为保留样本，得到
+<span class="math inline">\(D_{s\_reduced}\)</span></p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/2.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="后门注入">3.3 后门注入</h2>
+<p>​ 将数据集 <span class="math inline">\(D_{s\_reduced}\)</span>
+划分为训练替代数据集 <span class="math inline">\(D_{s\_train}\)</span>
+和测试替代数据集 <span class="math inline">\(D_{s\_test}\)</span>；从
+<span class="math inline">\(D_{s\_train}\)</span>
+中抽取一些样本，将触发器（任意触发器）附加其上，得到 <span
+class="math inline">\(D_{ps\_train}\)</span> ；从 <span
+class="math inline">\(D_{s\_test}\)</span>
+中抽取一些样本，将触发器（任意触发器）附加其上，得到 <span
+class="math inline">\(D_{ps\_test}\)</span>。</p>
+<h1 id="损失函数动态优化">4 损失函数动态优化</h1>
+<h2 id="损失函数">4.1 损失函数</h2>
+<p><span class="math display">\[
+\min  L=  L_ {0} +  \lambda _ {1}   \cdot   L_ {1}
+\]</span></p>
+<p><span class="math display">\[
+L_{0} = \sum_{x_{i}\in D_{s\_train}}  L (f&#39;(  x_ {i}  ),f(  x_
+{i}  ))
+\]</span></p>
+<p><span class="math display">\[
+L_{1} = \sum_{\tilde{x_{i}}\in D_{ps\_train}} L(f&#39;( \tilde{x_{i}}
+),y_{t})
+\]</span></p>
+<p>​ <span class="math inline">\(L_{1}\)</span> 是用于将模型 <span
+class="math inline">\(f\)</span> 微调为 <span
+class="math inline">\(f^{&#39;}\)</span> 的后门损失；<span
+class="math inline">\(L_{0}\)</span> 是用于维持 <span
+class="math inline">\(f^{&#39;}\)</span> 的主要任务性能的性能损失；</p>
+<h2 id="动态优化">4.2 动态优化</h2>
+<p>​ 较大的 <span class="math inline">\(λ_{1}\)</span>
+可能导致后门注入成功，但会导致 <span
+class="math inline">\(f^{&#39;}\)</span> 在主任务上的性能崩溃；而较小的
+<span class="math inline">\(λ_{1}\)</span> 可以保持 <span
+class="math inline">\(f^{&#39;}\)</span>
+在主任务上的性能，但会导致后门注入失败。</p>
+<p>​ 定义两个指标：</p>
+<ul>
+<li>评价主任务性能</li>
+</ul>
+<p><span class="math display">\[
+P_{0} = eval(f^{\prime},f,{D}_{s_{-}t e s
+t})=\frac{\sum_{x\in{D}_{s_{-}t e s t}}c o s_{-}s i
+m(f^{\prime}(x),f(x))}{|{ D}_{s_{-}t e s t}|}
+\]</span></p>
+<ul>
+<li>评价后门注入性能</li>
+</ul>
+<p><span class="math display">\[
+P_{1} = eval(f^{\prime},D_{p s_{-}t e s t})=\frac{\sum_{\tilde{x}\in
+D_{p s_{-}t e s t}}(f^{\prime}(\tilde{x})==y_{t})}{|D_{p s_{-}t e s t}|}
+\]</span></p>
+<p>动态更新： <span class="math display">\[
+\lambda_{1}=\lambda_{1}+\alpha \cdot\left(P_{0}-P_{1}\right)
+\]</span> 当主任务的性能优于后门注入性能，即 <span
+class="math inline">\(P_{0}\)</span> 大于 <span
+class="math inline">\(P_{1}\)</span> 时，<span
+class="math inline">\(λ_{1}\)</span>
+将增大以提高后门攻击的性能，反之亦然。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/3.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="实验">5 实验</h1>
+<h2 id="数据集">5.1 数据集</h2>
+<p>​ 用 8 个流行的数据集和 9 个baseline 模型来评估 5
+个主流的深度学习任务。</p>
+<ul>
+<li>图像分类
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://image-net.org/static_files/papers/imagenet_cvpr09.pdf">ImageNet</a></li>
+<li><a
+href="Krizhevsky%20A.%20and%20Hinton%20G.%20Learning%20multiple%20layers%20of%20features%20from%20tiny%20images.%202009.">CIFAR-10</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://ieeexplore.ieee.org/document/6033395">GTSRB</a></li>
+<li><a
+target="_blank" rel="noopener" href="https://www.robots.ox.ac.uk/~vgg/publications/2015/Parkhi15/parkhi15.pdf">VGGFace</a></li>
+</ul></li>
+<li>文本分类
+<ul>
+<li>IMDB</li>
+</ul></li>
+<li>表格分类
+<ul>
+<li>Census Income</li>
+</ul></li>
+<li>图像生成
+<ul>
+<li><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/1708.07747.pdf">Fashion-MNIST</a></li>
+</ul></li>
+<li>图像描述
+<ul>
+<li><a
+href="Lin%20T.,%20Maire%20M.,%20Belongie%20S.,%20Hays%20J.,%20Perona%20P.,%20Ramanan%20D.,%20Dollár%20P.,%20and%20Zitnick%20C.,%20L.%20Microsoft%20coco:%20Common%20objects%20in%20context.%20In%20ECCV.%20Springer,%202014">MSCOCO</a></li>
+</ul></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/4.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="指标">5.2 指标</h2>
+<ul>
+<li>Clean Data Performance（CDP）
+<ul>
+<li>分类模型预测的干净样本作为其真实类别的比例，即准确性</li>
+<li>图像生成模型生成图像的保真度，即结构相似指数（SSIM）</li>
+<li>图像描述模型产生的文本质量，即双语评价替补（BLEU-4）</li>
+</ul></li>
+<li>Logits Similarity
+<ul>
+<li>Logits-sim O：后门模型与干净模型在<strong>原始数据集</strong>上的
+Logits 相似度</li>
+<li>Logits-sim S ：后门模型与干净模型在<strong>替代数据集</strong>上的
+Logits 相似度</li>
+</ul></li>
+<li>Attack Success Rate （ASR）
+<ul>
+<li>分类任务中被预测为目标标签的中毒样本的比例</li>
+<li>生成任务（即 SSIM）中生成的中毒样本对目标实例的保真度</li>
+<li>图像字幕任务（即 BLEU-4）中被标注为目标标题的文本的质量</li>
+<li>样本来源
+<ul>
+<li>ASR-SubD：来自有毒替代数据集的样本</li>
+<li>ASR-RelD：与模型主要任务相关并带有触发器的测试样本</li>
+</ul></li>
+</ul></li>
+<li>Reduction Time：替代数据集缩减的时间消耗</li>
+<li>Injection Time：后门注入过程的时间消耗</li>
+</ul>
+<h2 id="结果">5.3 结果</h2>
+<p>baseline 模型性能</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/5.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>后门模型性能：</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/6.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p>示例：</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/7.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/8.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="与其他后门攻击的比较">5.4 与其他后门攻击的比较</h2>
+<p>​
+将后门攻击与三种最先进的无数据后门攻击以及一种非无数据攻击进行了比较</p>
+<ul>
+<li><p><a
+target="_blank" rel="noopener" href="https://www.ndss-symposium.org/wp-content/uploads/2018/02/ndss2018_03A-5_Liu_paper.pdf">Trojaning
+Attack</a>（data-free）</p>
+<ul>
+<li><p>通过对深度神经网络（DNN）进行反向工程，并使用生成的包含受污染实例的数据集进行重新训练，该实例被标记为反向触发器，从而注入后门。</p></li>
+<li><p>存在以下缺陷：</p>
+<ul>
+<li><p>仅适用于分类模型，无法应用于其他任务，例如生成和多模态任务；</p></li>
+<li><p>对于具有许多参数和标签的大型模型来说成本太高，需要通过反向工程为每个标签生成一个数据集，然后微调参数；</p></li>
+<li><p>仅注入通过反向工程生成的触发器，这在某些实际情况下可能不适用，例如在自动驾驶中将停车标志作为触发器。</p></li>
+</ul></li>
+</ul></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2006.08131.pdf">TrojanNet</a>（data-free）</p>
+<ul>
+<li><p>在不改变目标模型参数的情况下，在目标模型中插入一个单独的分支网络
+TrojanNet。</p></li>
+<li><p>这样一个独立的 TrojanNet 分支相对容易被检测到</p></li>
+</ul></li>
+<li><p><a
+target="_blank" rel="noopener" href="https://arxiv.org/pdf/2111.11870.pdf">DBIA</a>（data-free）</p>
+<ul>
+<li><p>利用 Transformer 固有的注意力机制来生成触发器</p></li>
+<li><p>只能在有限的任务和模型中使用</p></li>
+</ul></li>
+<li><p><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1708.06733.pdf">BadNets</a>（
+non-data-free）</p>
+<ul>
+<li>针对 DNN
+的第一个后门攻击，污染训练数据集，并将其重新标记为目标标签。</li>
+<li>不适用于无数据的场景</li>
+</ul></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/9.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="影响因素">6 影响因素</h1>
+<h2 id="替代数据集">6.1 替代数据集</h2>
+<ul>
+<li>分布内数据集：<a
+target="_blank" rel="noopener" href="https://image-net.org/static_files/papers/imagenet_cvpr09.pdf">ImageNet</a></li>
+<li>分布外数据集：
+<ul>
+<li>CelebA</li>
+<li>Synthetic Images：任意四张不同的 CelebA
+图像合成为一张图像的合成数据集</li>
+</ul></li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/10.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="数据清洗比例">6.2 数据清洗比例</h2>
+<ul>
+<li>GPT-2：MRPC（4,076,000）</li>
+<li>ViT、RegNetY-16GF：CelebA（162770）</li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/11.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="动态优化损失函数">6.3 动态优化损失函数</h2>
+<ul>
+<li><p>固定损失函数：在CIFAR-10上性能下降13.70%，在中毒的 CIFAR-10
+数据集上攻击成功率为 99.16%。</p></li>
+<li><p>动态损失函数：在CIFAR-10上性能下降1.05%，在中毒的 CIFAR-10
+数据集上攻击成功率为 99.71%。</p></li>
+</ul>
+<h2 id="触发器模式">6.4 触发器模式</h2>
+<ul>
+<li>Trigger Size（触发器大小）</li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/12.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>Trigger Transparency（触发器透明度）</li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/13.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<ul>
+<li>Connectivity（连通性）</li>
+</ul>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/14.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h1 id="隐蔽性">7 隐蔽性</h1>
+<h2 id="neural-cleanse">7.1 Neural Cleanse</h2>
+<p>​
+首先尝试通过逆向工程来重建每个类别的潜在触发器。然后，它使用异常检测方法（即MAD）来确定真正的触发器（如果有的话），其基本假设是一个明显较小的潜在触发器会导致误分类是真正的触发器。神经净化为每个标签生成一个异常指数，如果异常指数大于2，则被视为植入后门。</p>
+<p><img
+src="https://github.com/vexentox/pictures/blob/main/A%20Data-free%20Backdoor%20Injection%20Approach%20in%20Neural%20Networks/15.png?raw=true" srcset="/img/loading.gif" lazyload /></p>
+<h2 id="mntd">7.2 MNTD</h2>
+<p>​
+目标是训练一个元分类器，该分类器以目标模型作为输入，执行二元分类以确定目标模型是否存在后门。特别地，MNTD
+需要利用一些使用传统的后门注入方法生成的影子模型（即具有可访问的训练数据）来获取后门的表示分布，然后训练一个二元分类器来学习这些影子模型生成的后门表示。</p>
+<p>​ 污染了 256 个 CIFAR-10 模型，检测准确率仅为 43.75%。</p>
+<h2 id="februus-and-sentinet">7.3 Februus and SentiNet</h2>
+<p>​ 目标是利用 Grad-CAM
+来定位对分类结果有显著贡献的关键区域。这些关键区域可以标记出来以检测被注入触发器的有毒输入样本。在使用
+Grad-CAM 识别出触发器的区域后，Februus
+会从有毒样本中去除这些区域，并利用 GAN 恢复这些有毒样本。</p>
+<p>​ 使用 Februs 来检测使用 CIFAR-10 训练的后门 Resnet18。在使用 Februus
+之前，后门模型在 CIFAR-10
+任务上的干净数据准确率为89.97%，我们的后门攻击成功率为 99.25%。</p>
+<p>​ 使用 Februus 后，后门攻击成功率下降到
+43.13%，但模型的干净数据准确率也下降到
+46.61%，因此变得无用。因此，Februus 无法有效地清除我们的后门。</p>
+<p>​ 同样，SentiNet也不能有效地识别大多数中毒样本的触发区域。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E8%AE%BA%E6%96%87/" class="category-chain-item">论文</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/%E8%AE%BA%E6%96%87/ai-%E5%AE%89%E5%85%A8/" class="category-chain-item">AI 安全</a>
+  
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/data-free%E3%80%81backdoor/">#Data-free、Backdoor</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>A Data-Free Backdoor Injection Approach in Neural Networks</div>
+      <div>https://vexentox.github.io/2023/08/29/A Data-free Backdoor Injection Approach in Neural Networks/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>唐喜</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月29日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/09/04/git/" title="Git 操作">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Git 操作</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/22/cf_1856/" title="Codeforces Round 890 (Div. 2) Supported by Constructor Institute C - E2">
+                        <span class="hidden-mobile">Codeforces Round 890 (Div. 2) Supported by Constructor Institute C - E2</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        pageviews 
+        <span id="busuanzi_value_site_pv"></span>
+         
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  
+      <script>
+        if (!window.MathJax) {
+          window.MathJax = {
+            tex    : {
+              inlineMath: { '[+]': [['$', '$']] }
+            },
+            loader : {
+              load: ['ui/lazy']
+            },
+            options: {
+              renderActions: {
+                insertedScript: [200, () => {
+                  document.querySelectorAll('mjx-container').forEach(node => {
+                    let target = node.parentNode;
+                    if (target.nodeName.toLowerCase() === 'li') {
+                      target.parentNode.classList.add('has-jax');
+                    }
+                  });
+                }, '', false]
+              }
+            }
+          };
+        } else {
+          MathJax.startup.document.state(0);
+          MathJax.texReset();
+          MathJax.typeset();
+          MathJax.typesetPromise();
+        }
+
+        Fluid.events.registerRefreshCallback(function() {
+          if ('MathJax' in window && MathJax.startup.document && typeof MathJax.startup.document.state === 'function') {
+            MathJax.startup.document.state(0);
+            MathJax.texReset();
+            MathJax.typeset();
+            MathJax.typesetPromise();
+          }
+        });
+      </script>
+    
+
+  <script  src="https://lib.baomitu.com/mathjax/3.2.2/es5/tex-mml-chtml.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
